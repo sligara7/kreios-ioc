@@ -1,0 +1,70 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Arch-01 Setup and Context",
+    "based_on": "architecture_workflow.json step 0 + global context rules",
+    "description": "Initialize system directory, verify prerequisites, and establish context tracking."
+  },
+  "entry_conditions": {
+    "system_name_known": true,
+    "working_directory": "pwd == /home/ajs7/project/saa/systems/<system_name> (create if missing)"
+  },
+  "prerequisites": {
+    "required_tools": [
+      "/home/ajs7/project/saa/tools/validate_architecture.py",
+      "/home/ajs7/project/saa/tools/system_of_systems_graph.py",
+      "/home/ajs7/project/saa/tools/analyze_features.py",
+      "/home/ajs7/project/saa/tools/generate_interface_contracts.py"
+    ],
+    "required_templates": [
+      "/home/ajs7/project/saa/templates/index_template.json",
+      "/home/ajs7/project/saa/templates/service_architecture_template.json",
+      "/home/ajs7/project/saa/templates/service_architecture_schema.json"
+    ],
+    "required_definitions": [
+      "/home/ajs7/project/saa/definitions/architectural_definitions.json"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S0.1",
+      "description": "Verify required tools are present",
+      "tool": "bash",
+      "command": "for t in validate_architecture.py system_of_systems_graph.py analyze_features.py generate_interface_contracts.py; do [ -f /home/ajs7/project/saa/tools/$t ] || echo 'ERROR: Missing '$t; done",
+      "success": "No ERROR messages"
+    },
+    { "id": "S0.2", "description": "Create systems/<system_name> directory if missing", "tool": "bash", "command": "mkdir -p /home/ajs7/project/saa/systems/<system_name>/context /home/ajs7/project/saa/systems/<system_name>/specs/machine/service_arch /home/ajs7/project/saa/systems/<system_name>/specs/machine/interfaces /home/ajs7/project/saa/systems/<system_name>/specs/machine/graphs /home/ajs7/project/saa/systems/<system_name>/specs/machine/registries /home/ajs7/project/saa/systems/<system_name>/specs/human/visualizations" },
+    {
+      "id": "S0.3",
+      "description": "Initialize context tracking files",
+      "tool": "manual",
+      "artifacts": [
+        "context/process_log.md",
+        "context/working_memory.json",
+        "context/step_progress_tracker.json",
+        "context/current_focus.md"
+      ]
+    }
+  ],
+  "validation": {
+    "check": "All tools, templates, and tracking files exist"
+  },
+  "artifact_routing": {
+    "context": "context/*",
+    "machine": "specs/machine/*",
+    "human": "specs/human/*"
+  },
+  "iteration_paths": {
+    "on_missing_tools": "self",
+    "on_context_conflict": "self"
+  },
+  "handoff": {
+    "produces": [
+      "context/process_log.md",
+      "context/working_memory.json",
+      "context/step_progress_tracker.json",
+      "context/current_focus.md"
+    ],
+    "next_workflow": "../architecture/Arch-02-AnalysisAndDecomposition.json"
+  }
+}

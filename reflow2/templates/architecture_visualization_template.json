@@ -1,0 +1,79 @@
+{
+  "template_version": "1.0",
+  "template_description": "Template for ARCHITECTURE_VISUALIZATION.md with embedded Mermaid diagrams",
+  "master_document_structure": {
+    "title": "# Architecture Visualization - REPLACE_WITH_SYSTEM_NAME",
+    "overview": "System architecture visualizations across hierarchical levels",
+    "navigation": "Quick navigation to different diagram levels",
+    "level1_section": "## Level 1: System Overview",
+    "level2_section": "## Level 2: Component Details", 
+    "level3_section": "## Level 3: Internal Structure (if applicable)",
+    "legend_section": "## Legend and Styling Guide"
+  },
+  "mermaid_styling": {
+    "existing_components": {
+      "fill": "#9f9",
+      "stroke": "#393", 
+      "stroke_width": "2px",
+      "description": "Operational components with existing implementations"
+    },
+    "recommended_components": {
+      "fill": "#9cf",
+      "stroke": "#369",
+      "stroke_width": "2px", 
+      "description": "Components recommended for implementation"
+    },
+    "hypothetical_components": {
+      "fill": "#ff9",
+      "stroke": "#990",
+      "stroke_width": "2px",
+      "stroke_dasharray": "5 5",
+      "description": "Hypothetical components requiring investigation"
+    },
+    "external_systems": {
+      "fill": "#ccc",
+      "stroke": "#666",
+      "stroke_width": "2px",
+      "description": "External systems outside current architecture boundary"
+    }
+  },
+  "diagram_types": {
+    "level1": {
+      "type": "graph TB or graph LR",
+      "purpose": "System-to-system or major component interfaces",
+      "max_nodes": 15,
+      "example": "graph TB\n    A[System A] -->|Interface X| B[System B]\n    B -->|Interface Y| C[System C]"
+    },
+    "level2": {
+      "type": "graph TB (per Level 1 parent)",
+      "purpose": "Component-to-component interfaces within systems",
+      "organization": "One diagram per Level 1 parent",
+      "example": "graph TB\n    subgraph \"System A\"\n        A1[Component 1] -->|API| A2[Component 2]\n        A2 -->|Data| A3[Component 3]\n    end"
+    },
+    "level3": {
+      "type": "classDiagram or sequenceDiagram",
+      "purpose": "Internal modules, classes, or function workflows",
+      "when_to_use": "Only for components with Level 3 decomposition",
+      "example": "classDiagram\n    class ServiceA {\n        +method1()\n        +method2()\n    }\n    ServiceA --> ServiceB : depends"
+    }
+  },
+  "template_content": "# Architecture Visualization - {SYSTEM_NAME}\n\n## Overview\nThis document contains comprehensive architecture visualizations for {SYSTEM_NAME} across multiple hierarchical levels.\n\n## Navigation\n- [Level 1: System Overview](#level-1-system-overview)\n- [Level 2: Component Details](#level-2-component-details)\n- [Level 3: Internal Structure](#level-3-internal-structure) (if applicable)\n- [Legend](#legend-and-styling-guide)\n\n---\n\n## Level 1: System Overview\n\n### Purpose\nShows top-level systems or major components and their primary interfaces.\n\n```mermaid\n{LEVEL1_MERMAID_CODE}\n```\n\n---\n\n## Level 2: Component Details\n\n### Purpose\nShows components/submodules within each Level 1 entity and their interfaces.\n\n```mermaid\n{LEVEL2_MERMAID_CODE}\n```\n\n---\n\n## Level 3: Internal Structure\n\n### Purpose\nShows internal modules, classes, or functions (only if Level 3 decomposition was performed).\n\n```mermaid\n{LEVEL3_MERMAID_CODE}\n```\n\n---\n\n## Legend and Styling Guide\n\n| Component Type | Color | Description |\n|----------------|-------|-------------|\n| Existing | Green (`#9f9`) | Operational components with existing implementations |\n| Recommended | Blue (`#9cf`) | Components recommended for implementation |\n| Hypothetical | Yellow (`#ff9`) | Hypothetical components requiring investigation |\n| External | Gray (`#ccc`) | External systems outside architecture boundary |\n\n### Interface Notation\n- Solid arrows: Direct dependencies\n- Dashed arrows: Indirect dependencies\n- Edge labels: Interface names or protocols\n\n---\n\n## Generation Notes\n- Generated from: ARCHITECTURE_CONTEXT_SUMMARY.md\n- All Mermaid code embedded directly (no file includes)\n- Diagrams validated for syntax correctness\n- Navigation hierarchy maintained across levels",
+  "validation_checklist": [
+    "ARCHITECTURE_CONTEXT_SUMMARY.md exists and is complete",
+    "All hierarchy levels present in architecture are visualized", 
+    "Interfaces are clearly labeled on diagram edges",
+    "Color coding matches implementation status",
+    "Diagrams are syntactically valid Mermaid markup",
+    "All Mermaid code embedded directly (no file inclusion syntax)",
+    "Master document provides clear navigation",
+    "Legend uses Markdown table format"
+  ],
+  "critical_requirements": [
+    "NEVER use [[@include]] syntax for Mermaid files",
+    "ALWAYS embed complete Mermaid code directly in markdown",
+    "VERIFY Mermaid syntax before finalizing",
+    "LIMIT Level 1 diagrams to 15 nodes maximum",
+    "CREATE domain-specific sub-diagrams if node limit exceeded",
+    "USE Markdown tables for legends, not bullet lists with emoji"
+  ]
+}

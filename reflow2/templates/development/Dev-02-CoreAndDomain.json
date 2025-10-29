@@ -1,0 +1,39 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Dev-02 Core & Domain Model Realization",
+    "based_on": "service_development_workflow.json D2–D3",
+    "description": "Transform architectural skeleton into concrete code foundations and core domain logic."
+  },
+  "entry_conditions": {
+    "from": "Dev-01",
+    "artifacts": ["context/dev_progress_tracker.json", "specs/machine/index.json"]
+  },
+  "steps": [
+    { "id": "D2.1", "description": "Generate directory skeleton for each service (dependency order)", "tool": "bash", "output": "code/<service>/" },
+    { "id": "D2.2", "description": "Instantiate data models from specs/machine/service_arch/<service>/data_models.json", "tool": "manual" },
+    { "id": "D2.3", "description": "Create placeholder interface adapters aligning with api_contracts.json", "tool": "manual" },
+    { "id": "D2.4", "description": "Add configuration loader honoring infrastructure.json", "tool": "manual" },
+    { "id": "D2.5", "description": "Register DI graph if applicable", "tool": "manual" },
+    { "id": "D2.6", "description": "Initial lint & type pass", "tool": "bash" },
+    { "id": "D3.1", "description": "Rank use cases and implement domain services (pure logic first)", "tool": "manual" },
+    { "id": "D3.2", "description": "Wire API handlers to domain services per api_contracts.json", "tool": "manual" },
+    { "id": "D3.3", "description": "Enforce validation and auth policies per compliance.json", "tool": "manual" }
+  ],
+  "artifact_routing": {
+    "code": "code/<service>/",
+    "machine_specs": "specs/machine/service_arch/<service>/",
+    "context": "context/*"
+  },
+  "iteration_paths": {
+    "on_contract_change": "../feature_update/FU-02-ArchReengineering.json",
+    "on_spec_misalignment": "../architecture/Arch-05-ConsistencyAndSpecVerification.json"
+  },
+  "validation": {
+    "exit_criteria": ["API surface placeholders exist", "Data structures match data_models.json", "Config bootstrap operational"]
+  },
+  "handoff": {
+    "produces": ["code/<service>/", "updated dev_process_log.md"],
+    "next_workflow": "../development/Dev-03-Persistence.json"
+  }
+}

@@ -1,0 +1,286 @@
+{
+  "metadata": {
+    "description": "Centralized port registry for all services in the system",
+    "version": "1.0.0",
+    "purpose": "Prevent port conflicts, enable service discovery, simplify deployment configuration",
+    "last_updated": "YYYY-MM-DD",
+    "port_allocation_strategy": "STRATEGY (sequential|by_category|custom)",
+    "notes": [
+      "Port assignments made during Systems Engineering phase (SE-02)",
+      "Used during Development phase for service configuration",
+      "Referenced by docker-compose.yml generation",
+      "Validated for conflicts before deployment (TO-01)"
+    ]
+  },
+  "port_ranges": {
+    "description": "Port allocation strategy for different service types",
+    "application_services": {
+      "range": "8000-8099",
+      "description": "User-facing application services (REST APIs, GraphQL, etc.)"
+    },
+    "internal_services": {
+      "range": "8100-8199",
+      "description": "Internal microservices (background workers, internal APIs)"
+    },
+    "data_services": {
+      "range": "8200-8299",
+      "description": "Database services, caching services, message queues"
+    },
+    "infrastructure_services": {
+      "range": "8300-8399",
+      "description": "Monitoring, logging, service mesh, API gateways"
+    },
+    "third_party_defaults": {
+      "PostgreSQL": 5432,
+      "MongoDB": 27017,
+      "Redis": 6379,
+      "RabbitMQ": 5672,
+      "Kafka": 9092,
+      "note": "These are standard ports; can be remapped if conflicts exist"
+    }
+  },
+  "service_ports": {
+    "EXAMPLE_SERVICE_ID": {
+      "service_name": "Example Service",
+      "service_id": "example_service",
+      "classification": "application|internal|data|infrastructure",
+      "ports": {
+        "primary": {
+          "port": 8000,
+          "protocol": "HTTP",
+          "purpose": "Main REST API endpoint",
+          "binding": "0.0.0.0",
+          "public_facing": true,
+          "docker_mapping": {
+            "host_port": 8000,
+            "container_port": 8000,
+            "note": "Maps host:8000 -> container:8000"
+          },
+          "health_check_endpoint": "/health",
+          "readiness_check_endpoint": "/ready"
+        },
+        "metrics": {
+          "port": 9000,
+          "protocol": "HTTP",
+          "purpose": "Prometheus metrics endpoint",
+          "binding": "0.0.0.0",
+          "public_facing": false,
+          "docker_mapping": {
+            "host_port": 9000,
+            "container_port": 9000
+          }
+        },
+        "admin": {
+          "port": 8001,
+          "protocol": "HTTP",
+          "purpose": "Administrative interface",
+          "binding": "127.0.0.1",
+          "public_facing": false,
+          "docker_mapping": {
+            "host_port": 8001,
+            "container_port": 8001
+          },
+          "security_note": "Localhost only - not exposed outside host"
+        }
+      },
+      "environment_specific_overrides": {
+        "development": {
+          "primary_port": 8000,
+          "note": "Development uses default ports"
+        },
+        "staging": {
+          "primary_port": 8000,
+          "note": "Staging mirrors production port allocation"
+        },
+        "production": {
+          "primary_port": 8000,
+          "note": "Production uses load balancer, services run on standard ports"
+        }
+      }
+    }
+  },
+  "port_conflict_detection": {
+    "description": "Rules for detecting port conflicts before deployment",
+    "rules": [
+      {
+        "rule_id": "PC-01",
+        "name": "No duplicate primary ports",
+        "check": "All service_ports[*].ports.primary.port values must be unique",
+        "severity": "error",
+        "fix": "Reassign conflicting service to different port"
+      },
+      {
+        "rule_id": "PC-02",
+        "name": "No port overlap between services",
+        "check": "A service's secondary ports (metrics, admin) cannot conflict with another service's primary port",
+        "severity": "error",
+        "fix": "Reassign conflicting secondary port"
+      },
+      {
+        "rule_id": "PC-03",
+        "name": "Ports within allocated ranges",
+        "check": "Service ports should be within their designated range (application: 8000-8099, etc.)",
+        "severity": "warning",
+        "fix": "Reassign to proper range for service classification"
+      },
+      {
+        "rule_id": "PC-04",
+        "name": "Avoid well-known ports below 1024",
+        "check": "Services should not use privileged ports (<1024) unless explicitly required",
+        "severity": "warning",
+        "fix": "Use ports >= 8000 for application services"
+      },
+      {
+        "rule_id": "PC-05",
+        "name": "Docker host-container port mapping consistency",
+        "check": "host_port and container_port should match unless there's a specific reason to differ",
+        "severity": "info",
+        "fix": "Align host and container ports for simplicity"
+      }
+    ]
+  },
+  "service_discovery": {
+    "description": "How services find each other using this port registry",
+    "local_development": {
+      "pattern": "http://localhost:{port}",
+      "example": "http://localhost:8000/api/characters",
+      "note": "Services run directly on host, use localhost + port from registry"
+    },
+    "docker_compose": {
+      "pattern": "http://{service_name}:{container_port}",
+      "example": "http://character_service:8000/api/characters",
+      "note": "Docker internal DNS resolves service names, uses container port"
+    },
+    "kubernetes": {
+      "pattern": "http://{service_name}.{namespace}.svc.cluster.local:{port}",
+      "example": "http://character-service.default.svc.cluster.local:8000/api/characters",
+      "note": "k8s DNS with Service objects"
+    },
+    "service_mesh": {
+      "pattern": "Service mesh handles service discovery",
+      "example": "http://character-service:8000",
+      "note": "Istio/Linkerd provide service discovery and load balancing"
+    }
+  },
+  "docker_compose_generation": {
+    "description": "How to generate docker-compose.yml from this registry",
+    "template_pattern": {
+      "service_name": {
+        "image": "${SERVICE_NAME}:${VERSION}",
+        "ports": [
+          "${HOST_PORT_PRIMARY}:${CONTAINER_PORT_PRIMARY}",
+          "${HOST_PORT_METRICS}:${CONTAINER_PORT_METRICS}"
+        ],
+        "environment": [
+          "PORT=${CONTAINER_PORT_PRIMARY}",
+          "METRICS_PORT=${CONTAINER_PORT_METRICS}"
+        ],
+        "healthcheck": {
+          "test": "curl -f http://localhost:${CONTAINER_PORT_PRIMARY}/health || exit 1",
+          "interval": "30s",
+          "timeout": "10s",
+          "retries": 3
+        }
+      }
+    },
+    "generation_tool": "tools/generate_docker_compose.py",
+    "inputs": [
+      "port_registry.json",
+      "service_architecture.json files",
+      "docker-compose template"
+    ]
+  },
+  "port_assignment_workflow": {
+    "phase_1_architecture": {
+      "when": "Systems Engineering workflow (SE-02: Service Architecture Design)",
+      "action": "Assign primary port to each service based on classification",
+      "output": "Update service_architecture.json with port assignment, create/update port_registry.json"
+    },
+    "phase_2_validation": {
+      "when": "Systems Engineering workflow (SE-06: Graph Generation)",
+      "action": "Run port conflict detection as part of architectural validation",
+      "tool": "validate_port_registry.py or integrated into system_of_systems_graph_v2.py"
+    },
+    "phase_3_development": {
+      "when": "Development workflow (D-02: Service Implementation)",
+      "action": "Reference port_registry.json when configuring service startup",
+      "example": "app.run(host='0.0.0.0', port=config.PORT_FROM_REGISTRY)"
+    },
+    "phase_4_deployment": {
+      "when": "Testing & Operations workflow (TO-01: Docker Compose Setup)",
+      "action": "Generate docker-compose.yml from port_registry.json",
+      "validation": "Validate no port conflicts before docker-compose up"
+    }
+  },
+  "common_port_assignments": {
+    "description": "Suggested port assignments for common service types",
+    "api_gateway": 8000,
+    "auth_service": 8001,
+    "user_service": 8002,
+    "notification_service": 8003,
+    "file_service": 8004,
+    "search_service": 8005,
+    "analytics_service": 8100,
+    "background_worker": 8101,
+    "scheduler_service": 8102,
+    "postgres": 5432,
+    "mongodb": 27017,
+    "redis": 6379,
+    "rabbitmq": 5672,
+    "elasticsearch": 9200,
+    "prometheus": 9090,
+    "grafana": 3000,
+    "note": "These are conventions, not requirements. Adjust based on your system."
+  },
+  "troubleshooting": {
+    "port_already_in_use": {
+      "symptoms": "Service fails to start with 'Address already in use' or 'Port XXXX is already allocated'",
+      "diagnosis": [
+        "1. Check if previous instance still running: docker ps | grep <service>",
+        "2. Check host port usage: netstat -tlnp | grep <port> (Linux) or lsof -i :<port> (Mac)",
+        "3. Verify port_registry.json has no duplicate assignments"
+      ],
+      "fixes": [
+        "1. Stop previous instance: docker-compose down",
+        "2. Kill process using port: kill -9 <PID>",
+        "3. Reassign service to different port in port_registry.json",
+        "4. Update docker-compose.yml with new port mapping"
+      ]
+    },
+    "service_cannot_connect": {
+      "symptoms": "Service A cannot reach Service B, connection refused",
+      "diagnosis": [
+        "1. Verify Service B is running: docker ps",
+        "2. Check Service B health: curl http://localhost:<port>/health",
+        "3. Verify port mapping: docker port <container>",
+        "4. Check service discovery: Are you using localhost vs service_name?"
+      ],
+      "fixes": [
+        "1. In docker-compose: Use service name (http://service_b:8000), NOT localhost",
+        "2. Verify docker network: docker network inspect <network>",
+        "3. Ensure services on same Docker network",
+        "4. Check firewall rules if crossing host boundaries"
+      ]
+    }
+  },
+  "validation_checklist": {
+    "before_development": [
+      "✓ All services have assigned primary ports",
+      "✓ No duplicate port assignments",
+      "✓ Ports within appropriate ranges (8000+ for apps)",
+      "✓ port_registry.json committed to version control"
+    ],
+    "before_deployment": [
+      "✓ docker-compose.yml ports match port_registry.json",
+      "✓ No previous containers running on assigned ports (docker ps)",
+      "✓ Environment variables reference correct ports",
+      "✓ Health check endpoints configured with correct ports"
+    ],
+    "in_production": [
+      "✓ Load balancer configured with correct backend ports",
+      "✓ Firewall rules allow traffic on assigned ports",
+      "✓ Service mesh configured with correct port mappings",
+      "✓ Monitoring scraping metrics ports"
+    ]
+  }
+}

@@ -1,0 +1,833 @@
+{
+  "step_metadata": {
+    "step_id": "SE-06",
+    "step_name": "System Graph Generation",
+    "version": "1.0.0",
+    "created_date": "2025-10-27",
+    "last_updated": "2025-10-27",
+    "purpose": "Generate machine-readable system_of_systems_graph.json with framework-agnostic analysis",
+    "phase": "artifacts",
+    "workflow": "01-systems_engineering",
+    "maps_from": "Part of Arch-06, extracted for machine-readable artifacts"
+  },
+
+  "step_description": "Generate comprehensive machine-readable system graph with NetworkX analysis, knowledge gap detection, and architectural issue validation. This step creates the index.json catalog, runs framework-appropriate graph analysis, and produces version manifest for architecture lifecycle tracking.",
+
+  "prerequisites": {
+    "completed_steps": ["SE-00", "SE-01", "SE-02", "SE-03", "SE-04", "SE-05"],
+    "required_files": [
+      "All service_architecture.json files (via symlinks)",
+      "specs/machine/interface_registry.json",
+      "context/working_memory.json with framework_configuration"
+    ],
+    "required_tools": ["system_of_systems_graph_v2.py"],
+    "required_templates": ["index_template.json", "version_manifest_template.json"],
+    "required_definitions": [
+      "definitions/framework_registry.json",
+      "definitions/analysis_selection_guide.json"
+    ]
+  },
+
+  "actions": [
+    {
+      "action_id": "SE-06-A01",
+      "action_name": "Create Architecture Index",
+      "description": "Create index.json that catalogs all machine-readable architecture artifacts using symlinks",
+      "template": "index_template.json",
+      "location": "specs/machine/index.json",
+      "purpose": "Catalog all machine-readable architecture artifacts using symlinks to latest versions",
+
+      "index_includes": [
+        "Service list with paths to service_architecture.json SYMLINKS (not versioned files)",
+        "Interface registry path",
+        "Graph paths",
+        "Version information",
+        "Framework configuration metadata"
+      ],
+
+      "path_format": {
+        "use_symlinks": true,
+        "example": "specs/machine/service_arch/auth_service/service_architecture.json",
+        "note": "Path points to symlink, which points to latest versioned file",
+        "benefit": "Tools always use latest version without updating index.json",
+        "versioned_file_example": "specs/machine/service_arch/auth_service/service_architecture_v1.0.0-20251027.json",
+        "symlink_target": "service_architecture.json → service_architecture_v1.0.0-20251027.json"
+      },
+
+      "execution_steps": [
+        "1. Load index_template.json from templates directory",
+        "2. For each service, add entry with path to service_architecture.json SYMLINK",
+        "3. Add interface_registry.json path",
+        "4. Add graph output paths (system_of_systems_graph.json, architecture_issues.json)",
+        "5. Add version_manifest.json path",
+        "6. Include framework metadata from working_memory.json",
+        "7. Write to specs/machine/index.json"
+      ],
+
+      "validation": [
+        "All referenced symlinks exist",
+        "All symlinks point to valid versioned files",
+        "JSON syntax is valid",
+        "All required fields present"
+      ],
+
+      "llm_agent_guidance": "This index is the entry point for all graph generation and validation tools. Ensure paths use SYMLINKS not versioned files, so tools automatically use latest versions."
+    },
+
+    {
+      "action_id": "SE-06-A02",
+      "action_name": "Generate and Validate System Graph",
+      "description": "Generate system_of_systems_graph.json with framework-specific NetworkX analysis, knowledge gap detection, and architectural issue validation",
+      "tool": "system_of_systems_graph_v2.py",
+      "criticality": "CRITICAL - This is not just graph generation, it's comprehensive architecture validation",
+
+      "command_pattern": "python3 {reflow_root}/tools/system_of_systems_graph_v2.py {system_root}/specs/machine/index.json --detect-gaps --analyze-issues [SELECTED_ANALYSIS_FLAGS]",
+
+      "purpose": "Create framework-agnostic graph with comprehensive NetworkX analysis that validates system architecture quality, detects knowledge gaps (missing components), identifies architectural issues (circular deps, async/sync mismatches), and provides quantitative metrics for system understanding",
+
+      "analysis_selection_guidance": {
+        "overview": "CRITICAL: Different frameworks require different analyses. UAF needs DAG validation (no circular deps), Biology needs cycle detection (feedback loops), Ecological needs flow analysis (energy transfer). Selecting wrong analyses produces misleading results.",
+
+        "selection_process": {
+          "step_1": "Read framework_id from working_memory.json -> framework_configuration.framework_id",
+          "step_2": "Load {reflow_root}/definitions/framework_registry.json -> frameworks[framework_id].recommended_analyses",
+          "step_3": "Review {reflow_root}/definitions/analysis_selection_guide.json for detailed descriptions of each analysis type",
+          "step_4": "Select analyses based on framework recommendations (high_priority + medium_priority as appropriate for your system)",
+          "step_5": "Check if any selected analyses require edge weights (flow analysis REQUIRES weights, others benefit but work without)",
+          "step_6": "If edge weights required but missing: either (A) add 'weight' field to architecture files OR (B) skip that analysis",
+          "step_7": "Construct command with appropriate flags: --centrality --community --cycles --scc --dag --flow --connectivity --clustering --properties",
+          "step_8": "Update working_memory.json -> analysis_configuration with selected analyses, rationale, and edge weight inclusion"
+        },
+
+        "framework_specific_examples": {
+          "uaf": {
+            "recommended_flags": "--centrality --dag --scc --community --connectivity",
+            "rationale": "UAF systems should be DAG (no circular service deps), centrality finds critical services, SCC validates no cycles, community finds deployment groups, connectivity ensures system cohesion",
+            "edge_weights_needed": false,
+            "common_issues_detected": "Circular dependencies between services, orphaned services, missing API gateway"
+          },
+          "systems_biology": {
+            "recommended_flags": "--cycles --centrality --community --scc",
+            "rationale": "Biological systems have feedback loops (cycles are EXPECTED), centrality finds hub genes/proteins, community finds gene modules, SCC finds co-regulated groups",
+            "edge_weights_needed": false,
+            "edge_weights_optional": "reaction_rate or binding_affinity enables flow analysis of metabolic flux",
+            "common_issues_detected": "Missing feedback loops, isolated pathways, unbalanced regulatory networks"
+          },
+          "social_network": {
+            "recommended_flags": "--centrality --community --clustering --connectivity",
+            "rationale": "Social networks: centrality finds influencers, community finds social groups, clustering measures cohesion, connectivity finds bridges between groups",
+            "edge_weights_needed": false,
+            "edge_weights_optional": "interaction_frequency or relationship_strength enables flow analysis",
+            "common_issues_detected": "Isolated individuals, weak bridges between groups, low clustering"
+          },
+          "ecological": {
+            "recommended_flags": "--flow --centrality --connectivity --community --cycles",
+            "rationale": "Ecological systems: flow analysis CRITICAL for energy transfer, centrality finds keystone species, connectivity measures robustness, community finds trophic levels, cycles find nutrient cycling",
+            "edge_weights_needed": true,
+            "edge_weight_semantic": "energy_transfer_rate (kcal/m²/year) or biomass_flow (kg/year)",
+            "warning": "Flow analysis will fail without edge weights - must add to architecture files",
+            "common_issues_detected": "Energy flow bottlenecks, missing trophic levels, low connectivity (fragile ecosystem)"
+          },
+          "complex_adaptive": {
+            "recommended_flags": "--cycles --community --scc --centrality",
+            "rationale": "CAS: cycles drive adaptation (feedback loops), community finds emergent clusters, SCC finds co-evolving groups, centrality finds influential agents",
+            "edge_weights_needed": false,
+            "edge_weights_optional": "interaction_strength enables flow analysis",
+            "common_issues_detected": "Missing feedback mechanisms, isolated agents, weak emergence"
+          },
+          "decision_flow": {
+            "recommended_flags": "--flow --cycles --paths --centrality --dag",
+            "rationale": "Decision Flow (workflows): flow analysis finds common paths and bottlenecks, cycles detect rework loops, paths find critical path, centrality finds critical decision nodes, DAG validates workflow structure",
+            "edge_weights_needed": true,
+            "edge_weight_semantic": "transition_probability (0.0-1.0) - likelihood of taking this path",
+            "warning": "Flow analysis requires transition probabilities - mandatory for workflow analysis",
+            "common_issues_detected": "High rework probability, bottleneck decision nodes, missing alternative paths"
+          }
+        },
+
+        "edge_weight_guidance": {
+          "when_needed": "Flow analysis REQUIRES edge weights. Other analyses benefit from weights (weighted centrality, weighted community detection) but work without them.",
+          "how_to_add": "Add 'weight' field to each interface/interaction/relationship/transition in architecture files (service_architecture.json)",
+          "where_to_add": "In architecture files: interfaces section, dependencies section, or edges array depending on framework",
+
+          "semantic_meaning_by_framework": {
+            "uaf": {
+              "weight_semantic": "request_rate (requests/second) or data_volume (MB/second)",
+              "example": "character_service → character_api: weight=1000 (1000 req/sec)",
+              "benefit": "Identifies high-traffic interfaces, performance bottlenecks"
+            },
+            "systems_biology": {
+              "weight_semantic": "reaction_rate (molecules/second) or binding_affinity (Kd in nM)",
+              "example": "gene_A activates gene_B: weight=0.8 (80% activation strength)",
+              "benefit": "Identifies rate-limiting steps, strong regulatory relationships"
+            },
+            "social_network": {
+              "weight_semantic": "interaction_frequency (contacts/week) or relationship_strength (0-1 scale)",
+              "example": "Alice → Bob: weight=5.2 (5.2 interactions per week)",
+              "benefit": "Identifies strong relationships, frequent collaborations"
+            },
+            "ecological": {
+              "weight_semantic": "energy_transfer_rate (kcal/m²/year) or biomass_flow (kg/year)",
+              "example": "grass → rabbit: weight=1500 (1500 kcal/m²/year energy transfer)",
+              "benefit": "CRITICAL for energy flow analysis, trophic efficiency calculations"
+            },
+            "complex_adaptive": {
+              "weight_semantic": "flow_rate or interaction_strength",
+              "example": "buyer → seller: weight=0.7 (70% interaction strength)",
+              "benefit": "Identifies strong couplings, dominant flows in adaptive system"
+            },
+            "decision_flow": {
+              "weight_semantic": "transition_probability (0.0-1.0) - likelihood of taking this transition",
+              "example": "validation → pass: weight=0.6 (60% pass rate), validation → fail: weight=0.4 (40% fail/rework rate)",
+              "benefit": "CRITICAL for flow analysis - reveals common paths, rework probability, bottlenecks"
+            }
+          }
+        },
+
+        "analysis_flags_reference": {
+          "--centrality": "Degree, betweenness, closeness, eigenvector, PageRank centrality - finds critical/influential nodes",
+          "--community": "Louvain, label propagation, Girvan-Newman, modularity - finds clusters/modules/groups",
+          "--cycles": "Simple cycles, cycle basis, feedback loops, cycle length distribution - finds feedback or rework loops",
+          "--scc": "Strongly connected components, condensation graph, component sizes - finds co-dependent groups",
+          "--dag": "Topological sort, longest path, topological levels - validates DAG structure, finds critical path",
+          "--flow": "Maximum flow, minimum cut, node connectivity - finds bottlenecks, max throughput (REQUIRES edge weights)",
+          "--connectivity": "Components, bridges, node/edge connectivity - measures system robustness",
+          "--clustering": "Clustering coefficient, transitivity, triangles - measures local cohesion",
+          "--properties": "Density, assortativity, reciprocity, degree distribution - basic graph statistics",
+          "--analyze-all": "Run ALL analyses (use cautiously - may be overwhelming or inappropriate for framework)"
+        }
+      },
+
+      "inputs": [
+        "specs/machine/index.json (entry point)",
+        "All architecture files via symlinks (service_architecture.json, component_architecture.json, agent_profile.json, etc.)",
+        "specs/machine/interface_registry.json",
+        "context/working_memory.json -> framework_configuration",
+        "{reflow_root}/definitions/framework_registry.json",
+        "{reflow_root}/definitions/analysis_selection_guide.json"
+      ],
+
+      "outputs": [
+        "specs/machine/graphs/system_of_systems_graph.json (graph with comprehensive NetworkX analysis results)",
+        "specs/machine/architecture_issues.json (detected architectural problems)",
+        "context/working_memory.json updated with analysis_configuration section"
+      ],
+
+      "validation_loop": {
+        "description": "CRITICAL - This tool doesn't just generate a file, it VALIDATES the system architecture. Issues detected MUST be fixed before proceeding.",
+        "step_1": "Select appropriate analyses based on framework (see analysis_selection_guidance above)",
+        "step_2": "Check if flow analysis needed - if yes, ensure edge weights exist in architecture files",
+        "step_3": "Construct command with framework-appropriate analysis flags",
+        "step_4": "Run system_of_systems_graph_v2.py with selected flags, --detect-gaps, and --analyze-issues",
+        "step_5": "READ the tool output carefully - contains graph analysis results, statistics, warnings, errors",
+        "step_6": "Examine architecture_issues.json for architectural problems (circular deps, orphans, async/sync issues, security violations)",
+        "step_7": "Examine knowledge_gaps section in graph for missing nodes or edges ('dark matter' components, structural holes)",
+        "step_8": "If issues found: Fix in source architecture files (service_architecture.json, interface_registry.json, etc.)",
+        "step_9": "Re-run system_of_systems_graph_v2.py with same flags to verify fixes",
+        "step_10": "LOOP steps 5-9 until clean (zero critical errors, acceptable warnings)",
+        "termination": "Loop until clean OR max 5 iterations (then escalate to user for guidance)",
+        "success_criteria": "Tool completes without errors, no critical architectural issues, knowledge gaps explained or resolved"
+      },
+
+      "system_level_issues_to_check": [
+        {
+          "issue": "Circular dependencies between services",
+          "applicability": "UAF systems - services should form DAG",
+          "detection": "Tool reports circular dependency chains OR graph shows cycles in --dag or --scc analysis",
+          "severity": "CRITICAL",
+          "fix": "Refactor service boundaries to break circular dependency - one service must not depend on the other, or introduce event-driven decoupling (pub/sub)",
+          "architectural_principle": "Services should form a DAG (directed acyclic graph) to enable independent deployment",
+          "example": "Service A depends on Service B, Service B depends on Service A → Introduce message queue or remove one dependency"
+        },
+        {
+          "issue": "Interface mismatches between services",
+          "applicability": "All frameworks",
+          "detection": "Service A calls interface X on Service B, but Service B doesn't expose interface X",
+          "severity": "CRITICAL",
+          "fix": "Either (A) add missing interface to Service B's architecture OR (B) correct Service A's dependency declaration",
+          "cross_reference": "Check interface_registry.json and service dependencies sections",
+          "example": "character_service declares dependency on 'dice_roll_api', but dice_service doesn't expose 'dice_roll_api'"
+        },
+        {
+          "issue": "Missing interface definitions in registry",
+          "applicability": "All frameworks",
+          "detection": "Graph references interface but interface_registry.json doesn't contain it",
+          "severity": "HIGH",
+          "fix": "Add interface definition to interface_registry.json with complete contract",
+          "ensure": "Interface has request/response schemas, authentication requirements, protocols, versioning",
+          "example": "Services reference 'user_auth_api' but it's not defined in interface_registry.json"
+        },
+        {
+          "issue": "Inconsistent interface versions",
+          "applicability": "All frameworks with versioned interfaces",
+          "detection": "Two services reference same interface but with different version requirements",
+          "severity": "HIGH",
+          "fix": "Align interface versions OR clearly document version compatibility requirements",
+          "version_strategy": "Use semantic versioning to manage compatibility - major.minor.patch",
+          "example": "Service A requires user_api v2.1, Service B requires user_api v2.3 → Document v2.x compatibility"
+        },
+        {
+          "issue": "Orphaned services (no incoming or outgoing dependencies)",
+          "applicability": "All frameworks",
+          "detection": "Service/node appears in system but has no connections to other services/nodes",
+          "severity": "WARNING",
+          "fix": "Either (A) connect service to system OR (B) remove if it's not actually part of this system",
+          "validate": "Every service should have a clear role in at least one user scenario or system function",
+          "example": "notification_service exists but no service sends it events and it doesn't call other services"
+        },
+        {
+          "issue": "Data model conflicts",
+          "applicability": "UAF microservices, distributed systems",
+          "detection": "Multiple services define same entity with different schemas",
+          "severity": "HIGH",
+          "fix": "Establish canonical data model ownership - one service owns entity definition, others reference it",
+          "pattern": "Follow domain-driven design bounded context principles",
+          "example": "character_service defines User{id, name}, session_service defines User{id, username, email} → Choose one canonical definition"
+        },
+        {
+          "issue": "Missing external system declarations",
+          "applicability": "All frameworks with external dependencies",
+          "detection": "Services depend on external systems not declared in external_systems section",
+          "severity": "MEDIUM",
+          "fix": "Add external system to system-level external_systems list with integration details",
+          "documentation": "Document external dependencies explicitly (API keys, SLAs, failure modes)",
+          "example": "Service calls Stripe API but 'stripe' not in external_systems list"
+        },
+        {
+          "issue": "Security boundary violations",
+          "applicability": "UAF systems with security requirements",
+          "detection": "Public-facing service directly accessing database service without auth layer OR services bypass API gateway",
+          "severity": "CRITICAL",
+          "fix": "Introduce security boundaries - authentication/authorization services between public and private services",
+          "principle": "Defense in depth - multiple security layers, API gateway as single entry point",
+          "example": "public_web_app directly calls character_database_service → Must go through api_gateway and auth_service"
+        },
+        {
+          "issue": "Async/sync framework consistency violations",
+          "applicability": "UAF systems using async HTTP frameworks",
+          "detection": "Service uses async HTTP framework (python_uvicorn: true, FastAPI, aiohttp) but interfaces suggest synchronous database operations (SQLAlchemy without async, psycopg2, pymongo)",
+          "severity": "WARNING",
+          "fix": "Align async/sync patterns: async HTTP frameworks (uvicorn/FastAPI) should use async database drivers (asyncpg, motor, async SQLAlchemy) to avoid blocking the event loop",
+          "architectural_principle": "Async frameworks require async I/O throughout the stack - mixing sync DB with async HTTP blocks the event loop and degrades performance (200ms blocking DB call freezes entire service)",
+          "common_async_drivers": {
+            "PostgreSQL": "asyncpg or databases library with async SQLAlchemy",
+            "MongoDB": "motor (async MongoDB driver)",
+            "MySQL": "aiomysql with async SQLAlchemy",
+            "SQLite": "aiosqlite",
+            "Redis": "aioredis"
+          },
+          "detection_source": "architecture_issues.json -> async_sync_consistency section",
+          "fix_instructions": [
+            "1. Check architecture_issues.json for specific services with async/sync mismatches",
+            "2. For each flagged service, update service_architecture.json interfaces section",
+            "3. Update interface descriptions to explicitly specify async database drivers",
+            "4. Example: Change 'Internal database for character entities unique to this service' to 'Internal async database (asyncpg) for character entities'",
+            "5. Re-run system_of_systems_graph_v2.py --analyze-issues to verify fix"
+          ]
+        },
+        {
+          "issue": "Knowledge gaps - missing nodes ('dark matter' components)",
+          "applicability": "All frameworks",
+          "detection": "Knowledge gap detection finds interfaces with no providing or consuming service",
+          "severity": "MEDIUM to HIGH (depends on interface criticality)",
+          "fix": "Either (A) add missing service/component to architecture OR (B) remove interface from registry if not needed",
+          "explanation": "'Dark matter' = interfaces that exist in registry but no component provides/consumes them",
+          "example": "interface_registry.json has 'payment_processing_api' but no service provides it → Missing payment_service"
+        },
+        {
+          "issue": "Structural holes in social/ecological networks",
+          "applicability": "Social network, ecological systems frameworks",
+          "detection": "Knowledge gap detection finds nodes with no connections or disconnected subgraphs",
+          "severity": "MEDIUM",
+          "fix": "Add connections (relationships, trophic links) between disconnected groups OR document why separation is intentional",
+          "explanation": "Structural holes = missing connections that would increase network robustness or efficiency",
+          "example": "Social network has two disconnected communities with no bridges → Low information flow"
+        }
+      ],
+
+      "llm_agent_instructions": [
+        "STEP 1: CRITICAL - Select analyses appropriate for your framework using analysis_selection_guidance above",
+        "STEP 2: Check if flow analysis is needed - if yes, ensure edge weights are included in architecture files (check edge_weight_guidance)",
+        "STEP 3: Construct command with framework-appropriate analysis flags (e.g., for UAF: --centrality --dag --scc --community)",
+        "STEP 4: Run system_of_systems_graph_v2.py with selected flags, --detect-gaps, and --analyze-issues",
+        "STEP 5: READ the tool output carefully - it contains valuable graph analysis results (centrality scores, modularity, cycle counts, etc.)",
+        "STEP 6: Review architecture_issues.json for architectural problems (circular deps, orphans, async/sync issues, security violations)",
+        "STEP 7: Review knowledge_gaps section in graph for missing nodes or edges ('dark matter' components, structural holes)",
+        "STEP 8: If issues found: Analyze severity and fix in source architecture files (service_architecture.json, interface_registry.json)",
+        "STEP 9: Re-run tool to verify fixes - LOOP until clean (validation_loop above)",
+        "STEP 10: Update working_memory.json -> analysis_configuration with selected analyses, rationale, edge_weight_inclusion, results summary",
+        "DO NOT just run the tool and assume success - ANALYZE the results (centrality, community structure, cycles, etc.)",
+        "DO NOT proceed if tool reports CRITICAL errors - fix them first",
+        "DO NOT skip knowledge gap review - missing components cause runtime failures",
+        "CRITICAL: async HTTP services MUST use async database drivers (check async_sync_consistency in architecture_issues.json)",
+        "Use NetworkX analysis results to validate architecture quality: high modularity = good separation of concerns, low clustering = fragile system",
+        "IMPORTANT: Analysis results should make sense for your framework - cycles are bugs in UAF, expected in Biology"
+      ],
+
+      "success_criteria": [
+        "system_of_systems_graph_v2.py completes without errors",
+        "Framework-appropriate analyses selected based on framework_registry.json recommendations",
+        "All selected analyses run successfully and produce results",
+        "Generated graph shows cohesive system (no unexplained orphans, cycles consistent with framework expectations)",
+        "All interfaces properly connected between components (no missing providers/consumers)",
+        "NetworkX analysis results make sense for this system type (e.g., UAG is DAG, Biology has cycles)",
+        "Knowledge gap detection reveals no critical missing components (or gaps are documented/explained)",
+        "Architecture issues severity: zero CRITICAL, acceptable WARNING count",
+        "working_memory.json updated with analysis_configuration: selected_analyses, rationale, edge_weights_included, results_summary"
+      ]
+    },
+
+    {
+      "action_id": "SE-06-A03",
+      "action_name": "Create Version Manifest",
+      "description": "Create comprehensive version_manifest.json that tracks complete version history of all architecture artifacts",
+      "template": "version_manifest_template.json",
+      "location": "specs/machine/version_manifest.json",
+      "purpose": "Track complete version history of all architecture artifacts for lifecycle management, rollback support, and change tracking",
+
+      "schema": {
+        "services": {
+          "{service_name}": {
+            "latest_version": "v1.0.0-{YYYYMMDD}",
+            "current_symlink": "service_architecture.json",
+            "versions": [
+              {
+                "version": "v1.0.0-{YYYYMMDD}",
+                "architecture_file": "service_architecture_v1.0.0-{YYYYMMDD}.json",
+                "documentation_file": "system_description_v1.0.0-{YYYYMMDD}.md",
+                "created_date": "YYYY-MM-DD",
+                "change_type": "initial | major | minor | patch",
+                "description": "What changed in this version",
+                "breaking_changes": "List of breaking changes if change_type=major"
+              }
+            ]
+          }
+        },
+        "version_indexes": [
+          {
+            "name": "latest",
+            "file": "index.json",
+            "description": "Points to latest versions of all services via symlinks",
+            "created_date": "YYYY-MM-DD"
+          }
+        ],
+        "system_graphs": [
+          {
+            "version": "latest",
+            "file": "system_of_systems_graph.json",
+            "index_used": "index.json",
+            "generated_date": "YYYY-MM-DD",
+            "analyses_included": ["centrality", "community", "dag", "scc"]
+          }
+        ]
+      },
+
+      "update_pattern": {
+        "initial_creation": "Add entry for each service at v1.0.0-{date} with 'initial' change_type",
+        "on_update": "Add new version entry to versions array, update latest_version field",
+        "preservation": "Never remove old version entries - maintain complete history for audit and rollback",
+        "semantic_versioning": "Follow semver: major (breaking), minor (backward-compatible features), patch (bug fixes)"
+      },
+
+      "execution_steps": [
+        "1. Load version_manifest_template.json from templates",
+        "2. For each service, create entry with latest_version pointing to current versioned file",
+        "3. Add version history entry with version, architecture_file path, documentation_file path, created_date, change_type, description",
+        "4. Add version_indexes entry for index.json",
+        "5. Add system_graphs entry for system_of_systems_graph.json with analyses_included list",
+        "6. Write to specs/machine/version_manifest.json"
+      ],
+
+      "validation": [
+        "All referenced versioned files exist (service_architecture_v*.json)",
+        "All referenced symlinks exist (service_architecture.json)",
+        "Semantic versioning followed correctly",
+        "JSON syntax valid"
+      ],
+
+      "llm_agent_guidance": "Version manifest enables architecture lifecycle tracking from designed → as-built → as-fielded. Always update this when creating new architecture versions."
+    },
+
+    {
+      "action_id": "SE-06-A04",
+      "action_name": "Finalize Machine-Readable Architecture Products",
+      "description": "Verify all required machine-readable files present and valid before proceeding to next workflow",
+      "verification": "All required machine-readable files present and valid",
+
+      "required_files_checklist": [
+        "specs/machine/index.json",
+        "specs/machine/service_arch/{service}/service_architecture_v*.json (all services, versioned files)",
+        "specs/machine/service_arch/{service}/service_architecture.json (all services, symlinks)",
+        "specs/machine/interface_registry.json",
+        "specs/machine/graphs/system_of_systems_graph.json",
+        "specs/machine/architecture_issues.json",
+        "specs/machine/version_manifest.json"
+      ],
+
+      "validation_checks": [
+        "All files in checklist exist",
+        "All JSON files have valid syntax",
+        "All symlinks point to valid targets",
+        "system_of_systems_graph.json contains nodes, edges, and analysis results",
+        "architecture_issues.json has zero CRITICAL severity issues",
+        "version_manifest.json tracks all services"
+      ],
+
+      "execution_steps": [
+        "1. Check each file in required_files_checklist exists",
+        "2. Validate JSON syntax for each file",
+        "3. Verify symlinks point to correct versioned files",
+        "4. Check system_of_systems_graph.json has: nodes, edges, framework_info, networkx_analysis sections",
+        "5. Check architecture_issues.json has no CRITICAL issues (ERROR or BLOCKING severity)",
+        "6. Check version_manifest.json has entries for all services",
+        "7. If all checks pass: Report success and proceed to next step",
+        "8. If any checks fail: Report specific failures and block progression"
+      ],
+
+      "success_criteria": "All required files present, valid, and consistent - system ready for artifacts/visualization workflow",
+
+      "llm_agent_guidance": "This is the final validation before completing systems engineering workflow. Do not proceed if any critical files are missing or invalid."
+    },
+
+    {
+      "action_id": "SE-06-A05",
+      "action_name": "Define System Test Strategy",
+      "description": "Define comprehensive test strategy for the entire system based on complete architecture",
+      "when": "After system graph generation and finalization (SE-06-A04), when complete architecture is known",
+      "purpose": "Define testing strategy upfront so development implements tests per plan and operations executes tests. Testing defined HERE (SE phase), implemented in Development, executed in Testing.",
+      "template": "system_test_strategy_template.json",
+      "creates": "specs/machine/system_test_strategy.json",
+      "new_in_version": "Reflow v3.6.0 - Early Testing Integration feature",
+
+      "applicability": {
+        "applies_to": "All frameworks",
+        "note": "Testing strategy is universal across all system types - UAF, biological systems, social networks, ecological models all need comprehensive testing"
+      },
+
+      "test_strategy_sections": {
+        "unit_test_strategy": {
+          "description": "Component-level testing strategy",
+          "includes": [
+            "Coverage targets (80% minimum for critical services per risk_assessment.json, 60% for utilities)",
+            "Test frameworks by language (pytest for Python, Jest for JavaScript, JUnit for Java)",
+            "Mocking strategy (mock external dependencies, use real internal components)",
+            "Test organization (one test file per source file, descriptive test names)",
+            "Continuous testing (run on every commit via CI/CD)"
+          ],
+          "risk_based_coverage": {
+            "high_risk_services": "85% coverage (score >= 2.6 from SE-02-A10)",
+            "medium_risk_services": "80% coverage (score 1.6-2.5)",
+            "low_risk_services": "60% coverage (score < 1.6)"
+          }
+        },
+
+        "integration_test_strategy": {
+          "description": "Cross-component testing strategy",
+          "includes": [
+            "Service pairs to test (based on system_of_systems_graph.json edges)",
+            "Test environment (Docker Compose with test database/queue)",
+            "Mocking approach (mock external systems, real internal services)",
+            "Data setup/teardown (test fixtures, database seeds)",
+            "Contract tests (consumer-driven contracts using Pact or verify_component_contract.py)"
+          ],
+          "integration_targets": {
+            "description": "Which service pairs require integration tests",
+            "source": "Derived from system_of_systems_graph.json edges",
+            "example": "If character_service → session_service edge exists, test: 'Create character → Use in session'",
+            "rule": "Every edge in system graph requires at least one integration test"
+          }
+        },
+
+        "contract_test_strategy": {
+          "description": "Consumer-driven contract testing for all external-facing APIs",
+          "approach": "Consumer defines expected contract, provider validates implementation matches contract",
+          "tools": ["Pact", "Spring Cloud Contract", "verify_component_contract.py"],
+          "includes": [
+            "Which interfaces require contract tests (all external-facing APIs from interface_registry.json)",
+            "Who owns contract definitions (consumers define contracts, providers validate)",
+            "Contract versioning strategy (semantic versioning, breaking changes = major version bump)",
+            "Provider validation frequency (on every commit to provider service)"
+          ],
+          "targets": "All interfaces with external_api: true in interface_registry.json"
+        },
+
+        "performance_test_strategy": {
+          "description": "Load, stress, and endurance testing",
+          "test_types": [
+            {
+              "type": "Load testing",
+              "purpose": "Verify system handles expected traffic without degradation",
+              "scenarios": ["1x expected load", "2x expected load", "5x expected load"],
+              "tools": ["JMeter", "Gatling", "k6", "Locust"],
+              "success_criteria": "p95 latency < 500ms at 2x load, p99 < 1000ms, no errors"
+            },
+            {
+              "type": "Stress testing",
+              "purpose": "Find breaking point and verify graceful degradation",
+              "scenarios": ["Incrementally increase load until failure", "Measure recovery after overload"],
+              "success_criteria": "System degrades gracefully (returns 503 instead of crashing), no data corruption, recovers when load decreases"
+            },
+            {
+              "type": "Soak testing",
+              "purpose": "Verify stability over time (detect memory leaks, resource exhaustion)",
+              "scenarios": ["Run at expected load for 24-48 hours continuously"],
+              "success_criteria": "No memory leaks, latency remains stable, no resource exhaustion"
+            }
+          ],
+          "target_metrics": {
+            "availability": "99.9% uptime (8.76 hours downtime/year)",
+            "latency_p50": "< 200ms",
+            "latency_p95": "< 500ms",
+            "latency_p99": "< 1000ms",
+            "throughput": "Based on expected user count (e.g., 1000 req/sec for 10,000 concurrent users)",
+            "error_rate": "< 0.1% under normal load"
+          },
+          "targets": "All services, with focus on high-risk services (from SE-02-A10 risk_assessment.json)"
+        },
+
+        "security_test_strategy": {
+          "description": "Vulnerability and penetration testing",
+          "test_types": [
+            {
+              "type": "OWASP Top 10 testing",
+              "scope": "All external-facing APIs",
+              "tools": ["OWASP ZAP", "Burp Suite"],
+              "includes": ["SQL Injection", "XSS", "Broken Authentication", "Sensitive Data Exposure", "XML External Entities", "Broken Access Control", "Security Misconfiguration", "Insecure Deserialization", "Components with Known Vulnerabilities", "Insufficient Logging & Monitoring"],
+              "frequency": "Before each release + quarterly thereafter"
+            },
+            {
+              "type": "Dependency scanning",
+              "scope": "All third-party libraries and containers",
+              "tools": ["Snyk", "Dependabot", "npm audit", "pip-audit", "Trivy"],
+              "frequency": "On every commit (CI/CD pipeline)"
+            },
+            {
+              "type": "Container scanning",
+              "scope": "All Docker images",
+              "tools": ["Trivy", "Aqua Security", "Clair", "Docker Scout"],
+              "frequency": "On image build (part of CI/CD)",
+              "success_criteria": "No critical vulnerabilities, medium/low documented with mitigation plan"
+            },
+            {
+              "type": "Penetration testing",
+              "scope": "Complete system (black-box and white-box testing)",
+              "performed_by": "External security firm (if budget allows) or internal red team",
+              "frequency": "Before production release, then quarterly",
+              "deliverable": "Penetration test report with findings and remediation plan"
+            }
+          ],
+          "success_criteria": "No critical vulnerabilities, all medium vulnerabilities have documented mitigation plans with target dates"
+        },
+
+        "operational_test_strategy": {
+          "description": "Operational acceptance testing - validates system survives real operational conditions",
+          "purpose": "Validate system survives real operational conditions (not ideal lab conditions)",
+          "note": "This is the FOCUS of this change proposal - operational testing prevents 'toss it over the fence' problem",
+          "test_types": [
+            {
+              "type": "Deployment test",
+              "scenarios": [
+                "Cold start (fresh database, no state)",
+                "Upgrade deployment (schema migration, existing data)",
+                "Rollback (revert to previous version)"
+              ],
+              "success_criteria": "All services start healthy, smoke tests pass, no manual intervention",
+              "validation": "Automated via D-06.5 pre-deployment validation"
+            },
+            {
+              "type": "Failover test",
+              "scenarios": [
+                "Database failover (primary fails, standby promoted)",
+                "Service instance failure (orchestrator restarts)",
+                "Network partition (split-brain handling)",
+                "Multi-AZ failover (entire availability zone fails)"
+              ],
+              "success_criteria": "Automatic recovery within RTO (Recovery Time Objective), no data loss within RPO (Recovery Point Objective)",
+              "applicability": "Required for high-availability systems"
+            },
+            {
+              "type": "Chaos test",
+              "scenarios": [
+                "Random pod/container kills (Chaos Monkey pattern)",
+                "Network latency injection (add 500ms latency)",
+                "CPU/memory exhaustion (stress test individual services)",
+                "Disk full (fill disk to capacity)"
+              ],
+              "tools": ["Chaos Monkey", "Litmus Chaos", "Gremlin", "Chaos Mesh"],
+              "success_criteria": "System continues operating (degraded mode acceptable), no cascading failures, automatic recovery",
+              "applicability": "Required ONLY for high-risk services (score >= 2.6 from SE-02-A10)",
+              "rationale": "Chaos testing is expensive and time-consuming - focus on high-risk services"
+            },
+            {
+              "type": "Backup and restore test",
+              "scenarios": [
+                "Scheduled backup (verify backup completes successfully)",
+                "Point-in-time restore (restore to specific timestamp)",
+                "Disaster recovery (complete system restore from backup)"
+              ],
+              "success_criteria": "Restore completes within RTO, data integrity validated (checksums match), system functional after restore",
+              "frequency": "Monthly for backups, quarterly for full DR test"
+            }
+          ],
+          "acceptance_criteria": {
+            "description": "System ready for production when these criteria met",
+            "criteria": [
+              "All deployment tests pass (cold start, upgrade, rollback)",
+              "Failover tests demonstrate automatic recovery (if HA required)",
+              "Chaos tests show resilience (if high-risk services present)",
+              "Backup/restore validated"
+            ]
+          }
+        }
+      },
+
+      "handoff_to_workflows": {
+        "development_workflow": "Implements unit, integration, contract, performance tests per this strategy (D-02 through D-05)",
+        "testing_workflow": "Executes operational tests per this strategy (TO-01 through TO-05)",
+        "critical_note": "Testing strategy defined HERE (SE phase), implemented in Development, executed in Testing. Testing phase does NOT invent new tests."
+      },
+
+      "execution_steps": [
+        "1. Read system_of_systems_graph.json to understand complete system architecture",
+        "2. Read all service risk_assessment.json files to identify high/medium/low risk services",
+        "3. Define unit test strategy (coverage targets based on risk, frameworks, mocking approach)",
+        "4. Define integration test strategy (service pairs from graph edges, test environment)",
+        "5. Define contract test strategy (all external APIs from interface_registry.json)",
+        "6. Define performance test strategy (load scenarios based on expected usage, target metrics)",
+        "7. Define security test strategy (OWASP Top 10, dependency scanning, pentesting schedule)",
+        "8. Define operational test strategy (deployment, failover, chaos for high-risk, backup/restore)",
+        "9. Include success criteria for each test type with measurable targets (not subjective)",
+        "10. Map high-risk services to comprehensive testing (chaos, load, failover)",
+        "11. Save to specs/machine/system_test_strategy.json"
+      ],
+
+      "validation": [
+        "system_test_strategy.json exists and is valid JSON",
+        "All 6 test strategy sections present (unit, integration, contract, performance, security, operational)",
+        "Risk-based testing defined (high-risk services get comprehensive tests)",
+        "Success criteria are measurable (latency < 500ms, coverage >= 80%, not 'good performance')",
+        "Integration targets derived from system_of_systems_graph.json edges",
+        "High-risk services (>= 2.6) have chaos, load, failover tests defined",
+        "Operational test strategy includes D-06.5 pre-deployment validation reference"
+      ],
+
+      "llm_agent_instructions": [
+        "Read system_of_systems_graph.json first - this shows complete system structure",
+        "Read all risk_assessment.json files (from SE-02-A10) - risk scores determine testing thoroughness",
+        "High-risk services (>= 2.6): MUST have chaos tests, load tests (5x traffic), failover tests, pentesting",
+        "Medium-risk services (1.6-2.5): Standard tests + load tests (2x traffic) + contract tests",
+        "Low-risk services (< 1.6): Standard tests only (unit + integration + smoke)",
+        "Integration test targets: Every edge in system_of_systems_graph.json needs at least one integration test",
+        "Contract test targets: Every interface with external_api: true needs contract test",
+        "Operational testing: Reference D-06.5 pre-deployment validation - this runs BEFORE operational testing",
+        "Success criteria must be measurable: Use numbers (latency < 500ms, coverage >= 80%), not adjectives ('fast', 'good')",
+        "This strategy feeds directly into: Development workflow (D-02 through D-05) and Testing workflow (TO-01 through TO-05)",
+        "Testing phase (workflow 04) EXECUTES tests defined here - it does NOT invent new tests"
+      ],
+
+      "impact": "Testing strategy defined during SE phase ensures: (1) Testing is comprehensive (covers all test types), (2) Development knows what tests to implement, (3) Testing phase executes pre-defined plan (not ad-hoc testing), (4) Testability is architectural decision, not operational afterthought. Prevents 'toss it over the fence' problem."
+    }
+  ],
+
+  "quality_gate": {
+    "gate_id": "G-SE-06",
+    "gate_name": "Architecture Completion Gate",
+    "blocking": true,
+    "enforcement": "BLOCKING - Must pass all checks before proceeding to 02-artifacts_visualization workflow",
+
+    "checks": [
+      {
+        "check_id": "SE-06-G01",
+        "description": "All machine-readable artifacts present",
+        "validation": "All files in SE-06-A04 checklist exist"
+      },
+      {
+        "check_id": "SE-06-G02",
+        "description": "system_of_systems_graph.json generated successfully",
+        "validation": "File exists, valid JSON, contains nodes/edges/analysis results"
+      },
+      {
+        "check_id": "SE-06-G03",
+        "description": "index.json catalogs all artifacts",
+        "validation": "All services listed, all paths valid"
+      },
+      {
+        "check_id": "SE-06-G04",
+        "description": "version_manifest.json created and tracks all services",
+        "validation": "All services have version history entries"
+      },
+      {
+        "check_id": "SE-06-G05",
+        "description": "No CRITICAL architectural issues",
+        "validation": "architecture_issues.json has zero issues with severity=CRITICAL"
+      },
+      {
+        "check_id": "SE-06-G06",
+        "description": "Framework-appropriate NetworkX analyses completed",
+        "validation": "working_memory.json -> analysis_configuration documents selected analyses and results"
+      }
+    ],
+
+    "gate_decision": "pass|fail",
+    "on_pass": "Proceed to next step (SE-07 if updating existing architecture, otherwise workflow complete)",
+    "on_fail": "Block progression until all checks pass - fix issues in architecture files and re-run validations"
+  },
+
+  "tools_used": [
+    {
+      "tool": "system_of_systems_graph_v2.py",
+      "purpose": "Generate graph with NetworkX analysis, knowledge gap detection, architectural issue validation",
+      "criticality": "CRITICAL - Primary validation tool for architecture quality"
+    }
+  ],
+
+  "templates_used": [
+    {
+      "template": "index_template.json",
+      "purpose": "Catalog all machine-readable architecture artifacts"
+    },
+    {
+      "template": "version_manifest_template.json",
+      "purpose": "Track architecture version history for lifecycle management"
+    },
+    {
+      "template": "system_test_strategy_template.json",
+      "purpose": "Define comprehensive test strategy for entire system - NEW in v3.6.0"
+    }
+  ],
+
+  "outputs": [
+    {
+      "file": "specs/machine/index.json",
+      "description": "Catalog of all machine-readable architecture artifacts with symlink paths"
+    },
+    {
+      "file": "specs/machine/graphs/system_of_systems_graph.json",
+      "description": "System graph with comprehensive NetworkX analysis results (centrality, community, cycles, etc.)"
+    },
+    {
+      "file": "specs/machine/architecture_issues.json",
+      "description": "Detected architectural problems with severity levels and fix recommendations"
+    },
+    {
+      "file": "specs/machine/version_manifest.json",
+      "description": "Complete version history of all architecture artifacts"
+    },
+    {
+      "file": "context/working_memory.json (updated)",
+      "description": "analysis_configuration section added with selected analyses, rationale, results summary"
+    },
+    {
+      "file": "specs/machine/system_test_strategy.json",
+      "description": "Comprehensive test strategy for entire system (unit, integration, contract, performance, security, operational) - NEW in v3.6.0"
+    }
+  ],
+
+  "next_step": {
+    "default": "complete (systems engineering workflow finished)",
+    "optional": "SE-07 (Architecture Evolution) if updating existing architecture",
+    "note": "After SE-06, proceed to 02-artifacts_visualization workflow for human-readable documentation"
+  },
+
+  "llm_agent_summary": "SE-06 is the most critical step in systems engineering - it validates architecture quality through comprehensive graph analysis. This is NOT just file generation, it's ARCHITECTURE VALIDATION. Select framework-appropriate analyses, fix all detected issues, verify knowledge gaps are explained, and ensure zero CRITICAL severity problems before proceeding. The NetworkX analysis results provide quantitative metrics for architecture quality - use them to validate your design decisions."
+}

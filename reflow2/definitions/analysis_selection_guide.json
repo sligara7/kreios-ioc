@@ -1,0 +1,523 @@
+{
+  "metadata": {
+    "description": "Comprehensive guide for LLM agents on selecting appropriate NetworkX analyses for system graphs",
+    "version": "1.0.0",
+    "purpose": "Help agents understand which analysis methods are most relevant for different system types and domains",
+    "last_updated": "2025-10-25"
+  },
+  "analysis_catalog": {
+    "centrality": {
+      "analysis_id": "centrality",
+      "full_name": "Centrality Measures",
+      "command_line_flag": "--centrality",
+      "description": "Identify important, influential, or critical nodes in the network",
+      "algorithms_included": [
+        "Degree centrality (number of connections)",
+        "Betweenness centrality (frequency on shortest paths - brokers, bridges)",
+        "Closeness centrality (average distance to all others - efficient access)",
+        "Eigenvector centrality (connected to well-connected nodes - prestige)",
+        "PageRank (Google's algorithm - importance via connections)"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "You need to identify critical components",
+          "Some nodes are more important than others",
+          "Failure of certain nodes would cause system-wide problems",
+          "You need to prioritize resources or interventions"
+        ],
+        "questions_answered": [
+          "Which nodes are most influential?",
+          "Which nodes are bottlenecks or single points of failure?",
+          "Which nodes have best access to information/resources?",
+          "Which nodes are brokers between groups?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges"],
+        "optional": ["edge weights for weighted centrality"]
+      },
+      "framework_applicability": {
+        "uaf": "Identify critical services, API bottlenecks, key dependencies",
+        "systems_biology": "Find hub genes, master regulators, essential proteins, drug targets",
+        "social_network": "Identify influencers, opinion leaders, information brokers, gatekeepers",
+        "ecological": "Find keystone species, critical trophic nodes, ecosystem engineers",
+        "complex_adaptive": "Identify leverage points, critical interventions, system influencers"
+      },
+      "output_interpretation": {
+        "high_degree": "Well-connected, popular, many direct interactions",
+        "high_betweenness": "Bridge, broker, gatekeeper - controls flow between groups",
+        "high_closeness": "Central position, efficient access to entire network",
+        "high_eigenvector": "Connected to other important nodes, prestige, influence",
+        "high_pagerank": "Important via connections, authority, influence"
+      }
+    },
+    "paths": {
+      "analysis_id": "paths",
+      "full_name": "Path Analysis",
+      "command_line_flag": "--paths",
+      "description": "Analyze distances, shortest paths, and reachability between nodes",
+      "algorithms_included": [
+        "Shortest paths (distance between all node pairs)",
+        "Diameter (longest shortest path in network)",
+        "Average path length (mean distance between nodes)",
+        "Eccentricity (maximum distance from each node to all others)"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "Distance or reachability matters",
+          "Information/signals/resources propagate through network",
+          "You need to understand how quickly effects spread",
+          "You want to measure network compactness"
+        ],
+        "questions_answered": [
+          "How many steps from A to B?",
+          "What's the maximum distance across the system?",
+          "How tightly connected is the network?",
+          "Which nodes are most/least reachable?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges"],
+        "optional": ["edge weights for weighted shortest paths"]
+      },
+      "framework_applicability": {
+        "uaf": "Service dependency chains, deployment sequences, propagation delay",
+        "systems_biology": "Signal transduction path length, cascade depth, pathway analysis",
+        "social_network": "Six degrees of separation, social distance, information reach",
+        "ecological": "Food chain length, trophic distance, energy pathway length",
+        "complex_adaptive": "Propagation distance, cascade depth, contagion spread"
+      }
+    },
+    "connectivity": {
+      "analysis_id": "connectivity",
+      "full_name": "Connectivity Analysis",
+      "command_line_flag": "--connectivity",
+      "description": "Assess network robustness, components, bridges, and structural vulnerabilities",
+      "algorithms_included": [
+        "Connected components (separate subgraphs)",
+        "Node connectivity (minimum nodes to disconnect)",
+        "Edge connectivity (minimum edges to disconnect)",
+        "Bridges (edges whose removal disconnects network)",
+        "Articulation points (nodes whose removal disconnects network)"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "System resilience is important",
+          "You need to identify critical failure points",
+          "System might fragment into isolated parts",
+          "Redundancy and fault tolerance matter"
+        ],
+        "questions_answered": [
+          "How robust is the system to failures?",
+          "Which components are critical for connectivity?",
+          "Are there isolated subsystems?",
+          "What are single points of failure?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges"],
+        "optional": []
+      },
+      "framework_applicability": {
+        "uaf": "Service availability, fault tolerance, redundancy, disaster recovery",
+        "systems_biology": "System robustness, compensatory pathways, backup mechanisms",
+        "social_network": "Community fragmentation, bridge roles, information bottlenecks",
+        "ecological": "Ecosystem collapse, extinction cascades, keystone species removal",
+        "complex_adaptive": "System stability, regime shifts, fragmentation"
+      }
+    },
+    "clustering": {
+      "analysis_id": "clustering",
+      "full_name": "Clustering Analysis",
+      "command_line_flag": "--clustering",
+      "description": "Measure local cohesion, triadic closure, and neighborhood density",
+      "algorithms_included": [
+        "Clustering coefficient (fraction of closed triangles)",
+        "Transitivity (global clustering)",
+        "Triangles (count of 3-node complete subgraphs)",
+        "K-cliques (fully connected subgraphs of size k)"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "Friend-of-friend patterns matter",
+          "Local cohesion is important",
+          "Nodes form tight-knit groups",
+          "Triadic closure principle applies"
+        ],
+        "questions_answered": [
+          "How tightly clustered is the network?",
+          "Do neighbors of neighbors tend to connect?",
+          "How much local cohesion exists?",
+          "Are there tightly-knit subgroups?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges"],
+        "optional": []
+      },
+      "framework_applicability": {
+        "uaf": "Service coupling, component cohesion, modular design quality",
+        "systems_biology": "Protein complex density, regulatory module cohesion",
+        "social_network": "Social capital, group cohesion, clique formation, echo chambers",
+        "ecological": "Compartmentalization, trophic module density",
+        "complex_adaptive": "Local order, emergent structure, modularity"
+      }
+    },
+    "properties": {
+      "analysis_id": "properties",
+      "full_name": "Graph Properties",
+      "command_line_flag": "--properties",
+      "description": "Compute global network characteristics and statistical properties",
+      "algorithms_included": [
+        "Density (fraction of possible edges that exist)",
+        "Assortativity (tendency of similar nodes to connect)",
+        "Reciprocity (fraction of bidirectional edges)",
+        "Degree distribution (histogram of node degrees)"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "You need baseline network statistics",
+          "You want to compare this network to others",
+          "You need to characterize overall network structure",
+          "You want to detect network patterns (scale-free, small-world, etc.)"
+        ],
+        "questions_answered": [
+          "How dense is the network?",
+          "Do similar nodes connect (homophily)?",
+          "How many connections are reciprocal?",
+          "What's the degree distribution pattern?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges"],
+        "optional": ["node attributes for assortativity"]
+      },
+      "framework_applicability": {
+        "uaf": "Architecture density, service coupling metrics, design patterns",
+        "systems_biology": "Network motifs, scale-free properties, biological network patterns",
+        "social_network": "Homophily, reciprocity, network structure classification",
+        "ecological": "Connectance, nestedness, food web patterns",
+        "complex_adaptive": "Network topology, emergence indicators, critical transitions"
+      }
+    },
+    "community": {
+      "analysis_id": "community",
+      "full_name": "Community Detection",
+      "command_line_flag": "--community",
+      "description": "Identify clusters, groups, and modules within the network",
+      "algorithms_included": [
+        "Louvain method (modularity optimization)",
+        "Label propagation (fast community detection)",
+        "Girvan-Newman (hierarchical community structure)",
+        "Modularity scoring (quality of community partition)"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "Network has natural groupings or clusters",
+          "You want to find functional modules",
+          "System decomposes into subsystems",
+          "You need to identify boundaries between groups"
+        ],
+        "questions_answered": [
+          "What are the natural groups/clusters?",
+          "How should system be partitioned?",
+          "Which nodes belong together functionally?",
+          "How modular is the system?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges"],
+        "optional": ["edge weights for weighted community detection"]
+      },
+      "framework_applicability": {
+        "uaf": "Microservice boundaries, deployment groups, service mesh segmentation",
+        "systems_biology": "Gene modules, protein complexes, metabolic subsystems, functional pathways",
+        "social_network": "Cliques, departments, social groups, echo chambers, polarization",
+        "ecological": "Trophic levels, functional groups, guilds, habitat partitions",
+        "complex_adaptive": "Emergent clusters, self-organized groups, phase transitions"
+      }
+    },
+    "cycles": {
+      "analysis_id": "cycles",
+      "full_name": "Cycle Detection",
+      "command_line_flag": "--cycles",
+      "description": "Find feedback loops, circular dependencies, and closed paths",
+      "algorithms_included": [
+        "Simple cycles (all closed paths without repetition)",
+        "Cycle basis (minimal set of cycles)",
+        "Cycle length distribution (histogram of cycle sizes)",
+        "Feedback loop identification"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "Feedback loops are important to system behavior",
+          "Circular dependencies might exist (and may be problems)",
+          "Homeostasis or regulation involves feedback",
+          "Self-reinforcing or balancing mechanisms exist"
+        ],
+        "questions_answered": [
+          "Are there circular dependencies?",
+          "Where are the feedback loops?",
+          "How many cycles exist?",
+          "What are reinforcing vs balancing loops?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges"],
+        "optional": []
+      },
+      "framework_applicability": {
+        "uaf": "Circular service dependencies (usually errors), request loops, cycle detection",
+        "systems_biology": "Feedback regulation, homeostatic mechanisms, oscillators, bistable switches",
+        "social_network": "Reciprocal relationships, influence loops, echo chambers",
+        "ecological": "Nutrient cycling, decomposition loops, material recycling",
+        "complex_adaptive": "Reinforcing loops, balancing loops, self-regulation, tipping points"
+      },
+      "critical_for_frameworks": ["systems_biology", "complex_adaptive", "ecological"]
+    },
+    "scc": {
+      "analysis_id": "scc",
+      "full_name": "Strongly Connected Components",
+      "command_line_flag": "--scc",
+      "description": "Find maximal subgraphs where every node can reach every other node",
+      "algorithms_included": [
+        "SCC identification (Tarjan's algorithm)",
+        "SCC size distribution",
+        "Condensation graph (DAG of SCCs)",
+        "SCC membership for each node"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "Bidirectional reachability matters",
+          "You want to find tightly coupled components",
+          "System has mutually dependent clusters",
+          "Circular structures are functionally important"
+        ],
+        "questions_answered": [
+          "Which components can mutually reach each other?",
+          "What are tightly coupled clusters?",
+          "How many independent strongly connected groups exist?",
+          "What's the hierarchical structure of SCCs?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges (directed)"],
+        "optional": []
+      },
+      "framework_applicability": {
+        "uaf": "Circular service dependencies (architectural issues), tightly coupled components",
+        "systems_biology": "Strongly coupled regulatory modules, bistable systems, oscillatory networks",
+        "social_network": "Mutual influence groups, reciprocal cliques",
+        "ecological": "Mutualistic clusters, co-dependent species groups",
+        "complex_adaptive": "Co-evolving agent clusters, coupled dynamics, mutual adaptation"
+      }
+    },
+    "dag": {
+      "analysis_id": "dag",
+      "full_name": "Directed Acyclic Graph Analysis",
+      "command_line_flag": "--dag",
+      "description": "Analyze hierarchical structure, topological ordering, and acyclic properties",
+      "algorithms_included": [
+        "DAG verification (is graph acyclic?)",
+        "Topological sort (linear ordering respecting dependencies)",
+        "Longest path (critical path in DAG)",
+        "Topological levels (hierarchical layers)",
+        "Blocking cycle identification (if not DAG)"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "System has hierarchical structure",
+          "Dependencies flow in one direction",
+          "No circular dependencies should exist",
+          "Ordering or sequencing matters"
+        ],
+        "questions_answered": [
+          "Is system truly hierarchical (acyclic)?",
+          "What's the proper build/deployment sequence?",
+          "What's the critical path through the system?",
+          "What are the dependency layers?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges (directed)"],
+        "optional": ["edge weights for weighted longest path"]
+      },
+      "framework_applicability": {
+        "uaf": "Build ordering, deployment sequence, dependency management, CI/CD pipeline",
+        "systems_biology": "Signal cascades, metabolic pathways (if acyclic), developmental hierarchies",
+        "social_network": "Organizational hierarchy, reporting structure, influence chains",
+        "ecological": "Trophic hierarchy (if no omnivory), food chain ordering",
+        "complex_adaptive": "Emergence hierarchy, causal ordering"
+      }
+    },
+    "flow": {
+      "analysis_id": "flow",
+      "full_name": "Network Flow Analysis",
+      "command_line_flag": "--flow",
+      "description": "Analyze capacity, throughput, and maximum flow through network",
+      "algorithms_included": [
+        "Maximum flow (max throughput from source to sink)",
+        "Minimum cut (bottleneck edges)",
+        "Node connectivity via flow",
+        "Heuristic source/sink selection"
+      ],
+      "when_to_use": {
+        "system_characteristics": [
+          "Resources, energy, or information flows through network",
+          "Capacity and throughput matter",
+          "Bottlenecks need identification",
+          "Flow optimization is important"
+        ],
+        "questions_answered": [
+          "What's the maximum throughput?",
+          "Where are the bottlenecks?",
+          "Which edges limit flow?",
+          "How much can flow from A to B?"
+        ]
+      },
+      "required_fields": {
+        "minimum": ["nodes", "edges with weights/capacities"],
+        "CRITICAL": "Edge weights REQUIRED for meaningful flow analysis"
+      },
+      "framework_applicability": {
+        "uaf": "Request throughput, API capacity, data flow, performance bottlenecks",
+        "systems_biology": "Metabolic flux, signal strength, biomass transfer, enzyme capacity",
+        "social_network": "Information diffusion, influence spread, resource flow",
+        "ecological": "Energy transfer, biomass flow, trophic efficiency, nutrient flow",
+        "complex_adaptive": "Resource flow, traffic dynamics, market flows, cascades"
+      },
+      "critical_for_frameworks": ["ecological", "systems_biology (metabolic)"],
+      "architecture_requirements": {
+        "uaf": "Add interfaces.weight field with request_rate or data_volume",
+        "systems_biology": "Add interactions.weight field with reaction_rate or flux_capacity",
+        "social_network": "Add relationships.weight field with interaction_frequency or influence_strength",
+        "ecological": "Add interactions.weight field with energy_transfer_rate or biomass_flow",
+        "complex_adaptive": "Add interactions.weight field with flow_rate or capacity"
+      }
+    }
+  },
+  "decision_framework": {
+    "by_framework": {
+      "uaf": {
+        "always_run": ["centrality", "connectivity", "dag", "scc"],
+        "usually_run": ["community"],
+        "conditional": {
+          "flow": "If modeling request throughput or data flow - add interface weights",
+          "cycles": "If checking for circular dependencies (should be zero)",
+          "clustering": "If analyzing service cohesion"
+        }
+      },
+      "systems_biology": {
+        "always_run": ["cycles", "community", "centrality"],
+        "usually_run": ["dag", "connectivity"],
+        "conditional": {
+          "flow": "For metabolic networks - add reaction rates as weights",
+          "scc": "For regulatory networks with feedback",
+          "paths": "For signal transduction analysis"
+        }
+      },
+      "social_network": {
+        "always_run": ["centrality", "community", "clustering"],
+        "usually_run": ["connectivity", "paths"],
+        "conditional": {
+          "flow": "If modeling information diffusion - add interaction frequency weights",
+          "cycles": "If analyzing reciprocal relationships",
+          "scc": "If analyzing mutual influence groups"
+        }
+      },
+      "ecological": {
+        "always_run": ["flow", "centrality", "connectivity"],
+        "usually_run": ["community", "cycles", "paths"],
+        "conditional": {
+          "dag": "For simple food chains without omnivory",
+          "clustering": "For compartmentalization analysis",
+          "scc": "For mutualistic networks"
+        }
+      },
+      "complex_adaptive": {
+        "always_run": ["cycles", "community", "scc"],
+        "usually_run": ["centrality", "connectivity", "paths"],
+        "conditional": {
+          "flow": "If modeling resource/information flow - add flow rates",
+          "clustering": "For local structure analysis",
+          "dag": "If system has hierarchical emergence"
+        }
+      }
+    },
+    "by_system_characteristic": {
+      "hierarchical_no_feedback": ["dag", "centrality", "paths", "connectivity"],
+      "hierarchical_with_feedback": ["cycles", "scc", "centrality", "dag"],
+      "peer_to_peer_network": ["community", "clustering", "centrality", "connectivity"],
+      "flow_based_system": ["flow", "centrality", "connectivity", "paths"],
+      "modular_architecture": ["community", "connectivity", "scc", "centrality"]
+    }
+  },
+  "field_requirements": {
+    "description": "Optional fields to include in architecture files for specific analyses",
+    "weight_field": {
+      "analysis": "flow, weighted_centrality, weighted_paths",
+      "location": "edge/interface/interaction/relationship",
+      "field_name_by_framework": {
+        "uaf": "interfaces[].weight (request rate, data volume)",
+        "systems_biology": "interactions[].weight (reaction rate, binding affinity)",
+        "social_network": "relationships[].weight (frequency, strength)",
+        "ecological": "interactions[].weight (energy transfer, biomass flow)",
+        "complex_adaptive": "interactions[].weight (flow rate, capacity)"
+      },
+      "when_to_include": "If you plan to run flow analysis or weighted network analyses",
+      "default_if_absent": "All edges treated as equal weight (1.0)"
+    },
+    "node_attributes": {
+      "analysis": "assortativity, homophily",
+      "location": "node",
+      "examples": ["classification", "type", "category", "group"],
+      "when_to_include": "If you want to analyze whether similar nodes connect more often"
+    }
+  },
+  "workflow_integration": {
+    "when_to_decide": "Step SE-06 (Graph Generation) in 01-systems_engineering workflow",
+    "decision_process": [
+      "1. Read framework_id from working_memory.json",
+      "2. Load recommended_analyses from framework_registry.json",
+      "3. Review high_priority analyses for this framework",
+      "4. Check if any required_fields are needed (especially for flow analysis)",
+      "5. If required fields missing, either: (a) add them to architecture files, OR (b) skip that analysis",
+      "6. Construct command line: python3 system_of_systems_graph_v2.py index.json --detect-gaps --centrality --community --cycles ...",
+      "7. Store selected analyses in working_memory.json for documentation"
+    ],
+    "command_construction": {
+      "base": "python3 system_of_systems_graph_v2.py <system_root>/specs/machine/index.json",
+      "add_gap_detection": "--detect-gaps",
+      "add_arch_issues": "--analyze-issues",
+      "add_specific_analysis": "--centrality --community --cycles --scc --dag --flow",
+      "or_run_all": "--analyze-all (includes all 10 analysis categories)"
+    }
+  },
+  "common_patterns": {
+    "pattern_1_new_uaf_system": {
+      "scenario": "New microservices architecture",
+      "recommended": "--centrality --dag --scc --community --connectivity",
+      "rationale": "Verify no circular deps (dag, scc), find critical services (centrality), identify deployment groups (community)"
+    },
+    "pattern_2_gene_network": {
+      "scenario": "Gene regulatory network",
+      "recommended": "--cycles --centrality --community --scc",
+      "rationale": "Find feedback loops (cycles), hub genes (centrality), gene modules (community), coupled regulators (scc)"
+    },
+    "pattern_3_social_org": {
+      "scenario": "Organizational network",
+      "recommended": "--centrality --community --clustering --connectivity",
+      "rationale": "Find influencers (centrality), departments (community), cohesion (clustering), bridges (connectivity)"
+    },
+    "pattern_4_food_web": {
+      "scenario": "Ecological food web",
+      "recommended": "--flow --centrality --connectivity --community --cycles (add edge weights!)",
+      "rationale": "Energy flow (flow), keystone species (centrality), robustness (connectivity), trophic groups (community), nutrient cycles (cycles)"
+    },
+    "pattern_5_market_system": {
+      "scenario": "Economic market or CAS",
+      "recommended": "--cycles --community --scc --centrality --flow",
+      "rationale": "Feedback loops (cycles), emergent clusters (community), co-evolving groups (scc), critical agents (centrality), resource flow (flow)"
+    }
+  }
+}

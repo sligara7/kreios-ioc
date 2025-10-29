@@ -1,0 +1,174 @@
+{
+  "template_metadata": {
+    "name": "System Decomposition Template",
+    "version": "1.0.0", 
+    "description": "Template for analyzing and documenting the internal structure of a system for integration purposes"
+  },
+  "system_identification": {
+    "system_id": "<unique_system_identifier>",
+    "system_name": "<human_readable_system_name>",
+    "system_type": "<type_classification>",
+    "current_version": "<current_version_or_state>",
+    "owner": "<system_owner_or_team>",
+    "purpose": "<primary_purpose_and_responsibilities>"
+  },
+  "system_overview": {
+    "description": "<high_level_system_description>",
+    "key_capabilities": [
+      "<capability_1>",
+      "<capability_2>"
+    ],
+    "current_deployment_state": "<deployed/development/archived>",
+    "technology_stack": [
+      "<technology_1>",
+      "<technology_2>"
+    ],
+    "architectural_style": "<monolithic/microservices/layered/etc>"
+  },
+  "structural_analysis": {
+    "major_subsystems": [
+      {
+        "subsystem_id": "<subsystem_identifier>",
+        "subsystem_name": "<subsystem_name>",
+        "purpose": "<subsystem_purpose>",
+        "responsibilities": [
+          "<responsibility_1>",
+          "<responsibility_2>"
+        ],
+        "components": [
+          {
+            "component_id": "<component_identifier>", 
+            "component_name": "<component_name>",
+            "component_type": "<module/class/service/function>",
+            "purpose": "<component_purpose>",
+            "capabilities": [
+              "<capability_1>",
+              "<capability_2>"
+            ],
+            "inputs": [
+              {
+                "input_name": "<input_name>",
+                "input_type": "<data_type>",
+                "source": "<where_input_comes_from>",
+                "required": true
+              }
+            ],
+            "outputs": [
+              {
+                "output_name": "<output_name>",
+                "output_type": "<data_type>",
+                "destination": "<where_output_goes>",
+                "conditions": "<when_output_is_produced>"
+              }
+            ],
+            "dependencies": [
+              "<dependency_1>",
+              "<dependency_2>"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "interface_analysis": {
+    "current_external_interfaces": [
+      {
+        "interface_id": "<interface_identifier>",
+        "interface_name": "<interface_name>",
+        "interface_type": "<REST_API/GraphQL/messaging/file/database>",
+        "direction": "<inbound/outbound/bidirectional>",
+        "purpose": "<interface_purpose>",
+        "data_format": "<json/xml/binary/etc>",
+        "protocol": "<http/tcp/amqp/etc>",
+        "endpoint": "<interface_endpoint_or_location>",
+        "authentication": "<authentication_method>",
+        "connected_to": "<external_system_or_user_type>"
+      }
+    ],
+    "internal_interfaces": [
+      {
+        "interface_id": "<internal_interface_id>",
+        "from_component": "<source_component>",
+        "to_component": "<target_component>",
+        "interface_type": "<function_call/event/message/shared_data>",
+        "data_exchanged": "<data_description>",
+        "frequency": "<how_often_used>",
+        "criticality": "<high/medium/low>"
+      }
+    ]
+  },
+  "integration_potential": {
+    "potential_integration_points": [
+      {
+        "component_id": "<component_that_could_integrate>",
+        "integration_type": "<api/data/event/process>",
+        "accessibility": "<public/private/needs_modification>",
+        "modification_complexity": "<low/medium/high>",
+        "integration_value": "<high/medium/low>",
+        "notes": "<additional_considerations>"
+      }
+    ],
+    "extension_points": [
+      {
+        "extension_point": "<where_system_can_be_extended>",
+        "extension_type": "<plugin/api/configuration/inheritance>",
+        "effort_required": "<low/medium/high>",
+        "use_cases": ["<use_case_1>", "<use_case_2>"]
+      }
+    ]
+  },
+  "data_analysis": {
+    "data_stores": [
+      {
+        "store_id": "<data_store_identifier>",
+        "store_type": "<database/file/cache/queue>",
+        "purpose": "<what_data_is_stored>",
+        "access_patterns": ["<pattern_1>", "<pattern_2>"],
+        "sharing_potential": "<can_be_shared/private/needs_mediation>",
+        "consistency_requirements": "<strong/eventual/none>"
+      }
+    ],
+    "data_flows": [
+      {
+        "flow_id": "<data_flow_identifier>",
+        "from": "<data_source>",
+        "to": "<data_destination>",
+        "data_type": "<type_of_data>",
+        "volume": "<data_volume>",
+        "frequency": "<how_often>",
+        "transformation": "<any_data_transformation>"
+      }
+    ]
+  },
+  "operational_characteristics": {
+    "scalability": {
+      "current_scale": "<current_capacity_or_load>",
+      "scaling_approach": "<horizontal/vertical/static>",
+      "bottlenecks": ["<bottleneck_1>", "<bottleneck_2>"]
+    },
+    "reliability": {
+      "availability_target": "<availability_requirement>",
+      "failure_modes": ["<failure_mode_1>", "<failure_mode_2>"],
+      "recovery_mechanisms": ["<recovery_1>", "<recovery_2>"]
+    },
+    "security": {
+      "security_model": "<security_approach>",
+      "sensitive_data": ["<sensitive_data_type_1>", "<sensitive_data_type_2>"],
+      "access_controls": "<access_control_mechanism>"
+    }
+  },
+  "analysis_metadata": {
+    "analysis_date": "<date_of_analysis>",
+    "analyst": "<who_performed_analysis>",
+    "analysis_method": "<how_analysis_was_performed>",
+    "confidence_level": "<high/medium/low>",
+    "limitations": [
+      "<analysis_limitation_1>",
+      "<analysis_limitation_2>"
+    ],
+    "recommendations": [
+      "<recommendation_1>",
+      "<recommendation_2>"
+    ]
+  }
+}

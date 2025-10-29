@@ -1,0 +1,46 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Dev-08 Operational Validation & Release",
+    "based_on": "service_development_workflow.json D12–D14",
+    "description": "Validate mission & user acceptance in realistic conditions; certify release candidate."
+  },
+  "entry_conditions": {
+    "from": "Dev-07",
+    "artifacts": [
+      "specs/human/USER_SCENARIOS.md",
+      "specs/human/SUCCESS_CRITERIA.md",
+      "specs/human/operational_test_scenarios/"
+    ]
+  },
+  "steps": [
+    { "id": "D12.1", "description": "Create operational test environment simulating realistic conditions", "tool": "manual" },
+    { "id": "D12.2", "description": "Execute user scenarios with typical users", "tool": "manual" },
+    { "id": "D12.3", "description": "Measure success criteria in operational context", "tool": "manual" },
+    { "id": "D12.4", "description": "Document gaps between intended mission and actual UX", "tool": "manual" },
+    { "id": "D12.5", "description": "Validate edge cases and degraded conditions", "tool": "manual" },
+    { "id": "D13.1", "description": "User acceptance testing (representative users)", "tool": "manual" },
+    { "id": "D13.3", "description": "Measure task completion, error rates, satisfaction", "tool": "manual" },
+    { "id": "D14.1", "description": "Assemble evidence pack and certify release candidate", "tool": "manual" }
+  ],
+  "artifact_routing": {
+    "operational_results": "specs/human/reports/operational_validation/",
+    "user_acceptance": "specs/human/reports/user_acceptance/",
+    "evidence_pack": "specs/human/reports/release_candidate/"
+  },
+  "iteration_paths": {
+    "on_mission_gap": "../feature_update/FU-02-ArchReengineering.json",
+    "on_user_acceptance_failure": "../development/Dev-05-ObservabilityAndTesting.json"
+  },
+  "validation": {
+    "exit_criteria": ["User scenarios complete successfully", "Success criteria achieved", "Release candidate evidence complete"]
+  },
+  "handoff": {
+    "produces": [
+      "specs/human/reports/operational_validation/*",
+      "specs/human/reports/user_acceptance/*",
+      "specs/human/reports/release_candidate/*"
+    ],
+    "next_workflow": "../development/Dev-Post-Feedback.json"
+  }
+}

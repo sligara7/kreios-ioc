@@ -1,0 +1,39 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "FU-01 Change Proposal & Impact Analysis",
+    "based_on": "feature_update_workflow.json P1",
+    "description": "Capture intent, scope, and initial impact of new/updated features/services/systems."
+  },
+  "entry_conditions": {
+    "from": "Decision: feature_or_service_change",
+    "context_refresh": true,
+    "prerequisite_validation": {
+      "foundational_alignment": {
+        "tool": "../tools/validate_foundational_alignment.py",
+        "command": "python3 ../tools/validate_foundational_alignment.py systems/<system_name> --change-proposal specs/human/feature/change_proposal.md",
+        "success_criteria": "Exit code 0 or 2 (pass or conditional)",
+        "on_failure": "Return to architecture workflow to establish proper foundation"
+      }
+    }
+  },
+  "steps": [
+    { "id": "P1.0", "description": "MANDATORY: Validate foundational alignment before proceeding", "tool": "validate_foundational_alignment", "command": "python3 ../tools/validate_foundational_alignment.py systems/<system_name>", "success_criteria": "Foundational validation passes", "blocking": true },
+    { "id": "P1.1", "description": "Document change proposal: feature/service/system addition/update", "tool": "manual", "output": "specs/human/feature/change_proposal.md" },
+    { "id": "P1.1.1", "description": "Re-validate foundational alignment with specific change proposal", "tool": "validate_foundational_alignment", "command": "python3 ../tools/validate_foundational_alignment.py systems/<system_name> --change-proposal specs/human/feature/change_proposal.md", "success_criteria": "Change proposal aligns with foundational documents" },
+    { "id": "P1.2", "description": "Identify affected services/systems/interfaces", "tool": "manual", "output": "specs/human/feature/impact_analysis.md" },
+    { "id": "P1.3", "description": "Initial impact analysis: dependencies, data flows, contracts, deployment, compliance", "tool": "manual" },
+    { "id": "P1.4", "description": "Log proposal & impact in process log", "tool": "manual", "output": "context/process_log.md" }
+  ],
+  "artifact_routing": {
+    "human": "specs/human/feature/",
+    "context": "context/"
+  },
+  "iteration_paths": {
+    "on_scope_change": "self"
+  },
+  "handoff": {
+    "produces": ["specs/human/feature/change_proposal.md", "specs/human/feature/impact_analysis.md"],
+    "next_workflow": "../feature_update/FU-02-ArchReengineering.json"
+  }
+}

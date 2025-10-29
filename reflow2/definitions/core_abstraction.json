@@ -1,0 +1,233 @@
+{
+  "metadata": {
+    "description": "Framework-agnostic core schema that ALL architectural frameworks must satisfy",
+    "version": "1.0.0",
+    "purpose": "Enable universal graph analysis regardless of domain-specific framework",
+    "principle": "Every system can be modeled as nodes (black boxes with functions) connected by edges (interfaces/interactions)"
+  },
+  "universal_node_schema": {
+    "description": "Minimum required properties for any node in the system graph",
+    "required_properties": {
+      "node_id": {
+        "type": "string",
+        "description": "Unique identifier for this node in the system",
+        "examples": ["character_service", "p53_gene", "agent_007", "wolf_population"]
+      },
+      "node_name": {
+        "type": "string",
+        "description": "Human-readable name for this node",
+        "examples": ["Character Service", "p53 Tumor Suppressor Gene", "John Smith", "Gray Wolf Population"]
+      },
+      "node_type": {
+        "type": "string",
+        "description": "Classification of this node within the framework",
+        "examples": ["service", "gene", "agent", "species", "adaptive_agent"]
+      },
+      "functions": {
+        "type": "array",
+        "description": "What this node does internally (black box capabilities)",
+        "examples": [
+          ["Character CRUD operations", "D&D 5e validation"],
+          ["Transcription regulation", "Apoptosis activation"],
+          ["Information processing", "Decision making"],
+          ["Energy consumption", "Reproduction", "Predation"]
+        ]
+      },
+      "interfaces": {
+        "type": "array",
+        "description": "How this node connects to other nodes",
+        "element_schema": {
+          "interface_id": "string",
+          "interface_type": "string",
+          "direction": "provided|consumed|bidirectional",
+          "connects_to": "array of node_ids"
+        }
+      }
+    },
+    "optional_properties": {
+      "version": "Semantic version of this node's architecture",
+      "classification": "Framework-specific classification",
+      "metadata": "Framework-specific additional data",
+      "state": "Current state (for dynamic/temporal systems)",
+      "constraints": "Limitations or requirements",
+      "quality_attributes": "Performance, security, robustness, etc."
+    }
+  },
+  "universal_edge_schema": {
+    "description": "Minimum required properties for any edge connecting nodes",
+    "required_properties": {
+      "edge_id": {
+        "type": "string",
+        "description": "Unique identifier for this edge",
+        "examples": ["char_to_rules_api", "p53_inhibits_mdm2", "friendship_alice_bob", "wolf_preys_deer"]
+      },
+      "source_node": {
+        "type": "string",
+        "description": "Node ID where this edge originates",
+        "note": "For undirected edges, convention is alphabetical order"
+      },
+      "target_node": {
+        "type": "string",
+        "description": "Node ID where this edge terminates"
+      },
+      "interaction_type": {
+        "type": "string",
+        "description": "Type of connection or interaction",
+        "examples": ["REST API", "activation", "friendship", "predation", "information_flow"]
+      },
+      "direction": {
+        "type": "string",
+        "enum": ["directed", "undirected", "bidirectional"],
+        "description": "Whether interaction has directionality"
+      }
+    },
+    "optional_properties": {
+      "weight": "Strength or importance of this edge (for weighted graphs)",
+      "protocol": "Communication protocol (for engineered systems)",
+      "mechanism": "Biological/physical mechanism (for natural systems)",
+      "metadata": "Framework-specific additional data",
+      "temporal": "Time-dependent properties (for dynamic networks)"
+    }
+  },
+  "networkx_mapping": {
+    "description": "How core abstraction maps to Python networkx library",
+    "node_attributes": {
+      "required": ["name", "type", "functions"],
+      "optional": ["version", "classification", "state", "metadata"],
+      "note": "All node properties stored as networkx node attributes"
+    },
+    "edge_attributes": {
+      "required": ["interaction_type", "direction"],
+      "optional": ["weight", "protocol", "mechanism", "metadata"],
+      "note": "All edge properties stored as networkx edge attributes"
+    },
+    "graph_type": "nx.DiGraph (directed graph) to support both directed and undirected edges",
+    "undirected_representation": "Store as two directed edges (A→B and B→A) with bidirectional=True attribute"
+  },
+  "framework_adapter_pattern": {
+    "description": "How to convert framework-specific files to universal format",
+    "step_1_load_framework_definitions": {
+      "action": "Read framework_registry.json to get node_schema and edge_schema mappings",
+      "output": "Framework-specific field names"
+    },
+    "step_2_load_component_file": {
+      "action": "Read framework-specific architecture file (e.g., service_architecture.json)",
+      "output": "Raw JSON data"
+    },
+    "step_3_extract_universal_properties": {
+      "action": "Map framework fields to universal schema",
+      "example": {
+        "uaf": {
+          "node_id": "data['service_id']",
+          "node_name": "data['service_name']",
+          "node_type": "data['classification']",
+          "functions": "data['functions']",
+          "interfaces": "data['interfaces']"
+        },
+        "systems_biology": {
+          "node_id": "data['component_id']",
+          "node_name": "data['component_name']",
+          "node_type": "data['component_type']",
+          "functions": "data['biological_functions']",
+          "interfaces": "data['interactions']"
+        }
+      }
+    },
+    "step_4_build_networkx_graph": {
+      "action": "Add nodes and edges to networkx DiGraph",
+      "node_addition": "G.add_node(node_id, **universal_properties)",
+      "edge_addition": "G.add_edge(source, target, **edge_properties)"
+    }
+  },
+  "knowledge_gap_detection": {
+    "description": "Identify missing nodes or edges based on graph structure",
+    "gap_types": {
+      "orphaned_interface": {
+        "definition": "Interface defined but no corresponding edge in graph",
+        "detection": "Node has interface with direction='consumed' but no incoming edge providing it",
+        "example": "Service B needs 'user_authentication' but no service provides it",
+        "implication": "Missing node or missing edge"
+      },
+      "unmet_dependency": {
+        "definition": "Node requires capability that no other node provides",
+        "detection": "dependency.required_capability not in any node.provided_capabilities",
+        "example": "Character service needs 'spell_validation' but no service offers it",
+        "implication": "Missing node needed"
+      },
+      "implied_mediator": {
+        "definition": "Two nodes interact but lack direct connection and incompatible interfaces",
+        "detection": "A→C and B→C but A.output_type ≠ C.input_type_A and B.output_type ≠ C.input_type_B",
+        "example": "RNA polymerase and transcription factors both affect gene, suggesting missing regulatory complex",
+        "implication": "Missing mediator node (like dark matter)"
+      },
+      "missing_feedback": {
+        "definition": "Effect observed on A from C, but no path C→...→A exists in graph",
+        "detection": "Known effect relationship not represented in graph structure",
+        "example": "Gene expression affects protein concentration, protein affects gene (missing feedback loop)",
+        "implication": "Missing edge or missing intermediate node"
+      },
+      "structural_hole": {
+        "definition": "Two clusters connected through single node (potential missing connections)",
+        "detection": "High betweenness centrality node; removing it disconnects clusters",
+        "example": "All inter-department communication goes through one person",
+        "implication": "System fragile; missing redundant connections"
+      },
+      "unexplained_output": {
+        "definition": "Node produces output but has no defined function producing it",
+        "detection": "interface.direction='provided' but not in node.functions",
+        "example": "System emits X-rays but no function listed that generates X-rays",
+        "implication": "Missing function definition or hidden internal mechanism"
+      }
+    },
+    "detection_algorithms": {
+      "interface_matching": "Compare all 'consumed' interfaces with all 'provided' interfaces",
+      "path_analysis": "Use networkx shortest_path to verify expected connections exist",
+      "centrality_analysis": "Identify high-betweenness nodes as potential structural holes",
+      "capability_analysis": "Match required capabilities with provided capabilities",
+      "motif_detection": "Identify expected patterns (feedback loops, cascades) that are incomplete"
+    }
+  },
+  "validation_rules": {
+    "description": "Universal validation that applies to all frameworks",
+    "consistency_checks": {
+      "no_dangling_interfaces": "All consumed interfaces should match a provided interface",
+      "no_self_loops_unless_specified": "Node should not interface with itself (except explicit feedback)",
+      "bidirectional_consistency": "If A→B is bidirectional, then B→A should exist with same properties",
+      "type_compatibility": "Connected nodes should have compatible interface types"
+    },
+    "structural_checks": {
+      "no_isolated_nodes": "All nodes should connect to at least one other node (unless explicitly allowed)",
+      "no_unreachable_nodes": "For hierarchical systems, all nodes should be reachable from root",
+      "no_circular_dependencies": "For dependency graphs, should be DAG (directed acyclic graph)"
+    }
+  },
+  "framework_translation": {
+    "description": "How to translate between different frameworks",
+    "use_case": "Model biological system with UAF, or social network with Systems Biology",
+    "translation_table": {
+      "uaf_to_biology": {
+        "service": "component",
+        "interface": "interaction",
+        "dependency": "regulatory_dependency",
+        "function": "biological_function"
+      },
+      "biology_to_social": {
+        "component": "agent",
+        "interaction": "relationship",
+        "activation": "positive_influence",
+        "inhibition": "negative_influence"
+      }
+    },
+    "semantic_preservation": "Core graph structure preserved; only terminology changes"
+  },
+  "extension_mechanism": {
+    "description": "How to add new frameworks without modifying core abstraction",
+    "steps": [
+      "1. Create new framework definition file (architectural_definitions_X.json)",
+      "2. Add entry to framework_registry.json with field mappings",
+      "3. Create template file for new framework",
+      "4. system_of_systems_graph.py automatically supports new framework via adapter pattern"
+    ],
+    "no_code_changes_needed": "Graph tool reads framework_registry.json dynamically"
+  }
+}

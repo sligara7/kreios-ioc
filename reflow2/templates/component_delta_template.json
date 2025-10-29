@@ -1,0 +1,407 @@
+{
+  "$schema": "component_delta_schema.json",
+  "template_version": "1.0.0",
+  "template_description": "Template for specifying exact component-level changes (deltas) required for integration - FUNCTION/MODULE/CLASS level granularity",
+  "delta_metadata": {
+    "created_date": "YYYY-MM-DD",
+    "component_id": "REPLACE_WITH_COMPONENT_ID",
+    "component_name": "REPLACE_WITH_COMPONENT_NAME",
+    "current_version": "X.Y.Z",
+    "target_version": "X.Y.Z (incremented based on changes)",
+    "delta_purpose": "DESCRIBE: Why these changes are needed (e.g., 'Enable communication with rbac_service')",
+    "based_on_gaps": ["GAP-001", "GAP-002"],
+    "analyst": "REPLACE_WITH_ANALYST_NAME_OR_AGENT",
+    "analysis_tool": "generate_component_deltas.py | manual_analysis"
+  },
+  "component_context": {
+    "component_type": "python_package | npm_package | microservice | library",
+    "source_location": "https://github.com/example/component OR /path/to/component",
+    "primary_language": "python | javascript | java | go",
+    "framework": "OPTIONAL: Flask | FastAPI | Express | Spring Boot",
+    "current_architecture_file": "specs/machine/component_arch/component_id/component_architecture.json",
+    "integration_role": "Integrate with rbac_service for permission validation"
+  },
+  "required_changes": [
+    {
+      "change_id": "DELTA-001",
+      "change_type": "new_function | modify_function | new_class | modify_class | new_module | modify_module | delete_function | delete_class | delete_module | rename | refactor",
+      "tier_level": "tier_3_components | tier_4_modules",
+      "location": "EXACT_FILE_PATH (e.g., src/auth_library/session.py)",
+      "scope": "function | class | module | file",
+      "change_description": "DETAILED: What is being added/modified/deleted",
+      "rationale": "EXPLAIN: Why this change is necessary for integration",
+      "breaking_change": false,
+      "backward_compatible": true,
+      "current_state": {
+        "exists": false,
+        "current_code": "OPTIONAL: Current code if modifying existing function/class"
+      },
+      "new_implementation": {
+        "function_signature": "def get_user_permissions(user_id: str, resource: str) -> List[str]:",
+        "class_signature": "OPTIONAL: class ClassName(BaseClass):",
+        "function_body": "PSEUDOCODE OR ACTUAL CODE: Implementation details",
+        "docstring": "DOCSTRING: Function/class documentation",
+        "type_hints": true,
+        "async_function": false,
+        "dependencies_added": ["requests"],
+        "imports_added": ["import requests", "from typing import List"],
+        "example_usage": "permissions = get_user_permissions('user-123', '/api/data')"
+      },
+      "test_requirements": [
+        "Unit test: test_get_user_permissions_success()",
+        "Unit test: test_get_user_permissions_service_unavailable()",
+        "Integration test: test_get_user_permissions_with_real_rbac_service()"
+      ],
+      "estimated_effort": "2 hours | 1 day | 1 week",
+      "priority": "critical | high | medium | low",
+      "depends_on_changes": ["DELTA-003"]
+    },
+    {
+      "change_id": "DELTA-002",
+      "change_type": "modify_function",
+      "tier_level": "tier_3_components",
+      "location": "src/auth_library/tokens.py::validate_token()",
+      "scope": "function",
+      "change_description": "Modify validate_token() to optionally call rbac_service for permission validation",
+      "rationale": "Enable permission checking during token validation without breaking existing callers",
+      "breaking_change": false,
+      "backward_compatible": true,
+      "current_state": {
+        "exists": true,
+        "current_code": "def validate_token(token: str) -> bool:\n    # Current implementation\n    return jwt.decode(token, SECRET_KEY)"
+      },
+      "new_implementation": {
+        "function_signature": "def validate_token(token: str, check_permissions: bool = False, resource: str = None) -> Dict[str, Any]:",
+        "changes": [
+          "Add optional check_permissions parameter (default False for backward compatibility)",
+          "Add optional resource parameter for permission check",
+          "If check_permissions=True, extract user_id from token and call get_user_permissions()",
+          "Return dict instead of bool: {valid: bool, user_id: str, permissions: List[str]}",
+          "Maintain backward compatibility: if check_permissions=False, return {valid: bool}"
+        ],
+        "backward_compatible_notes": "Existing callers that check 'if validate_token(token)' will still work because dict is truthy if valid=True",
+        "type_hints": true,
+        "async_function": false,
+        "dependencies_added": [],
+        "imports_added": ["from typing import Dict, Any, Optional, List"],
+        "example_usage": "result = validate_token(token, check_permissions=True, resource='/api/data')"
+      },
+      "test_requirements": [
+        "Unit test: test_validate_token_backward_compatibility()",
+        "Unit test: test_validate_token_with_permission_check()",
+        "Unit test: test_validate_token_permission_check_denied()"
+      ],
+      "estimated_effort": "3 hours",
+      "priority": "high",
+      "depends_on_changes": ["DELTA-001"]
+    },
+    {
+      "change_id": "DELTA-003",
+      "change_type": "new_module",
+      "tier_level": "tier_4_modules",
+      "location": "src/auth_library/adapters/rbac_client.py",
+      "scope": "module",
+      "change_description": "Create new HTTP client adapter module for rbac_service communication",
+      "rationale": "Encapsulate all rbac_service communication in dedicated module for separation of concerns",
+      "breaking_change": false,
+      "backward_compatible": true,
+      "new_implementation": {
+        "module_purpose": "Provide Python API for rbac_service REST endpoints",
+        "classes": [
+          {
+            "class_name": "RBACClient",
+            "base_class": "None",
+            "purpose": "HTTP client for rbac_service",
+            "methods": [
+              {
+                "method_name": "validate_permissions",
+                "signature": "def validate_permissions(self, user_id: str, resource: str) -> List[str]:",
+                "purpose": "Check user permissions for resource",
+                "implementation_notes": "Call GET /api/v1/permissions?user_id={user_id}&resource={resource}"
+              },
+              {
+                "method_name": "get_user_roles",
+                "signature": "def get_user_roles(self, user_id: str) -> List[str]:",
+                "purpose": "Get all roles for user",
+                "implementation_notes": "Call GET /api/v1/users/{user_id}/roles"
+              }
+            ],
+            "attributes": [
+              {
+                "name": "base_url",
+                "type": "str",
+                "default": "os.getenv('RBAC_SERVICE_URL', 'http://localhost:8100')"
+              },
+              {
+                "name": "timeout",
+                "type": "int",
+                "default": "5"
+              }
+            ]
+          }
+        ],
+        "functions": [],
+        "constants": [
+          "DEFAULT_TIMEOUT = 5",
+          "MAX_RETRIES = 3"
+        ],
+        "configuration_required": {
+          "environment_variables": [
+            {
+              "name": "RBAC_SERVICE_URL",
+              "required": true,
+              "default": "http://localhost:8100",
+              "description": "Base URL of RBAC service"
+            }
+          ]
+        },
+        "error_handling": {
+          "exceptions_raised": ["RBACServiceUnavailable", "RBACPermissionDenied"],
+          "retry_logic": "Exponential backoff, max 3 retries",
+          "timeout_handling": "Raise RBACServiceUnavailable after 5 seconds"
+        },
+        "dependencies_added": ["requests>=2.31.0", "tenacity>=8.2.0"],
+        "imports_added": ["import requests", "import os", "from tenacity import retry, stop_after_attempt"],
+        "example_usage": "client = RBACClient()\npermissions = client.validate_permissions('user-123', '/api/data')"
+      },
+      "test_requirements": [
+        "Unit test: test_rbac_client_validate_permissions_success()",
+        "Unit test: test_rbac_client_service_unavailable()",
+        "Unit test: test_rbac_client_timeout()",
+        "Integration test: test_rbac_client_with_real_service()"
+      ],
+      "estimated_effort": "4 hours",
+      "priority": "critical",
+      "depends_on_changes": []
+    },
+    {
+      "change_id": "DELTA-004",
+      "change_type": "new_class",
+      "tier_level": "tier_4_modules",
+      "location": "src/auth_library/exceptions.py",
+      "scope": "class",
+      "change_description": "Add custom exception classes for rbac_service integration",
+      "rationale": "Provide specific exceptions for error handling",
+      "new_implementation": {
+        "classes": [
+          {
+            "class_name": "RBACServiceUnavailable",
+            "base_class": "Exception",
+            "purpose": "Raised when rbac_service is unreachable"
+          },
+          {
+            "class_name": "RBACPermissionDenied",
+            "base_class": "Exception",
+            "purpose": "Raised when user lacks required permissions"
+          }
+        ]
+      },
+      "estimated_effort": "30 minutes",
+      "priority": "medium"
+    }
+  ],
+  "configuration_changes": [
+    {
+      "change_type": "new_environment_variable | modify_config_file | new_config_section",
+      "location": "Environment variables | config.yml | settings.py",
+      "change_description": "Add RBAC_SERVICE_URL environment variable",
+      "variable_name": "RBAC_SERVICE_URL",
+      "required": true,
+      "default_value": "http://localhost:8100",
+      "description": "Base URL of RBAC service for permission validation",
+      "example": "export RBAC_SERVICE_URL=http://rbac-service:8100"
+    }
+  ],
+  "dependency_changes": {
+    "added": [
+      {
+        "package_name": "requests",
+        "version_constraint": ">=2.31.0",
+        "justification": "HTTP client for rbac_service communication"
+      },
+      {
+        "package_name": "tenacity",
+        "version_constraint": ">=8.2.0",
+        "justification": "Retry logic for resilient rbac_service calls"
+      }
+    ],
+    "removed": [],
+    "upgraded": [],
+    "downgraded": []
+  },
+  "file_structure_changes": {
+    "new_directories": [
+      "src/auth_library/adapters/"
+    ],
+    "new_files": [
+      "src/auth_library/adapters/__init__.py",
+      "src/auth_library/adapters/rbac_client.py",
+      "tests/adapters/test_rbac_client.py"
+    ],
+    "deleted_files": [],
+    "renamed_files": [],
+    "moved_files": []
+  },
+  "testing_requirements": {
+    "new_unit_tests": [
+      {
+        "test_file": "tests/test_session.py",
+        "test_cases": [
+          "test_get_user_permissions_success",
+          "test_get_user_permissions_service_unavailable"
+        ]
+      },
+      {
+        "test_file": "tests/adapters/test_rbac_client.py",
+        "test_cases": [
+          "test_rbac_client_validate_permissions",
+          "test_rbac_client_timeout",
+          "test_rbac_client_retry_logic"
+        ]
+      }
+    ],
+    "modified_existing_tests": [
+      {
+        "test_file": "tests/test_tokens.py",
+        "modifications": "Add tests for new check_permissions parameter"
+      }
+    ],
+    "new_integration_tests": [
+      {
+        "test_file": "tests/integration/test_rbac_integration.py",
+        "test_cases": [
+          "test_end_to_end_permission_validation",
+          "test_rbac_service_failure_handling"
+        ]
+      }
+    ],
+    "test_coverage_target": "≥80% for new code",
+    "test_infrastructure": [
+      "Mock rbac_service responses with requests_mock",
+      "Integration test requires rbac_service running on localhost:8100"
+    ]
+  },
+  "documentation_updates": [
+    {
+      "document": "README.md",
+      "section": "Integration with RBAC Service",
+      "changes": [
+        "Add section on rbac_service integration",
+        "Document RBAC_SERVICE_URL configuration",
+        "Provide example usage of get_user_permissions()"
+      ]
+    },
+    {
+      "document": "API_REFERENCE.md",
+      "section": "Session Management",
+      "changes": [
+        "Document new get_user_permissions() function",
+        "Update validate_token() documentation for new parameters"
+      ]
+    },
+    {
+      "document": "CHANGELOG.md",
+      "changes": [
+        "Add entry for version 2.4.0 with rbac_service integration features"
+      ]
+    }
+  ],
+  "migration_guide": {
+    "breaking_changes": [],
+    "backward_compatible_changes": [
+      {
+        "change": "validate_token() now returns dict instead of bool",
+        "migration": "Existing code continues to work (dict is truthy), but update to use dict keys for better error handling"
+      }
+    ],
+    "configuration_changes": [
+      {
+        "change": "New RBAC_SERVICE_URL environment variable required",
+        "migration": "Set RBAC_SERVICE_URL before starting application, or accept default http://localhost:8100"
+      }
+    ]
+  },
+  "risks": [
+    {
+      "risk_id": "RISK-001",
+      "risk_description": "Network latency to rbac_service increases authentication time",
+      "impact": "medium",
+      "mitigation": "Add caching layer for permissions, use async calls in future version",
+      "acceptance_criteria": "95% of permission checks complete in <50ms"
+    }
+  ],
+  "rollback_plan": {
+    "rollback_possible": true,
+    "rollback_procedure": [
+      "1. Revert to previous version (git checkout v2.3.1)",
+      "2. Remove RBAC_SERVICE_URL environment variable",
+      "3. Redeploy component"
+    ],
+    "data_migration_required": false
+  },
+  "summary": {
+    "total_changes": 4,
+    "by_type": {
+      "new_function": 1,
+      "modify_function": 1,
+      "new_module": 1,
+      "new_class": 1
+    },
+    "estimated_total_effort": "9.5 hours",
+    "breaking_changes": 0,
+    "backward_compatible": true,
+    "test_count": 8,
+    "dependencies_added": 2,
+    "files_affected": 5,
+    "risk_level": "low | medium | high"
+  },
+  "next_steps": [
+    "Review and approve delta changes with component owner",
+    "Implement changes following delta specifications",
+    "Run tests to verify backward compatibility",
+    "Update documentation",
+    "Create pull request with changes"
+  ],
+  "INSTRUCTIONS": {
+    "purpose": "This template is used in bottom-up systems engineering (workflow step BU-04) to specify EXACT code-level changes needed for component integration",
+    "when_to_use": "After identifying integration gaps, generate component deltas to show precisely what code needs to change",
+    "granularity_levels": {
+      "function_level": "Specific functions to add/modify (most common)",
+      "class_level": "Specific classes to add/modify",
+      "module_level": "Entire new modules to create",
+      "file_level": "Entire files to add/modify (rare, only for small files)"
+    },
+    "how_to_fill": [
+      "1. Run generate_component_deltas.py with integration_gaps.json",
+      "2. Tool analyzes gaps and generates exact changes needed for each component",
+      "3. For each change, specify exact location (file path, function/class name)",
+      "4. Provide function signatures, implementation notes, or pseudocode",
+      "5. Identify dependencies, imports, configuration changes",
+      "6. Define test requirements for each change",
+      "7. Estimate effort (hours/days) for each change",
+      "8. Document risks and mitigation strategies"
+    ],
+    "change_type_definitions": {
+      "new_function": "Add new function to existing module",
+      "modify_function": "Change existing function signature or implementation",
+      "new_class": "Add new class to existing module",
+      "modify_class": "Change existing class",
+      "new_module": "Create entirely new module (.py file)",
+      "modify_module": "Make changes across entire module",
+      "delete_function": "Remove deprecated function",
+      "delete_class": "Remove deprecated class",
+      "delete_module": "Remove entire module",
+      "rename": "Rename function/class/module",
+      "refactor": "Restructure code without changing behavior"
+    },
+    "required_fields": [
+      "change_id",
+      "change_type",
+      "location",
+      "change_description",
+      "rationale",
+      "estimated_effort"
+    ],
+    "output_location": "specs/machine/component_deltas/{component_id}_delta.json"
+  }
+}

@@ -1,0 +1,361 @@
+{
+  "rag_context_configuration": {
+    "version": "1.0.0",
+    "description": "RAG-enhanced context management for reflow workflows",
+    "system_name": "<system_name>",
+    "embedding_configuration": {
+      "model": "sentence-transformers/all-MiniLM-L6-v2",
+      "dimension": 384,
+      "chunk_strategy": "semantic_sections",
+      "overlap_tokens": 50,
+      "storage_path": "context/embeddings/",
+      "index_type": "faiss"
+    },
+    "knowledge_bases": [
+      {
+        "name": "decision_flow_kb",
+        "source_file": "../../decision_flow.json",
+        "content_type": "workflow_rules",
+        "priority": "CRITICAL",
+        "chunk_sections": [
+          "CRITICAL_BEHAVIORAL_RULES",
+          "MANDATORY_WORKFLOW_ADHERENCE",
+          "CONTEXT_CONTINUITY",
+          "system_isolation",
+          "validation_before_every_operation",
+          "refresh_sequence",
+          "degradation_signals"
+        ],
+        "update_frequency": "on_file_change",
+        "embeddings_file": "decision_flow_embeddings.pkl",
+        "metadata_file": "decision_flow_metadata.json"
+      },
+      {
+        "name": "architectural_definitions_kb",
+        "source_file": "../../definitions/architectural_definitions.json",
+        "content_type": "domain_knowledge",
+        "priority": "HIGH",
+        "chunk_sections": ["services", "components", "interfaces", "deployment_units"],
+        "update_frequency": "daily",
+        "embeddings_file": "arch_definitions_embeddings.pkl",
+        "metadata_file": "arch_definitions_metadata.json"
+      },
+      {
+        "name": "workflow_steps_kb",
+        "source_files": [
+          "../../architecture/*.json",
+          "../../development/*.json",
+          "../../feature_update/*.json"
+        ],
+        "content_type": "workflow_procedures",
+        "priority": "HIGH",
+        "chunk_strategy": "per_step",
+        "update_frequency": "on_file_change",
+        "embeddings_file": "workflow_steps_embeddings.pkl",
+        "metadata_file": "workflow_steps_metadata.json"
+      },
+      {
+        "name": "tool_reference_kb",
+        "source_section": "decision_flow.json#tool_reference",
+        "content_type": "tool_documentation",
+        "priority": "MEDIUM",
+        "chunk_strategy": "per_tool",
+        "update_frequency": "on_file_change",
+        "embeddings_file": "tool_reference_embeddings.pkl",
+        "metadata_file": "tool_reference_metadata.json"
+      },
+      {
+        "name": "system_context_kb",
+        "source_files": [
+          "context/working_memory.json",
+          "context/step_progress_tracker.json",
+          "context/current_focus.md",
+          "context/process_log.md"
+        ],
+        "content_type": "runtime_state",
+        "priority": "CRITICAL",
+        "chunk_strategy": "structured_fields",
+        "update_frequency": "continuous",
+        "embeddings_file": "system_context_embeddings.pkl",
+        "metadata_file": "system_context_metadata.json"
+      }
+    ],
+    "retrieval_strategies": {
+      "on_step_start": {
+        "description": "Context retrieval when starting a new step",
+        "trigger": "step_transition",
+        "queries": [
+          {
+            "query_template": "workflow instructions for step {current_step}",
+            "knowledge_bases": ["workflow_steps_kb"],
+            "top_k": 3,
+            "min_similarity": 0.7
+          },
+          {
+            "query_template": "critical behavioral rules and workflow adherence",
+            "knowledge_bases": ["decision_flow_kb"],
+            "top_k": 5,
+            "min_similarity": 0.8
+          },
+          {
+            "query_template": "system isolation and validation requirements",
+            "knowledge_bases": ["decision_flow_kb"],
+            "top_k": 3,
+            "min_similarity": 0.75
+          }
+        ],
+        "always_include": [
+          "CRITICAL_BEHAVIORAL_RULES",
+          "current_step from step_progress_tracker.json",
+          "system_name from working_memory.json"
+        ]
+      },
+      "on_degradation_detected": {
+        "description": "Targeted retrieval when context degradation is detected",
+        "trigger": "degradation_signal",
+        "queries": [
+          {
+            "query_template": "degradation signals: {detected_signal}",
+            "knowledge_bases": ["decision_flow_kb"],
+            "top_k": 5,
+            "min_similarity": 0.75,
+            "boost_sections": ["CRITICAL_BEHAVIORAL_RULES", "degradation_signals", "refresh_sequence"]
+          },
+          {
+            "query_template": "correct procedure for {current_step}",
+            "knowledge_bases": ["workflow_steps_kb"],
+            "top_k": 3,
+            "min_similarity": 0.8
+          }
+        ],
+        "always_include": [
+          "CRITICAL_BEHAVIORAL_RULES.NEVER_GENERATE_REPORTS",
+          "CRITICAL_BEHAVIORAL_RULES.MANDATORY_WORKFLOW_ADHERENCE",
+          "validation_before_every_operation"
+        ],
+        "force_refresh": true
+      },
+      "on_tool_execution": {
+        "description": "Retrieval before tool execution",
+        "trigger": "pre_tool_call",
+        "queries": [
+          {
+            "query_template": "tool usage for {tool_name}",
+            "knowledge_bases": ["tool_reference_kb"],
+            "top_k": 1,
+            "min_similarity": 0.9,
+            "exact_match_preferred": true
+          },
+          {
+            "query_template": "validation requirements before tool execution",
+            "knowledge_bases": ["decision_flow_kb"],
+            "top_k": 2,
+            "min_similarity": 0.7
+          }
+        ],
+        "always_include": ["system_isolation.mandatory_check"]
+      },
+      "on_user_query": {
+        "description": "Semantic retrieval based on user's question",
+        "trigger": "user_input",
+        "queries": [
+          {
+            "query_template": "{user_query_text}",
+            "knowledge_bases": ["workflow_steps_kb", "tool_reference_kb", "architectural_definitions_kb"],
+            "top_k": 5,
+            "min_similarity": 0.65,
+            "hybrid_search": true
+          }
+        ],
+        "always_include": ["CRITICAL_BEHAVIORAL_RULES"]
+      },
+      "periodic_refresh": {
+        "description": "Scheduled context refresh",
+        "trigger": "operations_count >= 4 OR time_elapsed >= 12min",
+        "queries": [
+          {
+            "query_template": "current step {current_step} requirements and next actions",
+            "knowledge_bases": ["workflow_steps_kb", "decision_flow_kb"],
+            "top_k": 5,
+            "min_similarity": 0.7
+          }
+        ],
+        "always_include": [
+          "CRITICAL_BEHAVIORAL_RULES",
+          "step_progress_tracker.json",
+          "current_focus.md"
+        ],
+        "full_reload": ["working_memory.json"]
+      }
+    },
+    "context_prioritization": {
+      "priority_levels": {
+        "CRITICAL": {
+          "weight": 1.0,
+          "always_inject": true,
+          "max_token_budget": 2000,
+          "sections": [
+            "CRITICAL_BEHAVIORAL_RULES",
+            "system_name",
+            "current_step",
+            "current_substep",
+            "working_directory",
+            "system_isolation.mandatory_check"
+          ]
+        },
+        "HIGH": {
+          "weight": 0.8,
+          "inject_on_relevance": true,
+          "max_token_budget": 3000,
+          "sections": [
+            "validation_before_every_operation",
+            "current workflow step instructions",
+            "tool usage for current action",
+            "degradation_signals"
+          ]
+        },
+        "MEDIUM": {
+          "weight": 0.6,
+          "inject_on_query": true,
+          "max_token_budget": 2000,
+          "sections": [
+            "tool_reference",
+            "quality_gates",
+            "architectural_definitions"
+          ]
+        },
+        "LOW": {
+          "weight": 0.4,
+          "inject_on_explicit_need": true,
+          "max_token_budget": 1000,
+          "sections": [
+            "process_log history",
+            "completed step instructions",
+            "archived decisions"
+          ]
+        }
+      },
+      "token_budget_management": {
+        "total_context_budget": 8000,
+        "reserved_for_critical": 2000,
+        "dynamic_allocation": true,
+        "compression_strategy": "truncate_low_priority_first",
+        "fallback": "increase_min_similarity_threshold"
+      }
+    },
+    "degradation_detection": {
+      "monitoring_enabled": true,
+      "signal_patterns": [
+        {
+          "signal": "report_generation_attempt",
+          "detection_patterns": [
+            "creating.*report",
+            "generating.*summary",
+            "status update",
+            "progress report"
+          ],
+          "action": "retrieve_and_inject",
+          "target_sections": ["CRITICAL_BEHAVIORAL_RULES.NEVER_GENERATE_REPORTS"],
+          "alert_level": "CRITICAL"
+        },
+        {
+          "signal": "workflow_violation",
+          "detection_patterns": [
+            "skipping step",
+            "proceeding without",
+            "ignoring workflow"
+          ],
+          "action": "retrieve_and_inject",
+          "target_sections": ["MANDATORY_WORKFLOW_ADHERENCE", "validation_before_every_operation"],
+          "alert_level": "CRITICAL"
+        },
+        {
+          "signal": "system_isolation_breach",
+          "detection_patterns": [
+            "accessing.*other system",
+            "wrong system directory",
+            "cross-system reference"
+          ],
+          "action": "retrieve_and_inject",
+          "target_sections": ["system_isolation", "system_isolation_recovery"],
+          "alert_level": "CRITICAL"
+        },
+        {
+          "signal": "context_confusion",
+          "detection_patterns": [
+            "what system am I working on",
+            "what step are we at",
+            "remind me"
+          ],
+          "action": "retrieve_and_inject",
+          "target_sections": ["working_memory.json", "step_progress_tracker.json", "current_focus.md"],
+          "alert_level": "HIGH"
+        }
+      ],
+      "auto_correction": {
+        "enabled": true,
+        "max_auto_corrections": 3,
+        "escalate_after": 3,
+        "correction_actions": [
+          "inject_critical_context",
+          "force_context_refresh",
+          "halt_and_require_manual_verification"
+        ]
+      }
+    },
+    "injection_mechanism": {
+      "injection_points": [
+        {
+          "name": "pre_agent_prompt",
+          "position": "before_user_query",
+          "format": "structured_context_block",
+          "template": "MANDATORY CONTEXT:\n{critical_context}\n\nRELEVANT WORKFLOW:\n{high_priority_context}\n\nADDITIONAL REFERENCE:\n{medium_priority_context}"
+        },
+        {
+          "name": "post_retrieval_verification",
+          "position": "after_agent_response",
+          "format": "validation_checklist",
+          "checks": [
+            "Response aligns with CRITICAL_BEHAVIORAL_RULES",
+            "No report generation in response",
+            "Actions match current step instructions"
+          ]
+        }
+      ],
+      "formatting_rules": {
+        "max_line_length": 120,
+        "use_markdown": true,
+        "highlight_critical": "**CRITICAL:**",
+        "highlight_mandatory": "**MANDATORY:**",
+        "code_formatting": "```json``` blocks for structured data"
+      }
+    },
+    "caching_strategy": {
+      "cache_embeddings": true,
+      "cache_ttl_minutes": 60,
+      "cache_invalidation": [
+        "on_source_file_change",
+        "on_step_transition",
+        "on_manual_refresh"
+      ],
+      "cache_storage": "context/embeddings/cache/",
+      "preload_on_startup": ["decision_flow_kb", "system_context_kb"]
+    },
+    "metrics_and_logging": {
+      "track_retrieval_metrics": true,
+      "metrics_file": "context/rag_metrics.json",
+      "log_queries": true,
+      "log_relevance_scores": true,
+      "log_injection_success": true,
+      "metrics_to_track": [
+        "query_latency_ms",
+        "retrieval_success_rate",
+        "average_relevance_score",
+        "degradation_detection_count",
+        "auto_correction_success_rate",
+        "token_budget_utilization",
+        "cache_hit_rate"
+      ]
+    }
+  }
+}

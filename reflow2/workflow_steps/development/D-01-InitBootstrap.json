@@ -1,0 +1,49 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Dev-01 Initialization & Environment Bootstrap",
+    "based_on": "service_development_workflow.json D1",
+    "description": "Establish reproducible development environment per build_ready_index and capture mission artifacts."
+  },
+  "entry_conditions": {
+    "from": "Arch-06 or Decision: implementation_from_final_specs",
+    "artifacts": [
+      "specs/machine/build_ready_index.json",
+      "specs/human/SYSTEM_MISSION_STATEMENT.md",
+      "specs/human/USER_SCENARIOS.md",
+      "specs/human/SUCCESS_CRITERIA.md",
+      "development_language_configuration.json"
+    ],
+    "language_configuration_validation": {
+      "description": "Development language configuration must be present and valid",
+      "required_fields": [
+        "system_name",
+        "configuration_type",
+        "service_languages",
+        "development_setup"
+      ],
+      "validation": "All services must have language and framework assignments"
+    }
+  },
+  "steps": [
+    { "id": "D1.0", "description": "Validate development language configuration exists", "tool": "manual", "input": "development_language_configuration.json", "validation": "Language configuration must exist before development begins" },
+    { "id": "D1.1", "description": "Parse build_ready_index.json to enumerate dependency layers", "tool": "manual", "input": "specs/machine/build_ready_index.json" },
+    { "id": "D1.2", "description": "Create context/dev trackers (dev_progress_tracker.json, dev_current_focus.md)", "tool": "manual", "outputs": ["context/dev_progress_tracker.json", "context/dev_current_focus.md", "context/dev_process_log.md"] },
+    { "id": "D1.3", "description": "Validate required runtimes, toolchains, lint/test frameworks for selected languages", "tool": "bash", "input": "development_language_configuration.json", "validation": "All required language runtimes and tools must be available" },
+    { "id": "D1.4", "description": "Setup language-specific development environments", "tool": "manual", "input": "development_language_configuration.json", "outputs": ["Language-specific project structures", "Framework initialization", "Development tooling setup"] },
+    { "id": "D1.5", "description": "Confirm mission artifacts present and aligned", "tool": "manual", "inputs": ["specs/human/SYSTEM_MISSION_STATEMENT.md", "specs/human/USER_SCENARIOS.md", "specs/human/SUCCESS_CRITERIA.md"] }
+  ],
+  "artifact_routing": {
+    "context": "context/*",
+    "machine": "specs/machine/*",
+    "human": "specs/human/*",
+    "code": "code/<service>/"
+  },
+  "iteration_paths": {
+    "on_missing_artifacts": "../architecture/Arch-06-ImplArtifactsAndCompletion.json"
+  },
+  "handoff": {
+    "produces": ["context/dev_progress_tracker.json", "context/dev_current_focus.md", "context/dev_process_log.md"],
+    "next_workflow": "../development/Dev-02-CoreAndDomain.json"
+  }
+}

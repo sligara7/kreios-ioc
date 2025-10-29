@@ -1,0 +1,34 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Dev-Post Feedback Loop Initialization",
+    "based_on": "service_development_workflow.json POST",
+    "description": "Establish continuous improvement cycle integrating runtime signals and user feedback back into architecture & code."
+  },
+  "entry_conditions": {
+    "from": "Dev-08",
+    "artifacts": [
+      "specs/human/reports/release_candidate/*"
+    ]
+  },
+  "steps": [
+    { "id": "P1", "description": "Capture first-week telemetry deltas vs baselines", "tool": "manual" },
+    { "id": "P2", "description": "Feed production incident learnings into architecture change log", "tool": "manual", "output": "specs/human/ARCHITECTURE_CHANGE_LOG.md" },
+    { "id": "P3", "description": "Update service_architecture.json or observability.json where drift detected", "tool": "manual" },
+    { "id": "P4", "description": "Prioritize backlog items from operational insights", "tool": "manual" },
+    { "id": "P5", "description": "Monitor mission effectiveness metrics in production", "tool": "manual" },
+    { "id": "P6", "description": "Collect ongoing user feedback and usage patterns", "tool": "manual" },
+    { "id": "P7", "description": "Update SUCCESS_CRITERIA.md based on real-world data", "tool": "manual" }
+  ],
+  "artifact_routing": {
+    "change_log": "specs/human/ARCHITECTURE_CHANGE_LOG.md",
+    "machine_specs": "specs/machine/service_arch/<service>/"
+  },
+  "iteration_paths": {
+    "on_cross_service_change": "../feature_update/FU-02-ArchReengineering.json"
+  },
+  "handoff": {
+    "produces": ["specs/human/ARCHITECTURE_CHANGE_LOG.md"],
+    "next_workflow": "continuous"
+  }
+}

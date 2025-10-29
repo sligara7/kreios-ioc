@@ -1,0 +1,23 @@
+{
+  "template_version": "1.0",
+  "template_description": "Standard template for index.json files in system-of-systems architecture analysis",
+  "system_name": "REPLACE_WITH_SYSTEM_NAME",
+  "description": "REPLACE_WITH_SYSTEM_DESCRIPTION",
+  "last_updated": "YYYY-MM-DD",
+  "metadata": {
+    "framework": "UAF",
+    "process_version": "1.0",
+    "generated_by": "LLM_AGENT_NAME",
+    "total_components": 0
+  },
+  "components": {
+    "COMPONENT_ID_1": "systems/SYSTEM_NAME/COMPONENT_ID_1/service_architecture.json",
+    "COMPONENT_ID_2": "systems/SYSTEM_NAME/COMPONENT_ID_2/service_architecture.json"
+  },
+  "INSTRUCTIONS": {
+    "component_paths": "Use relative paths from repository root: systems/SYSTEM_NAME/COMPONENT_ID/service_architecture.json",
+    "component_ids": "Use lowercase with underscores: bluesky_queueserver, not bluesky-queueserver",
+    "required_fields": ["system_name", "description", "last_updated", "components"],
+    "components_format": "Flat dictionary mapping component_id to relative file path"
+  }
+}

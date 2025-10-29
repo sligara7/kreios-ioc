@@ -1,0 +1,38 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Dev-06 CI/CD & Deployment",
+    "based_on": "service_development_workflow.json D9–D10",
+    "description": "Translate cicd plan into automation; deploy to controlled env; validate runtime behavior."
+  },
+  "entry_conditions": {
+    "from": "Dev-05",
+    "artifacts": ["specs/machine/service_arch/<service>/cicd_pipeline.json", "specs/machine/service_arch/<service>/infrastructure.json"]
+  },
+  "steps": [
+    { "id": "D9.1", "description": "Scaffold pipeline stages per plan (build/test/scan/package/deploy)", "tool": "manual" },
+    { "id": "D9.2", "description": "Integrate quality gates (coverage, scans, thresholds)", "tool": "manual" },
+    { "id": "D9.3", "description": "Add artifact versioning & provenance", "tool": "manual" },
+    { "id": "D9.4", "description": "Implement deployment promotion logic", "tool": "manual" },
+    { "id": "D10.1", "description": "Provision runtime environment from infrastructure.json", "tool": "manual" },
+    { "id": "D10.2", "description": "Deploy respecting dependency sequencing", "tool": "manual" },
+    { "id": "D10.3", "description": "Run smoke & contract tests against live endpoints", "tool": "manual" },
+    { "id": "D10.4", "description": "Validate telemetry ingestion & dashboards", "tool": "manual" }
+  ],
+  "artifact_routing": {
+    "pipeline": "specs/machine/service_arch/<service>/cicd_pipeline.json",
+    "deployment_logs": "specs/human/reports/deployment_logs/",
+    "env_configs": "specs/machine/service_arch/<service>/config_templates/"
+  },
+  "iteration_paths": {
+    "on_deploy_failure": "../development/Dev-05-ObservabilityAndTesting.json",
+    "on_contract_break": "../feature_update/FU-02-ArchReengineering.json"
+  },
+  "validation": {
+    "exit_criteria": ["Pipeline executes end-to-end", "Contracts hold under live conditions", "Telemetry operational"]
+  },
+  "handoff": {
+    "produces": ["pipeline config", "deployment logs"],
+    "next_workflow": "../development/Dev-07-OperationalReadiness.json"
+  }
+}

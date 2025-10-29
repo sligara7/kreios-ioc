@@ -1,0 +1,56 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Arch-04 Deployment Reconciliation and Deep Interface Analysis",
+    "based_on": "architecture_workflow.json steps 5–5.5",
+    "description": "Reconcile logical vs deployment architecture, then perform conditional deep-dive decomposition for complex interfaces."
+  },
+  "entry_conditions": {
+    "from": "Arch-03",
+    "artifacts": ["service_architecture.json (per service)", "index.json", "interfaces/*.json"]
+  },
+  "steps": [
+    {
+      "id": "S5.1",
+      "name": "Deployment Best Practices (RAG)",
+      "tool": "rag",
+      "output": "deployment_best_practices.md"
+    },
+    {
+      "id": "S5.2",
+      "name": "Scan Deployment Artifacts",
+      "tool": "bash",
+      "patterns": ["docker-compose.yml", "*.yaml", "nginx.conf", "*.tf", "Dockerfile"]
+    },
+    {
+      "id": "S5.3",
+      "name": "Parse Deployment Configs",
+      "tool": "manual"
+    },
+    {
+      "id": "S5.4",
+      "name": "Reconcile Logical and Deployment Architectures",
+      "tool": "manual"
+    },
+    {
+      "id": "S5.5",
+      "name": "Update Specs to Reflect Deployment Reality",
+      "tool": "manual",
+      "update": ["service_architecture.json"]
+    },
+    {
+      "id": "S5.5*",
+      "name": "Conditional Level 3 Decomposition",
+      "trigger": "Any objective trigger from decomposition step",
+      "tool": "manual",
+      "guidance": "Create internal module service_architecture.json where necessary"
+    }
+  ],
+  "validation": {
+    "check": "Logical architecture matches deployment; deep-dive captured where required"
+  },
+  "handoff": {
+    "produces": ["deployment_best_practices.md", "updated service_architecture.json", "(optional) Level 3 service_architecture.json"],
+    "next_workflow": "../architecture/Arch-05-ConsistencyAndSpecVerification.json"
+  }
+}

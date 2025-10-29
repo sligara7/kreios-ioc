@@ -1,0 +1,186 @@
+{
+  "$schema": "integration_gaps_schema.json",
+  "template_version": "1.0.0",
+  "template_description": "Template for documenting integration gaps identified between components",
+  "gaps_metadata": {
+    "created_date": "YYYY-MM-DD",
+    "system_name": "REPLACE_WITH_SYSTEM_NAME",
+    "based_on_inventory": "component_inventory.json",
+    "based_on_requirements": "integration_requirements.json",
+    "analyst": "REPLACE_WITH_ANALYST_NAME_OR_AGENT",
+    "analysis_tool": "analyze_integration_gaps.py | manual_analysis"
+  },
+  "gaps": [
+    {
+      "gap_id": "GAP-001",
+      "gap_type": "missing_interface | protocol_mismatch | data_model_incompatibility | missing_mediator | circular_dependency | conflicting_requirements | version_incompatibility | performance_gap | security_gap",
+      "severity": "critical | high | medium | low",
+      "from_component": "REPLACE_WITH_SOURCE_COMPONENT_ID",
+      "to_component": "REPLACE_WITH_TARGET_COMPONENT_ID",
+      "gap_description": "DETAILED: Describe what integration capability is missing or incompatible",
+      "current_state": "DESCRIBE: What exists now (e.g., 'auth_library has no way to communicate with rbac_service')",
+      "required_state": "DESCRIBE: What is needed (e.g., 'auth_library must call rbac_service.validate_permissions(user_id, resource) API')",
+      "required_change": "DESCRIBE: What needs to change (e.g., 'Add integration adapter or modify rbac_service to expose API')",
+      "affected_tiers": ["tier_2_services | tier_3_components | tier_4_modules"],
+      "affected_capabilities": ["CAPABILITY_1", "CAPABILITY_2"],
+      "impact_if_not_resolved": "DESCRIBE: What happens if this gap is not fixed",
+      "recommendation": {
+        "recommended_solution": "DESCRIBE: Recommended approach to resolve gap",
+        "rationale": "EXPLAIN: Why this solution is recommended",
+        "alternatives": [
+          {
+            "solution": "Alternative approach description",
+            "pros": ["PRO_1", "PRO_2"],
+            "cons": ["CON_1", "CON_2"]
+          }
+        ],
+        "estimated_effort": "ESTIMATE: hours | days | weeks",
+        "priority": "immediate | short_term | medium_term | long_term"
+      },
+      "resolution_approach": {
+        "approach_type": "modify_component | create_adapter | create_mediator | refactor_architecture | use_existing_pattern",
+        "components_to_modify": ["component_a", "component_b"],
+        "new_components_to_create": ["adapter_component_name"],
+        "code_changes_required": true,
+        "configuration_changes_required": true,
+        "infrastructure_changes_required": false
+      },
+      "dependencies_for_resolution": [
+        "GAP-002 must be resolved first",
+        "Requires approval from component_owner"
+      ],
+      "related_gaps": ["GAP-003", "GAP-005"]
+    },
+    {
+      "gap_id": "GAP-002",
+      "gap_type": "protocol_mismatch",
+      "severity": "high",
+      "from_component": "auth_library",
+      "to_component": "api_key_manager",
+      "gap_description": "auth_library uses in-process Python function calls, api_key_manager is a REST service. No direct integration possible.",
+      "current_state": "auth_library: Python library with function calls. api_key_manager: REST service on http://localhost:8100",
+      "required_state": "auth_library must be able to validate API keys via api_key_manager",
+      "required_change": "Add HTTP client adapter to auth_library OR embed api_key_manager as Python library",
+      "affected_tiers": ["tier_2_services", "tier_3_components"],
+      "affected_capabilities": ["API key validation"],
+      "impact_if_not_resolved": "Cannot validate API keys, must use only username/password auth",
+      "recommendation": {
+        "recommended_solution": "Create rest_adapter component that wraps api_key_manager REST calls in Python API",
+        "rationale": "Preserves both components as-is, adapter is reusable for other integrations",
+        "alternatives": [
+          {
+            "solution": "Embed api_key_manager logic into auth_library",
+            "pros": ["No network latency", "Simpler deployment"],
+            "cons": ["Tight coupling", "Duplicates code", "Loses api_key_manager's standalone capability"]
+          }
+        ],
+        "estimated_effort": "4 hours",
+        "priority": "short_term"
+      },
+      "resolution_approach": {
+        "approach_type": "create_adapter",
+        "components_to_modify": ["auth_library"],
+        "new_components_to_create": ["rest_adapter"],
+        "code_changes_required": true,
+        "configuration_changes_required": true,
+        "infrastructure_changes_required": false
+      },
+      "dependencies_for_resolution": [],
+      "related_gaps": []
+    }
+  ],
+  "gap_categories": {
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "by_type": {
+      "missing_interface": 0,
+      "protocol_mismatch": 0,
+      "data_model_incompatibility": 0,
+      "missing_mediator": 0,
+      "circular_dependency": 0,
+      "conflicting_requirements": 0,
+      "version_incompatibility": 0,
+      "performance_gap": 0,
+      "security_gap": 0
+    },
+    "by_tier": {
+      "tier_0_system_of_systems": 0,
+      "tier_1_systems": 0,
+      "tier_2_services": 0,
+      "tier_3_components": 0,
+      "tier_4_modules": 0
+    }
+  },
+  "summary": {
+    "total_gaps": 0,
+    "critical_gaps": 0,
+    "high_priority_gaps": 0,
+    "gaps_requiring_new_components": 0,
+    "gaps_requiring_modifications": 0,
+    "estimated_total_effort": "ESTIMATE: Total effort to resolve all gaps",
+    "integration_feasibility": "high | medium | low",
+    "integration_feasibility_rationale": "EXPLAIN: Why integration is feasible or not based on gaps identified",
+    "blocking_gaps": [
+      {
+        "gap_id": "GAP-001",
+        "blocks": "Cannot proceed with Phase 1 integration until resolved"
+      }
+    ]
+  },
+  "resolution_roadmap": [
+    {
+      "phase": 1,
+      "phase_name": "Critical Gap Resolution",
+      "gaps_to_resolve": ["GAP-001", "GAP-003"],
+      "estimated_duration": "1 week",
+      "dependencies": "None",
+      "deliverables": [
+        "rest_adapter component created",
+        "auth_library modified to use adapter"
+      ]
+    }
+  ],
+  "next_steps": [
+    "Prioritize gaps by severity and impact",
+    "Assign gaps to resolution phases",
+    "Run generate_component_deltas.py to create exact change specifications",
+    "Review and approve resolution roadmap"
+  ],
+  "INSTRUCTIONS": {
+    "purpose": "This template is used in bottom-up systems engineering (workflow step BU-03) to document integration gaps between components",
+    "when_to_use": "After defining integration requirements, run analyze_integration_gaps.py to identify what prevents components from integrating",
+    "how_to_fill": [
+      "1. Run analyze_integration_gaps.py with component_inventory.json and integration_requirements.json",
+      "2. Tool will identify gaps automatically (missing interfaces, protocol mismatches, etc.)",
+      "3. For each gap, provide detailed description, current state, required state",
+      "4. Recommend solution approaches (create adapter, modify component, etc.)",
+      "5. Estimate effort and priority for each gap",
+      "6. Create resolution roadmap showing phased approach to fixing gaps"
+    ],
+    "gap_type_definitions": {
+      "missing_interface": "Component A needs to call Component B, but B doesn't expose required interface",
+      "protocol_mismatch": "Components use incompatible protocols (e.g., REST vs gRPC, sync vs async)",
+      "data_model_incompatibility": "Components expect different data formats or schemas",
+      "missing_mediator": "Components cannot communicate directly, need adapter/translator",
+      "circular_dependency": "Components depend on each other, creating cycle",
+      "conflicting_requirements": "Components have incompatible requirements (e.g., A needs sync, B is async-only)",
+      "version_incompatibility": "Components require incompatible versions of shared dependency",
+      "performance_gap": "Integration would violate performance requirements",
+      "security_gap": "Integration would create security vulnerability"
+    },
+    "required_fields": [
+      "gap_id",
+      "gap_type",
+      "severity",
+      "from_component",
+      "to_component",
+      "gap_description",
+      "recommendation"
+    ],
+    "output_location": "specs/machine/integration_gaps.json"
+  }
+}

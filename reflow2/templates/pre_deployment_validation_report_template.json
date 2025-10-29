@@ -1,0 +1,148 @@
+{
+  "template_version": "1.0.0",
+  "template_id": "pre_deployment_validation_report",
+  "description": "Pre-deployment integration validation report (D-06.5)",
+  "created_date": "{timestamp}",
+  "system_name": "{system_name}",
+  "workflow_step": "D-06.5",
+  "workflow_step_name": "Pre-Deployment Integration Validation",
+
+  "validation_summary": {
+    "overall_status": "pass|fail",
+    "total_validations": 7,
+    "validations_passed": 0,
+    "validations_failed": 0,
+    "blocking_issues": 0,
+    "warnings": 0
+  },
+
+  "validations": {
+    "dependency_validation": {
+      "validation_id": "D-06.5-A01",
+      "name": "Dependency Validation",
+      "status": "pass|fail|skipped",
+      "tool": "validate_dependencies.py",
+      "execution_time_seconds": 0,
+      "services_validated": [],
+      "services_passed": 0,
+      "services_failed": 0,
+      "issues_found": [],
+      "details": "All dependencies in requirements.txt match code imports",
+      "output_file": "path/to/dependency_validation_report.json"
+    },
+
+    "module_structure_validation": {
+      "validation_id": "D-06.5-A02",
+      "name": "Module Structure Validation",
+      "status": "pass|fail|skipped",
+      "tool": "validate_module_structure.py",
+      "execution_time_seconds": 0,
+      "services_validated": [],
+      "issues_found": [],
+      "details": "All packages have __init__.py, no circular imports, no shadowed modules",
+      "output_file": "path/to/module_structure_validation_report.json"
+    },
+
+    "configuration_consistency_validation": {
+      "validation_id": "D-06.5-A03",
+      "name": "Configuration Consistency Validation",
+      "status": "pass|fail|skipped",
+      "tool": "validate_configuration_consistency.py",
+      "execution_time_seconds": 0,
+      "services_validated": [],
+      "issues_found": [],
+      "details": "Code defaults match docker-compose.yml configuration",
+      "output_file": "path/to/configuration_consistency_report.json"
+    },
+
+    "database_permission_validation": {
+      "validation_id": "D-06.5-A04",
+      "name": "Database Permission Validation",
+      "status": "pass|fail|skipped",
+      "method": "Manual test with service user credentials",
+      "execution_time_seconds": 0,
+      "databases_tested": [],
+      "tests_performed": [
+        "Service user can run migrations (CREATE TABLE, ALTER TABLE)",
+        "Service user can SELECT, INSERT, UPDATE, DELETE",
+        "init_db() succeeds with fresh database",
+        "Migrations are idempotent (can run twice)"
+      ],
+      "issues_found": [],
+      "details": "Service user has all required database permissions"
+    },
+
+    "docker_build_validation": {
+      "validation_id": "D-06.5-A05",
+      "name": "Docker Build Validation",
+      "status": "pass|fail|skipped",
+      "execution_time_seconds": 0,
+      "services_validated": [],
+      "images_built": [],
+      "issues_found": [],
+      "details": "All Docker images build successfully without cache",
+      "security_scan_results": {
+        "tool": "trivy|snyk|none",
+        "critical_vulnerabilities": 0,
+        "high_vulnerabilities": 0,
+        "medium_vulnerabilities": 0,
+        "low_vulnerabilities": 0
+      }
+    },
+
+    "system_smoke_test": {
+      "validation_id": "D-06.5-A06",
+      "name": "System-Wide Smoke Test",
+      "status": "pass|fail|skipped",
+      "execution_time_seconds": 0,
+      "services_tested": [],
+      "tests_performed": {
+        "all_services_start": "pass|fail",
+        "all_health_endpoints_respond": "pass|fail",
+        "inter_service_communication": "pass|fail",
+        "end_to_end_scenario": "pass|fail",
+        "no_error_logs": "pass|fail"
+      },
+      "issues_found": [],
+      "details": "All services start, health checks pass, end-to-end scenario succeeds"
+    },
+
+    "contract_validation": {
+      "validation_id": "D-06.5-A07",
+      "name": "Contract Validation",
+      "status": "pass|fail|skipped",
+      "tool": "verify_component_contract.py --strict",
+      "execution_time_seconds": 0,
+      "services_validated": [],
+      "contracts_verified": 0,
+      "issues_found": [],
+      "details": "All services implement their Interface Contract Documents (ICDs) correctly"
+    }
+  },
+
+  "gate_status": {
+    "gate_id": "G-D-06.5",
+    "gate_name": "Pre-Deployment Integration Validation Gate",
+    "status": "pass|fail",
+    "blocking": true,
+    "enforcement": "BLOCKING - Must pass all checks before proceeding to D-Post",
+    "decision": "PROCEED|BLOCKED",
+    "blockers": []
+  },
+
+  "recommendations": [
+    "If PASS: Proceed to D-Post (Feedback Loop Initialization)",
+    "If FAIL: Fix blocking issues before proceeding",
+    "Review warnings even if validation passes"
+  ],
+
+  "next_steps": "Proceed to D-Post if all validations pass; fix issues if any fail",
+
+  "metadata": {
+    "validation_timestamp": "{timestamp}",
+    "total_execution_time_seconds": 0,
+    "system_root": "{system_root_path}",
+    "reflow_version": "3.6.0",
+    "feature": "early-testing-integration"
+  }
+}

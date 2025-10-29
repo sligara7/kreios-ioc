@@ -1,0 +1,879 @@
+{
+  "metadata": {
+    "description": "Registry of architectural frameworks supported by Reflow",
+    "version": "1.0.0",
+    "purpose": "Allow system-agnostic modeling by selecting appropriate framework during setup"
+  },
+  "frameworks": {
+    "uaf": {
+      "framework_id": "uaf",
+      "name": "UAF 1.2 - Unified Architecture Framework",
+      "standard": "ISO/IEC 19540-1:2022 and ISO/IEC 19540-2:2022",
+      "domain": "Engineered systems (software, hardware, defense, enterprise architecture)",
+      "definitions_file": "architectural_definitions_uaf.json",
+      "template_file": "service_architecture_template.json",
+      "terminology": {
+        "node": "service",
+        "edge": "interface",
+        "architecture_file": "service_architecture.json",
+        "system_graph": "system_of_systems_graph.json",
+        "node_collection": "services",
+        "edge_collection": "interfaces"
+      },
+      "node_schema": {
+        "primary_type": "ServiceFunction",
+        "id_field": "service_id",
+        "name_field": "service_name",
+        "type_field": "classification",
+        "functions_field": "functions",
+        "interfaces_field": "interfaces",
+        "dependencies_field": "dependencies"
+      },
+      "edge_schema": {
+        "primary_type": "ServiceInterface",
+        "id_field": "name",
+        "type_field": "interface_type",
+        "direction_field": "direction",
+        "protocol_field": "protocol",
+        "connects_to_field": "connected_services"
+      },
+      "best_for": [
+        "Software microservices",
+        "Enterprise IT systems",
+        "Defense systems (DoDAF)",
+        "System-of-systems integration",
+        "Hardware/software co-design"
+      ],
+      "visualization_types": [
+        "Service dependency graph",
+        "Interface contract diagrams",
+        "Deployment architecture",
+        "Sequence diagrams"
+      ],
+      "deployment_characteristics": {
+        "port_management_applicable": true,
+        "rationale": "IT systems with network services require port assignments to prevent conflicts",
+        "container_orchestration_applicable": true,
+        "deployment_types": ["docker", "kubernetes", "bare_metal", "cloud_vms"]
+      },
+      "recommended_analyses": {
+        "high_priority": {
+          "dag": {
+            "reason": "Verify no circular dependencies in service architecture",
+            "use_cases": ["Deployment ordering", "Build sequence", "Dependency management"],
+            "required_fields": []
+          },
+          "scc": {
+            "reason": "Detect tightly coupled service clusters that violate clean architecture",
+            "use_cases": ["Identify microservice boundaries", "Find coupling issues"],
+            "required_fields": []
+          },
+          "centrality": {
+            "reason": "Identify critical services and potential single points of failure",
+            "use_cases": ["Scalability planning", "Resilience analysis", "Load balancing"],
+            "required_fields": []
+          }
+        },
+        "medium_priority": {
+          "connectivity": {
+            "reason": "Ensure system remains functional if services fail",
+            "use_cases": ["Fault tolerance", "Redundancy planning"],
+            "required_fields": []
+          },
+          "community": {
+            "reason": "Detect natural service groupings for deployment",
+            "use_cases": ["Microservice decomposition", "Service mesh planning"],
+            "required_fields": []
+          }
+        },
+        "optional": {
+          "flow": {
+            "reason": "Analyze request throughput and capacity",
+            "use_cases": ["Performance bottleneck detection", "Traffic routing"],
+            "required_fields": ["interfaces.weight (request volume or data rate)"]
+          }
+        }
+      }
+    },
+    "decision_flow": {
+      "framework_id": "decision_flow",
+      "name": "Decision Flow Framework",
+      "standard": "State machine + decision graph (Reflow-specific)",
+      "domain": "Workflow systems, decision processes, state machines, process flows",
+      "definitions_file": "architectural_definitions_decision_flow.json",
+      "template_file": "workflow_step_template.json",
+      "terminology": {
+        "node": "workflow_step",
+        "edge": "transition",
+        "architecture_file": "workflow_step_architecture.json",
+        "system_graph": "workflow_decision_graph.json",
+        "node_collection": "workflow_steps",
+        "edge_collection": "transitions"
+      },
+      "node_schema": {
+        "primary_type": "WorkflowStep",
+        "id_field": "step_id",
+        "name_field": "step_name",
+        "type_field": "step_type",
+        "functions_field": "actions",
+        "interfaces_field": "transitions",
+        "dependencies_field": "prerequisites",
+        "node_type_field": "node_type"
+      },
+      "edge_schema": {
+        "primary_type": "StateTransition",
+        "id_field": "transition_id",
+        "type_field": "transition_type",
+        "direction_field": "flow_direction",
+        "condition_field": "condition",
+        "probability_field": "probability",
+        "weight_field": "weight",
+        "connects_to_field": "next_steps"
+      },
+      "node_types": {
+        "process_step": {
+          "description": "Executable workflow step that performs actions",
+          "examples": ["SE-02 (Architecture Creation)", "D-01 (Dev Setup)", "TO-02 (CI/CD)"],
+          "characteristics": ["Has inputs", "Produces outputs", "Deterministic execution"]
+        },
+        "decision_node": {
+          "description": "Branching point where workflow path is determined by conditions",
+          "examples": ["SE-03 (Validation Gate)", "S-04-decision (Git automation?)", "Architecture complete?"],
+          "characteristics": ["Multiple outgoing edges", "Conditional routing", "Quality gates"]
+        },
+        "start_state": {
+          "description": "Workflow entry point",
+          "examples": ["S-01 (Workflow Start)"],
+          "characteristics": ["No incoming edges", "One outgoing edge"]
+        },
+        "end_state": {
+          "description": "Workflow completion or transition to next workflow",
+          "examples": ["Workflow Complete", "Transition to 01-systems_engineering"],
+          "characteristics": ["No outgoing edges", "May have completion actions"]
+        }
+      },
+      "edge_types": {
+        "sequential": {
+          "description": "Unconditional next-step transition",
+          "probability": 1.0,
+          "examples": ["S-01 → S-02", "SE-02 → SE-03"]
+        },
+        "conditional": {
+          "description": "If/else transition based on condition",
+          "probability": "0.0-1.0 (varies)",
+          "examples": ["SE-03 → SE-06 (if PASS)", "SE-03 → SE-02 (if FAIL)"],
+          "required_attributes": ["condition"]
+        },
+        "rework": {
+          "description": "Return to previous step after validation failure",
+          "probability": "< 1.0 (failure rate)",
+          "examples": ["SE-03 → SE-02 (validation failed)", "D-05 → D-03 (tests failed)"],
+          "characteristics": ["Creates cycle", "Indicates quality issue"]
+        },
+        "parallel": {
+          "description": "Concurrent execution paths (optional in most workflows)",
+          "probability": 1.0,
+          "examples": ["Rarely used in linear workflows"]
+        },
+        "skip": {
+          "description": "Optional step bypass",
+          "probability": "varies by user choice",
+          "examples": ["S-04-decision → SE-01 (skip git automation)"]
+        }
+      },
+      "edge_attributes": {
+        "condition": {
+          "type": "string",
+          "description": "Boolean expression determining if transition occurs",
+          "examples": ["validation_passed", "user_choice == 'git_automation'", "coverage >= 0.8"]
+        },
+        "probability": {
+          "type": "float",
+          "range": "0.0-1.0",
+          "description": "Likelihood of taking this transition (for flow analysis)",
+          "examples": {
+            "sequential": 1.0,
+            "common_path": 0.7,
+            "rare_path": 0.3,
+            "validation_failure": 0.4
+          }
+        },
+        "weight": {
+          "type": "integer",
+          "description": "Typical number of executions (for flow analysis capacity)",
+          "examples": {
+            "10_executions": 10,
+            "7_skip_git": 7,
+            "3_use_git": 3
+          },
+          "calculation": "probability * total_workflows"
+        },
+        "transition_type": {
+          "type": "enum",
+          "values": ["sequential", "conditional", "rework", "parallel", "skip"]
+        }
+      },
+      "best_for": [
+        "Workflow analysis and optimization",
+        "Process flow modeling",
+        "State machine systems",
+        "Decision trees and graphs",
+        "Guided execution systems (LLM agent workflows)",
+        "Quality gate validation flows"
+      ],
+      "visualization_types": [
+        "State transition diagrams",
+        "Decision flow diagrams",
+        "Critical path analysis",
+        "Rework loop visualization",
+        "Probability flow diagrams"
+      ],
+      "deployment_characteristics": {
+        "port_management_applicable": false,
+        "rationale": "Decision flows are abstract control structures, not network services",
+        "container_orchestration_applicable": false,
+        "deployment_types": ["workflow_engine", "process_automation", "guidance_system"]
+      },
+      "recommended_analyses": {
+        "high_priority": {
+          "flow": {
+            "reason": "CRITICAL - Find most common workflow paths and bottlenecks using edge probabilities",
+            "use_cases": [
+              "Identify most-traveled paths (architecture-only vs. full development)",
+              "Find bottleneck steps where many paths converge",
+              "Measure workflow efficiency (actual flow vs. theoretical max)",
+              "Optimize for common paths"
+            ],
+            "required_fields": ["transitions.probability OR transitions.weight"],
+            "edge_weight_semantic": "probability (0.0-1.0) or execution count",
+            "interpretation": "High flow = critical path, Low flow = rare/optional path"
+          },
+          "cycles": {
+            "reason": "Identify rework loops and validation failures",
+            "use_cases": [
+              "Find validation failure loops (SE-03 → SE-02 → SE-03)",
+              "Measure rework probability",
+              "Distinguish expected cycles from infinite loops",
+              "Optimize validation gates to reduce rework"
+            ],
+            "required_fields": [],
+            "expected_behavior": "Some cycles are normal (quality gates), infinite loops are bugs"
+          },
+          "paths": {
+            "reason": "Analyze workflow execution paths and alternatives",
+            "use_cases": [
+              "Find critical path (shortest viable workflow)",
+              "Identify full development path (longest path)",
+              "Count alternative paths",
+              "Measure workflow flexibility"
+            ],
+            "required_fields": [],
+            "metrics": ["Shortest path = architecture-only", "Longest path = full development"]
+          }
+        },
+        "medium_priority": {
+          "centrality": {
+            "reason": "Identify critical decision points and high-impact steps",
+            "use_cases": [
+              "Find quality gates with highest betweenness (critical decisions)",
+              "Identify bottleneck steps",
+              "Prioritize workflow improvements"
+            ],
+            "required_fields": [],
+            "interpretation": "High betweenness centrality = critical decision node"
+          },
+          "community": {
+            "reason": "Detect workflow phases and tightly coupled step groups",
+            "use_cases": [
+              "Identify natural workflow phases (Setup, Architecture, Development, Operations)",
+              "Find tightly coupled validation loops",
+              "Group steps for modular execution"
+            ],
+            "required_fields": []
+          },
+          "dag": {
+            "reason": "Verify no infinite loops (except intentional rework cycles)",
+            "use_cases": [
+              "Detect unintended circular dependencies",
+              "Verify workflow termination",
+              "Find topological ordering of steps"
+            ],
+            "required_fields": [],
+            "note": "Rework loops are expected - DAG analysis applies to non-rework edges only"
+          }
+        },
+        "optional": {
+          "scc": {
+            "reason": "Find strongly coupled step clusters (rework loops)",
+            "use_cases": [
+              "Identify validation loops (SE-02, SE-03 as SCC)",
+              "Measure loop complexity"
+            ],
+            "required_fields": []
+          },
+          "connectivity": {
+            "reason": "Ensure workflow has no unreachable steps",
+            "use_cases": [
+              "Detect orphaned steps",
+              "Verify all steps reachable from start"
+            ],
+            "required_fields": []
+          }
+        }
+      },
+      "key_insights_vs_uaf": {
+        "what_uaf_missed": [
+          "Decision logic at quality gates (conditional routing)",
+          "Rework loops and validation failures (cycles with semantic meaning)",
+          "Workflow path probabilities (common vs. rare paths)",
+          "State machine semantics (steps are states, not services)",
+          "Flow analysis (requires edge weights that UAF doesn't capture)"
+        ],
+        "what_decision_flow_reveals": [
+          "Most common workflow path (70% skip git automation)",
+          "Validation failure rate (40% of SE-03 gates fail → rework)",
+          "Bottleneck steps (SE-06 has highest convergence)",
+          "Critical decision nodes (SE-03 has highest betweenness centrality)",
+          "Workflow efficiency (flow analysis shows 60% take architecture-only path)"
+        ]
+      }
+    },
+    "systems_biology": {
+      "framework_id": "systems_biology",
+      "name": "Systems Biology Framework",
+      "standard": "Community practice (no formal ISO standard)",
+      "domain": "Biological systems (molecular to ecosystem scale)",
+      "definitions_file": "architectural_definitions_biology.json",
+      "template_file": "biological_component_template.json",
+      "terminology": {
+        "node": "component",
+        "edge": "interaction",
+        "architecture_file": "component_architecture.json",
+        "system_graph": "biological_network.json",
+        "node_collection": "components",
+        "edge_collection": "interactions"
+      },
+      "node_schema": {
+        "primary_type": "BiologicalComponent",
+        "id_field": "component_id",
+        "name_field": "component_name",
+        "type_field": "component_type",
+        "functions_field": "biological_functions",
+        "interfaces_field": "interactions",
+        "dependencies_field": "regulatory_dependencies"
+      },
+      "edge_schema": {
+        "primary_type": "BiologicalInteraction",
+        "id_field": "interaction_id",
+        "type_field": "interaction_type",
+        "direction_field": "directionality",
+        "mechanism_field": "molecular_mechanism",
+        "connects_to_field": "target_components"
+      },
+      "best_for": [
+        "Gene regulatory networks",
+        "Metabolic pathways",
+        "Protein-protein interaction networks",
+        "Cell signaling cascades",
+        "Ecological food webs",
+        "Population dynamics"
+      ],
+      "visualization_types": [
+        "Regulatory network diagrams",
+        "Pathway maps",
+        "Food web diagrams",
+        "Phylogenetic trees"
+      ],
+      "modeling_approaches": [
+        "Boolean networks",
+        "Ordinary differential equations (ODEs)",
+        "Agent-based models",
+        "Bayesian networks",
+        "Stoichiometric models"
+      ],
+      "deployment_characteristics": {
+        "port_management_applicable": false,
+        "rationale": "Biological systems are not IT systems and don't have network ports",
+        "container_orchestration_applicable": false,
+        "deployment_types": ["simulation", "modeling_software", "computational_analysis"]
+      },
+      "recommended_analyses": {
+        "high_priority": {
+          "cycles": {
+            "reason": "Feedback loops are fundamental to biological regulation",
+            "use_cases": ["Identify regulatory circuits", "Find homeostatic mechanisms", "Detect oscillators"],
+            "required_fields": []
+          },
+          "community": {
+            "reason": "Biological systems organize into functional modules",
+            "use_cases": ["Gene modules", "Protein complexes", "Metabolic subsystems"],
+            "required_fields": []
+          },
+          "centrality": {
+            "reason": "Identify hub genes, master regulators, and critical proteins",
+            "use_cases": ["Drug targets", "Disease genes", "Essential proteins"],
+            "required_fields": []
+          }
+        },
+        "medium_priority": {
+          "dag": {
+            "reason": "Analyze signal transduction cascades and metabolic pathways",
+            "use_cases": ["Pathway analysis", "Signaling flow", "Metabolic flux"],
+            "required_fields": []
+          },
+          "connectivity": {
+            "reason": "Assess network robustness and resilience",
+            "use_cases": ["System resilience", "Compensatory pathways", "Redundancy"],
+            "required_fields": []
+          }
+        },
+        "optional": {
+          "flow": {
+            "reason": "Model metabolic flux or signal strength propagation",
+            "use_cases": ["Flux balance analysis", "Signal amplification", "Energy flow"],
+            "required_fields": ["interactions.weight (reaction rate, binding affinity, or signal strength)"]
+          },
+          "scc": {
+            "reason": "Find strongly coupled regulatory modules",
+            "use_cases": ["Bistable switches", "Oscillatory networks"],
+            "required_fields": []
+          }
+        }
+      }
+    },
+    "social_network": {
+      "framework_id": "social_network",
+      "name": "Social Network Analysis (SNA)",
+      "standard": "Community practice (graph theory foundation)",
+      "domain": "Social systems (organizations, communities, influence networks)",
+      "definitions_file": "architectural_definitions_social.json",
+      "template_file": "agent_profile_template.json",
+      "terminology": {
+        "node": "agent",
+        "edge": "relationship",
+        "architecture_file": "agent_profile.json",
+        "system_graph": "social_network.json",
+        "node_collection": "agents",
+        "edge_collection": "relationships"
+      },
+      "node_schema": {
+        "primary_type": "SocialAgent",
+        "id_field": "agent_id",
+        "name_field": "agent_name",
+        "type_field": "agent_type",
+        "functions_field": "capabilities",
+        "interfaces_field": "relationships",
+        "dependencies_field": "dependencies"
+      },
+      "edge_schema": {
+        "primary_type": "SocialRelationship",
+        "id_field": "relationship_id",
+        "type_field": "relationship_type",
+        "direction_field": "direction",
+        "strength_field": "strength",
+        "connects_to_field": "connected_agents"
+      },
+      "best_for": [
+        "Organizational networks",
+        "Social influence analysis",
+        "Community detection",
+        "Information diffusion",
+        "Collaboration networks",
+        "Market ecosystems"
+      ],
+      "visualization_types": [
+        "Sociograms",
+        "Influence diagrams",
+        "Community structure graphs",
+        "Temporal network evolution"
+      ],
+      "analysis_metrics": [
+        "Degree centrality",
+        "Betweenness centrality",
+        "Closeness centrality",
+        "PageRank",
+        "Clustering coefficient",
+        "Community modularity"
+      ],
+      "deployment_characteristics": {
+        "port_management_applicable": false,
+        "rationale": "Social networks are abstract models of relationships, not IT systems requiring network ports",
+        "container_orchestration_applicable": false,
+        "deployment_types": ["analysis_software", "visualization_tools", "simulation"]
+      },
+      "recommended_analyses": {
+        "high_priority": {
+          "centrality": {
+            "reason": "Core of SNA - identify influential, connected, and bridge agents",
+            "use_cases": ["Influence ranking", "Key opinion leaders", "Information brokers", "Gatekeepers"],
+            "required_fields": []
+          },
+          "community": {
+            "reason": "Detect social groups, cliques, and echo chambers",
+            "use_cases": ["Team formation", "Department boundaries", "Social cohesion", "Polarization"],
+            "required_fields": []
+          },
+          "clustering": {
+            "reason": "Measure social cohesion and triadic closure",
+            "use_cases": ["Group density", "Friend-of-friend patterns", "Social capital"],
+            "required_fields": []
+          }
+        },
+        "medium_priority": {
+          "connectivity": {
+            "reason": "Identify bridges and structural holes",
+            "use_cases": ["Boundary spanners", "Information bottlenecks", "Network fragmentation"],
+            "required_fields": []
+          },
+          "paths": {
+            "reason": "Measure social distance and reachability",
+            "use_cases": ["Six degrees of separation", "Information reach", "Social proximity"],
+            "required_fields": []
+          }
+        },
+        "optional": {
+          "flow": {
+            "reason": "Model information or influence diffusion",
+            "use_cases": ["Viral spread", "Opinion cascades", "Resource flow"],
+            "required_fields": ["relationships.weight (interaction frequency or influence strength)"]
+          },
+          "cycles": {
+            "reason": "Detect reciprocal relationships and feedback loops",
+            "use_cases": ["Mutual friendships", "Influence cycles"],
+            "required_fields": []
+          }
+        }
+      }
+    },
+    "ecological": {
+      "framework_id": "ecological",
+      "name": "Ecological Systems Framework",
+      "standard": "Community practice (ecological modeling)",
+      "domain": "Ecosystems (food webs, nutrient cycles, biodiversity)",
+      "definitions_file": "architectural_definitions_ecology.json",
+      "template_file": "ecological_entity_template.json",
+      "terminology": {
+        "node": "species_or_population",
+        "edge": "ecological_interaction",
+        "architecture_file": "ecological_entity.json",
+        "system_graph": "ecosystem_network.json",
+        "node_collection": "species",
+        "edge_collection": "interactions"
+      },
+      "node_schema": {
+        "primary_type": "EcologicalEntity",
+        "id_field": "entity_id",
+        "name_field": "entity_name",
+        "type_field": "trophic_level",
+        "functions_field": "ecological_functions",
+        "interfaces_field": "interactions",
+        "dependencies_field": "resource_dependencies"
+      },
+      "edge_schema": {
+        "primary_type": "EcologicalInteraction",
+        "id_field": "interaction_id",
+        "type_field": "interaction_type",
+        "direction_field": "energy_flow_direction",
+        "strength_field": "interaction_strength",
+        "connects_to_field": "target_entities"
+      },
+      "best_for": [
+        "Food web modeling",
+        "Nutrient cycling",
+        "Species competition/cooperation",
+        "Ecosystem resilience analysis",
+        "Conservation planning",
+        "Invasive species impact"
+      ],
+      "visualization_types": [
+        "Food web diagrams",
+        "Trophic pyramid",
+        "Nutrient flow diagrams",
+        "Species interaction networks"
+      ],
+      "interaction_types": [
+        "Predation",
+        "Competition",
+        "Mutualism",
+        "Parasitism",
+        "Commensalism"
+      ],
+      "deployment_characteristics": {
+        "port_management_applicable": false,
+        "rationale": "Ecological systems are natural systems, not IT infrastructure requiring network ports",
+        "container_orchestration_applicable": false,
+        "deployment_types": ["ecological_modeling_software", "simulation", "field_data_analysis"]
+      },
+      "recommended_analyses": {
+        "high_priority": {
+          "flow": {
+            "reason": "Energy and biomass transfer is fundamental to ecosystem function",
+            "use_cases": ["Trophic efficiency", "Energy budgets", "Biomass pyramids"],
+            "required_fields": ["interactions.weight (energy transfer rate or biomass flow)"]
+          },
+          "centrality": {
+            "reason": "Identify keystone species and critical ecosystem nodes",
+            "use_cases": ["Keystone species", "Trophic importance", "Conservation priority"],
+            "required_fields": []
+          },
+          "connectivity": {
+            "reason": "Assess ecosystem resilience and stability",
+            "use_cases": ["Food web robustness", "Extinction cascades", "Redundancy"],
+            "required_fields": []
+          }
+        },
+        "medium_priority": {
+          "community": {
+            "reason": "Identify functional groups and trophic modules",
+            "use_cases": ["Trophic levels", "Guilds", "Functional groups"],
+            "required_fields": []
+          },
+          "cycles": {
+            "reason": "Detect nutrient cycles and material loops",
+            "use_cases": ["Nutrient cycling", "Decomposition loops", "Recycling pathways"],
+            "required_fields": []
+          },
+          "paths": {
+            "reason": "Trace energy pathways and trophic chains",
+            "use_cases": ["Food chain length", "Trophic cascades", "Indirect effects"],
+            "required_fields": []
+          }
+        },
+        "optional": {
+          "dag": {
+            "reason": "Analyze hierarchical trophic structure (if no omnivory)",
+            "use_cases": ["Trophic hierarchy", "Food chain ordering"],
+            "required_fields": []
+          },
+          "clustering": {
+            "reason": "Measure compartmentalization and modularity",
+            "use_cases": ["Habitat partitioning", "Trophic modules"],
+            "required_fields": []
+          }
+        }
+      }
+    },
+    "complex_adaptive": {
+      "framework_id": "complex_adaptive",
+      "name": "Complex Adaptive Systems (CAS)",
+      "standard": "Multidisciplinary framework (Santa Fe Institute tradition)",
+      "domain": "Emergent, self-organizing systems (markets, cities, hybrid systems)",
+      "definitions_file": "architectural_definitions_cas.json",
+      "template_file": "adaptive_agent_template.json",
+      "terminology": {
+        "node": "adaptive_agent",
+        "edge": "interaction",
+        "architecture_file": "adaptive_agent.json",
+        "system_graph": "cas_network.json",
+        "node_collection": "agents",
+        "edge_collection": "interactions"
+      },
+      "node_schema": {
+        "primary_type": "AdaptiveAgent",
+        "id_field": "agent_id",
+        "name_field": "agent_name",
+        "type_field": "agent_type",
+        "functions_field": "behaviors",
+        "interfaces_field": "interactions",
+        "dependencies_field": "resource_dependencies",
+        "adaptation_field": "learning_rules"
+      },
+      "edge_schema": {
+        "primary_type": "AgentInteraction",
+        "id_field": "interaction_id",
+        "type_field": "interaction_type",
+        "direction_field": "direction",
+        "feedback_field": "feedback_type",
+        "connects_to_field": "target_agents"
+      },
+      "best_for": [
+        "Economic markets",
+        "Urban systems",
+        "Immune system modeling",
+        "Traffic flow",
+        "Evolutionary systems",
+        "Multi-agent simulations"
+      ],
+      "visualization_types": [
+        "Agent interaction networks",
+        "Phase space diagrams",
+        "Emergence patterns",
+        "Fitness landscapes"
+      ],
+      "key_concepts": [
+        "Emergence",
+        "Self-organization",
+        "Feedback loops",
+        "Adaptation",
+        "Non-linear dynamics",
+        "Multiscale interactions"
+      ],
+      "deployment_characteristics": {
+        "port_management_applicable": false,
+        "rationale": "Complex adaptive systems are abstract models of emergent behavior, not networked IT systems",
+        "container_orchestration_applicable": false,
+        "deployment_types": ["agent_based_modeling", "simulation", "computational_models"]
+      },
+      "recommended_analyses": {
+        "high_priority": {
+          "cycles": {
+            "reason": "Feedback loops drive adaptation and emergent behavior",
+            "use_cases": ["Reinforcing loops", "Balancing loops", "Self-regulation", "Tipping points"],
+            "required_fields": []
+          },
+          "community": {
+            "reason": "Detect emergent clustering and self-organized groups",
+            "use_cases": ["Spontaneous organization", "Phase transitions", "Collective behavior"],
+            "required_fields": []
+          },
+          "scc": {
+            "reason": "Identify co-evolving agent clusters",
+            "use_cases": ["Coupled dynamics", "Co-evolution", "Mutual adaptation"],
+            "required_fields": []
+          }
+        },
+        "medium_priority": {
+          "centrality": {
+            "reason": "Find critical nodes that disproportionately affect system behavior",
+            "use_cases": ["Leverage points", "Systemic interventions", "Criticality"],
+            "required_fields": []
+          },
+          "connectivity": {
+            "reason": "Assess resilience to perturbations and shocks",
+            "use_cases": ["System stability", "Robustness", "Regime shifts"],
+            "required_fields": []
+          },
+          "paths": {
+            "reason": "Trace causal chains and cascade effects",
+            "use_cases": ["Propagation dynamics", "Cascade failures", "Contagion"],
+            "required_fields": []
+          }
+        },
+        "optional": {
+          "flow": {
+            "reason": "Model resource or information flow through adaptive network",
+            "use_cases": ["Market dynamics", "Traffic flow", "Information cascades"],
+            "required_fields": ["interactions.weight (flow rate or interaction strength)"]
+          },
+          "clustering": {
+            "reason": "Measure local cohesion and modularity",
+            "use_cases": ["Local order", "Hierarchical structure"],
+            "required_fields": []
+          }
+        }
+      }
+    },
+    "custom": {
+      "framework_id": "custom",
+      "name": "Custom Framework (LLM-Generated)",
+      "standard": "User-defined or LLM-generated",
+      "domain": "Novel or hybrid systems not covered by existing frameworks",
+      "definitions_file": "architectural_definitions_custom.json",
+      "template_file": "custom_node_template.json",
+      "terminology": {
+        "node": "component",
+        "edge": "connection",
+        "architecture_file": "component_architecture.json",
+        "system_graph": "system_graph.json",
+        "node_collection": "components",
+        "edge_collection": "connections"
+      },
+      "node_schema": {
+        "primary_type": "CustomNode",
+        "id_field": "node_id",
+        "name_field": "node_name",
+        "type_field": "node_type",
+        "functions_field": "functions",
+        "interfaces_field": "connections",
+        "dependencies_field": "dependencies"
+      },
+      "edge_schema": {
+        "primary_type": "CustomEdge",
+        "id_field": "connection_id",
+        "type_field": "connection_type",
+        "direction_field": "direction",
+        "connects_to_field": "target_nodes"
+      },
+      "best_for": [
+        "Hybrid systems (e.g., cyber-physical-social)",
+        "Novel research domains",
+        "Experimental modeling",
+        "Domain-specific requirements"
+      ],
+      "setup_requirements": [
+        "LLM researches domain literature",
+        "LLM creates custom definitions file",
+        "LLM generates appropriate templates",
+        "User reviews and approves framework"
+      ],
+      "deployment_characteristics": {
+        "port_management_applicable": "conditional",
+        "rationale": "Depends on whether custom framework models IT systems. LLM should determine during framework creation.",
+        "container_orchestration_applicable": "conditional",
+        "deployment_types": ["varies_by_domain"],
+        "decision_guidance": "If custom framework is for networked IT systems (e.g., cyber-physical), set port_management_applicable=true. Otherwise false."
+      },
+      "recommended_analyses": {
+        "high_priority": {
+          "centrality": {
+            "reason": "General importance ranking applicable to most systems",
+            "use_cases": ["Identify critical nodes"],
+            "required_fields": []
+          },
+          "connectivity": {
+            "reason": "Basic structural analysis of system resilience",
+            "use_cases": ["System robustness"],
+            "required_fields": []
+          }
+        },
+        "medium_priority": {
+          "community": {
+            "reason": "Detect natural groupings in most network types",
+            "use_cases": ["Subsystem boundaries"],
+            "required_fields": []
+          },
+          "paths": {
+            "reason": "Basic reachability and distance analysis",
+            "use_cases": ["System navigation"],
+            "required_fields": []
+          }
+        },
+        "domain_specific": {
+          "llm_research_required": true,
+          "instructions": "LLM should research domain literature to determine which additional analyses are appropriate (cycles, dag, scc, flow, clustering). Consider domain characteristics: Is system hierarchical (use dag)? Does it have feedback (use cycles, scc)? Are flows/capacities important (use flow)?"
+        }
+      }
+    }
+  },
+  "framework_selection_guidance": {
+    "decision_tree": {
+      "engineered_system": "uaf",
+      "workflow_or_process_system": "decision_flow",
+      "biological_system": "systems_biology",
+      "social_system": "social_network",
+      "ecological_system": "ecological",
+      "emergent_system": "complex_adaptive",
+      "novel_system": "custom"
+    },
+    "questions_to_ask": [
+      "Is this a human-engineered system (software, hardware)?",
+      "Is this a workflow, decision process, or state machine system?",
+      "Does it involve biological components (genes, proteins, organisms)?",
+      "Is it primarily a social network (people, organizations, communities)?",
+      "Is it an ecological system (species, populations, ecosystems)?",
+      "Does it exhibit emergent, self-organizing behavior?",
+      "Is it a hybrid or novel system type?"
+    ]
+  },
+  "cross_framework_compatibility": {
+    "description": "All frameworks map to the same core abstraction (nodes + edges)",
+    "core_abstraction_file": "core_abstraction.json",
+    "graph_tool": "system_of_systems_graph.py",
+    "universal_analysis": [
+      "Graph topology (centrality, clustering, paths)",
+      "Knowledge gap detection",
+      "Validation (circular dependencies, orphaned nodes)",
+      "Visualization (networkx-based diagrams)"
+    ]
+  }
+}

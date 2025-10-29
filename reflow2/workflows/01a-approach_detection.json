@@ -1,0 +1,75 @@
+{
+  "workflow_metadata": {
+    "workflow_id": "01a-approach_detection",
+    "name": "Approach Detection Workflow",
+    "version": "3.7.0",
+    "description": "Automatically detect bottom-up (existing components) vs top-down (greenfield) approach",
+    "created_from": "01-systems_engineering.json v1.0.0 - SE-00 step extracted",
+    "last_updated": "2025-10-27",
+    "purpose": "Route to 01b-bottom_up_integration or 01c-top_down_design based on system directory analysis",
+    "context_reduction": "Reduced from 1,535 lines to ~150 lines (90% reduction)"
+  },
+  "prerequisites": {
+    "required_workflows": [
+      "00-setup"
+    ],
+    "required_files": [
+      "context/working_memory.json (with paths configured)",
+      "docs/SYSTEM_MISSION_STATEMENT.md",
+      "docs/USER_SCENARIOS.md",
+      "docs/SUCCESS_CRITERIA.md"
+    ],
+    "required_directories": [
+      "specs/machine/service_arch/",
+      "specs/machine/interfaces/",
+      "specs/machine/graphs/"
+    ]
+  },
+  "workflow_steps": [
+    {
+      "step_id": "SE-00",
+      "name": "Auto-Detect Integration Approach",
+      "description": "Automatically detect bottom-up (existing components) vs top-down (greenfield) by examining system directory",
+      "phase": "approach_detection",
+      "step_file": "workflow_steps/systems_engineering/SE-00-AutoDetectApproach.json",
+      "approach": "auto_detect",
+      "when_to_use": "When using 'auto' entry point - LLM examines system directory to determine approach",
+      "actions": [
+        {
+          "action_id": "SE-00-A01",
+          "description": "Examine system directory structure for existing components"
+        },
+        {
+          "action_id": "SE-00-A02",
+          "description": "Classify system as bottom-up or top-down based on evidence"
+        },
+        {
+          "action_id": "SE-00-A03",
+          "description": "Record detection result in approach_detection_result.json"
+        },
+        {
+          "action_id": "SE-00-A04",
+          "description": "Update working_memory.json with detected approach"
+        },
+        {
+          "action_id": "SE-00-A05",
+          "description": "Route to BU-01 (bottom-up) or SE-01 (top-down)"
+        }
+      ],
+      "outputs": [
+        "context/approach_detection_result.json",
+        "context/working_memory.json (updated with detected_approach)"
+      ],
+      "next_workflow_routing": "Dynamic: 01b-bottom_up_integration if bottom_up detected, 01c-top_down_design if top_down detected"
+    }
+  ],
+  "quality_gates": {
+    "gates": [],
+    "enforcement": "Approach detection is informational only, no blocking gates"
+  },
+  "next_workflow": {
+    "if_bottom_up": "01b-bottom_up_integration",
+    "if_top_down": "01c-top_down_design",
+    "routing_note": "LLM reads context/approach_detection_result.json to determine next workflow"
+  }
+}

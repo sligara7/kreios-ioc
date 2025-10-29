@@ -1,0 +1,43 @@
+{
+  "template_version": "1.0",
+  "template_description": "Template for step_progress_tracker.json - tracks progress through workflow steps",
+  "system_name": "REPLACE_WITH_SYSTEM_NAME",
+  "workflow_version": "2.0.0",
+  "started_timestamp": "YYYY-MM-DD HH:MM:SS",
+  "last_updated": "YYYY-MM-DD HH:MM:SS",
+  "current_step": "CURRENT_STEP_ID",
+  "current_substep": "CURRENT_SUBSTEP_ID",
+  "step_history": [
+    {
+      "step_id": "0",
+      "name": "Setup and Verification",
+      "status": "completed",
+      "started": "YYYY-MM-DD HH:MM:SS",
+      "completed": "YYYY-MM-DD HH:MM:SS",
+      "actions_completed": [],
+      "validation_passed": true,
+      "notes": "Step completion notes"
+    }
+  ],
+  "current_step_actions": {
+    "total_actions": 0,
+    "completed_actions": [],
+    "current_action": "ACTION_ID",
+    "validation_status": "pending"
+  },
+  "overall_progress": {
+    "total_steps": 10,
+    "completed_steps": 0,
+    "estimated_completion": "YYYY-MM-DD",
+    "blockers": [],
+    "quality_gates_passed": []
+  },
+  "artifacts_generated": {
+    "service_architectures": [],
+    "index_json": false,
+    "interface_registry": false,
+    "icds": [],
+    "visualizations": [],
+    "handoff_documents": []
+  }
+}

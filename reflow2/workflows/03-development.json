@@ -1,0 +1,1061 @@
+{
+  "workflow_metadata": {
+    "workflow_id": "03-development",
+    "name": "Development Workflow",
+    "version": "1.1.0",
+    "description": "Implement services according to architecture specifications OR analyze existing implementation (meta-analysis/brownfield)",
+    "created_from": "decision_flow.json v2.5.0 - extracted Dev-01 through Dev-Post",
+    "last_updated": "2025-10-25",
+    "purpose": "Transform architecture specifications into working code (greenfield) OR validate existing code quality (meta-analysis)",
+    "note": "This workflow may be subdivided in the future (foundation, integration, quality)",
+    "changelog_v1.1.0": {
+      "date": "2025-10-25",
+      "changes": [
+        "DEV-OBS-01: Changed G-D-05 from blocking to non-blocking two-tier gate (60% min, 80% target)",
+        "DEV-OBS-05: Added meta-analysis/brownfield branch to D-02 for code quality analysis",
+        "DEV-OBS-06: D-01 research already optional (confirmed documentation)"
+      ],
+      "rationale": "Support meta-analysis scenarios (Reflow analyzing itself) and large codebases where 80% coverage unrealistic in single session"
+    }
+  },
+  "prerequisites": {
+    "required_workflows": ["00-setup", "01-systems_engineering", "02-artifacts_visualization"],
+    "required_files": [
+      "specs/machine/service_arch/{service}/service_architecture_v*.json (all services)",
+      "specs/machine/interfaces/{interface}_icd.json (all interfaces)",
+      "specs/human/documentation/DEVELOPMENT_HANDOFF.md",
+      "docs/ARCHITECTURE_CONTEXT_SUMMARY.md"
+    ]
+  },
+  "entry_points": {
+    "from_artifacts": {
+      "id": "from_artifacts",
+      "description": "Standard entry after completing artifacts/visualization workflow",
+      "first_step": "D-01"
+    },
+    "implementation_from_final_specs": {
+      "id": "implementation_from_final_specs",
+      "description": "Architecture complete, ready to begin development",
+      "first_step": "D-01"
+    }
+  },
+  "context_management": {
+    "description": "Prevent context drift and token exhaustion during workflow execution",
+    "template_reference": "See templates/context_management_template.json for complete details",
+    "rag_enhanced_mode": {
+      "description": "RECOMMENDED - Use RAG for automatic context injection and degradation detection",
+      "setup": "Initialize in S-03-A05 (Setup workflow)",
+      "benefits": "Automatic context refresh, degradation detection, token-efficient retrieval",
+      "usage": "python3 {reflow_root}/tools/rag_agent_wrapper.py {system_root} wrap --query 'your query' --strategy on_step_start",
+      "fallback": "If RAG not set up, use manual operations counter and refresh sequence below"
+    },
+    "operations_counter": {
+      "threshold": 5,
+      "tracking_location": "context/working_memory.json (operations_since_refresh field)",
+      "rule": "Increment after each real operation (file creation, tool execution, code implementation)",
+      "refresh_trigger": "When >= 5, execute refresh sequence immediately"
+    },
+    "degradation_signals_watch_for": [
+      "Implementing code for undefined interface",
+      "Modifying API without updating contracts",
+      "Writing tests for non-existent endpoints",
+      "Schema drift between code and data models",
+      "Working in wrong directory (pwd != system_root)",
+      "Forgetting which service being implemented"
+    ],
+    "refresh_sequence_summary": [
+      "1. PAUSE - Stop all operations",
+      "2. VERIFY PWD - Confirm in correct directory",
+      "3. SAVE STATE - Update working_memory.json and dev_progress_tracker.json",
+      "4. RELOAD - Read workflow file, service_architecture files, interface_registry.json",
+      "5. READ - dev_current_focus.md and dev_progress_tracker.json",
+      "6. CONFIRM - State system name, service being developed, next action",
+      "7. RESET - Set operations_since_refresh = 0",
+      "8. RESUME - Continue with confirmed action"
+    ],
+    "pre_operation_checklist": [
+      "Verify pwd equals system_root",
+      "Read dev_current_focus.md",
+      "Read dev_progress_tracker.json",
+      "Verify implementing defined interface/component",
+      "Check operations_since_refresh <= 4",
+      "Verify changes align with service_architecture.json"
+    ]
+  },
+  "self_improvement": {
+    "description": "Continuous workflow improvement through observation and metrics",
+    "template_reference": "See templates/self_improvement_template.json for complete details",
+    "during_execution": {
+      "observe": ["Time efficiency", "Code quality", "Test coverage", "Build success rate", "Integration issues"],
+      "document": "Log observations to context/process_log.md with timestamps",
+      "track_metrics": "Update context/workflow_metrics.json after each step"
+    },
+    "after_completion": {
+      "retrospective_file": "context/workflow_retrospective_03-development_{date}.md",
+      "key_questions": [
+        "What worked well?",
+        "What patterns emerged across services?",
+        "What caused most build/test failures?",
+        "What took longer than expected?",
+        "How could code generation be improved?"
+      ],
+      "improvement_submission": "Add entries to WORKFLOW_IMPROVEMENTS_BACKLOG.md"
+    }
+  },
+  "workflow_steps": [
+    {
+      "step_id": "D-01",
+      "name": "Initialization & Environment Bootstrap",
+      "description": "Set up reproducible development environment for each service",
+      "phase": "initialization",
+      "step_file": "workflow_steps/development/D-01-InitBootstrap.json",
+      "maps_from": "Dev-01: Initialization & Environment Bootstrap",
+      "actions": [
+        {
+          "action_id": "D-01-A00",
+          "description": "Research current development best practices and industry standards (OPTIONAL)",
+          "when": "Before setting up development environment",
+          "user_prompt": {
+            "ask": "Would you like to research current best practices for development tooling before setting up the environment?",
+            "options": [
+              "Yes - Research current best practices (recommended for new tech stacks)",
+              "No - Skip research and use known/default tooling"
+            ],
+            "default": "No",
+            "note": "Research takes 5-10 minutes but helps ensure modern, industry-standard tooling choices"
+          },
+          "if_yes": {
+            "research_areas": [
+              {
+                "category": "Dependency Management",
+                "query_template": "{language} dependency management best practices 2025",
+                "examples": [
+                  "Python: poetry vs hatchling vs pdm vs pip-tools",
+                  "JavaScript: npm vs yarn vs pnpm",
+                  "Java: Maven vs Gradle",
+                  "Go: go modules best practices"
+                ],
+                "output_key": "dependency_management_recommendation"
+              },
+              {
+                "category": "Container Best Practices",
+                "query_template": "{language} Dockerfile best practices 2025",
+                "examples": [
+                  "Multi-stage builds",
+                  "Security scanning",
+                  "Layer optimization",
+                  "Base image selection"
+                ],
+                "output_key": "container_recommendations"
+              },
+              {
+                "category": "CI/CD Tooling",
+                "query_template": "{language} CI/CD pipeline best practices 2025",
+                "examples": [
+                  "GitHub Actions vs GitLab CI vs Jenkins",
+                  "Automated testing in CI",
+                  "Deployment strategies",
+                  "Environment promotion"
+                ],
+                "output_key": "cicd_recommendations"
+              },
+              {
+                "category": "Observability Frameworks",
+                "query_template": "{language} observability and monitoring best practices 2025",
+                "examples": [
+                  "Logging frameworks (structured logging)",
+                  "Metrics collection (Prometheus, StatsD)",
+                  "Distributed tracing (OpenTelemetry)",
+                  "Error tracking (Sentry, Rollbar)"
+                ],
+                "output_key": "observability_recommendations"
+              },
+              {
+                "category": "Security Standards",
+                "query_template": "{language} security best practices 2025",
+                "examples": [
+                  "Dependency vulnerability scanning",
+                  "Secrets management",
+                  "Code security linting",
+                  "OWASP compliance"
+                ],
+                "output_key": "security_recommendations"
+              },
+              {
+                "category": "Testing Frameworks",
+                "query_template": "{language} testing frameworks best practices 2025",
+                "examples": [
+                  "Unit testing (pytest, Jest, JUnit)",
+                  "Integration testing",
+                  "Mocking libraries",
+                  "Test coverage tools"
+                ],
+                "output_key": "testing_recommendations"
+              },
+              {
+                "category": "Linting and Formatting",
+                "query_template": "{language} code quality tools 2025",
+                "examples": [
+                  "Python: ruff vs black vs pylint",
+                  "JavaScript: ESLint, Prettier",
+                  "Type checking (mypy, TypeScript)",
+                  "Pre-commit hooks"
+                ],
+                "output_key": "code_quality_recommendations"
+              },
+              {
+                "category": "Build Systems",
+                "query_template": "{language} build system best practices 2025",
+                "examples": [
+                  "Build automation",
+                  "Artifact packaging",
+                  "Version management",
+                  "Release automation"
+                ],
+                "output_key": "build_recommendations"
+              }
+            ],
+            "research_method": "quick",
+            "research_depth": "Top 3-5 results per category, focus on 2024-2025 sources",
+            "time_budget": "5-10 minutes total",
+            "tools": ["WebSearch", "WebFetch"],
+            "output_file": "context/development_tooling_research_{date}.md",
+            "output_format": {
+              "structure": [
+                "# Development Tooling Research",
+                "Date: {timestamp}",
+                "Language/Framework: {primary_language}",
+                "",
+                "## Research Summary",
+                "For each research_area:",
+                "  ### {category}",
+                "  **Current Best Practice**: {recommendation}",
+                "  **Reasoning**: {why_this_is_recommended}",
+                "  **Sources**: [links]",
+                "",
+                "## Recommendations for This Project",
+                "Based on research, recommended tooling stack:",
+                "- Dependency Management: {tool} (rationale)",
+                "- Testing: {framework} (rationale)",
+                "- etc."
+              ],
+              "example_output": "See templates/development_research_output_template.md"
+            }
+          },
+          "if_no": {
+            "action": "Skip research, proceed with default tooling based on service_architecture.json deployment section"
+          },
+          "llm_agent_instructions": [
+            "ASK the user via AskUserQuestion tool if they want to research current best practices",
+            "If YES: Use WebSearch for each research area, focusing on 2024-2025 sources",
+            "Spend no more than 1-2 minutes per research area (quick search, top results only)",
+            "Synthesize findings into actionable recommendations",
+            "Save research to context/development_tooling_research_{date}.md",
+            "Use research findings to inform D-01-A04 (dependency management) decisions",
+            "If NO: Skip directly to D-01-A01"
+          ],
+          "success_criteria": [
+            "User question asked and answered",
+            "If yes: Research completed and saved to context/ directory",
+            "If no: Research skipped, noted in working_memory.json"
+          ]
+        },
+        {
+          "action_id": "D-01-A01",
+          "description": "Select development languages and frameworks",
+          "tool": "select_development_languages.py",
+          "command_pattern": "python3 {reflow_root}/tools/select_development_languages.py {system_root}",
+          "purpose": "Interactive selection of languages/frameworks for each service",
+          "outputs": ["specs/machine/development_language_configuration.json"]
+        },
+        {
+          "action_id": "D-01-A02",
+          "description": "Bootstrap development context for each service",
+          "tool": "bootstrap_development_context.py",
+          "command_pattern": "python3 {reflow_root}/tools/bootstrap_development_context.py {system_root} --service {service_name}",
+          "purpose": "Create development tracking files for each service",
+          "creates": [
+            "context/dev_working_memory.json",
+            "context/dev_progress_tracker.json",
+            "context/dev_current_focus.md"
+          ]
+        },
+        {
+          "action_id": "D-01-A03",
+          "description": "Create service directory structure",
+          "pattern": "For each service, create services/{service_name}/{src,tests,config,docs}",
+          "purpose": "Standard directory layout for each service"
+        },
+        {
+          "action_id": "D-01-A04",
+          "description": "Initialize dependency management",
+          "note": "If D-01-A00 research was performed, use those recommendations. Otherwise, use defaults below.",
+          "check_for_research": "context/development_tooling_research_*.md (if exists, read dependency_management_recommendation section)",
+          "modern_best_practices": {
+            "Python": {
+              "recommended": "poetry or hatchling (modern tools with lock files and dependency resolution)",
+              "traditional": "requirements.txt (simple but lacks lock file and dependency resolution)",
+              "rationale": "Poetry/hatchling provide reproducible builds, better dependency resolution, and standardized packaging"
+            },
+            "JavaScript": {
+              "recommended": "pnpm or yarn (fast, disk-efficient)",
+              "traditional": "npm (standard, widely compatible)",
+              "rationale": "pnpm saves disk space via content-addressable storage, yarn has better workspace support"
+            },
+            "Java": {
+              "recommended": "Gradle with version catalogs",
+              "traditional": "Maven",
+              "rationale": "Gradle is faster, more flexible, better for multi-module projects"
+            },
+            "Go": {
+              "recommended": "go modules (standard)",
+              "rationale": "Built-in, official Go dependency management"
+            }
+          },
+          "examples": [
+            "Python: pyproject.toml with poetry/hatchling (modern) or requirements.txt (traditional)",
+            "JavaScript/TypeScript: package.json with pnpm/yarn (recommended) or npm",
+            "Java: build.gradle with version catalogs or pom.xml",
+            "Go: go.mod and go.sum"
+          ],
+          "purpose": "Set up reproducible dependency management using modern tools when possible",
+          "outputs": [
+            "services/{service}/pyproject.toml (Python with poetry/hatchling)",
+            "services/{service}/requirements.txt (Python traditional)",
+            "services/{service}/package.json (JavaScript)",
+            "services/{service}/pom.xml or build.gradle (Java)",
+            "services/{service}/go.mod (Go)"
+          ],
+          "llm_agent_instructions": [
+            "CHECK if context/development_tooling_research_*.md exists from D-01-A00",
+            "If exists: READ the dependency_management_recommendation section and use those recommendations",
+            "If not exists: Use modern_best_practices guidance above",
+            "For Python specifically: PREFER poetry or hatchling over requirements.txt for new projects",
+            "Create appropriate dependency files in services/{service}/ directory",
+            "Document dependency management choice in dev_current_focus.md"
+          ]
+        },
+        {
+          "action_id": "D-01-A05",
+          "description": "Create build_ready_index.json",
+          "location": "services/build_ready_index.json",
+          "purpose": "Track which services are ready for build/test",
+          "includes": "List of services with build status"
+        },
+        {
+          "action_id": "D-01-A06",
+          "description": "Create lightweight service prototype to validate architecture assumptions (OPTIONAL)",
+          "when": "After environment bootstrap (D-01), before domain model implementation (D-02)",
+          "new_in_version": "v3.6.0 - Early Testing Integration",
+          "user_prompt": {
+            "ask": "Would you like to create a prototype to validate architecture assumptions before full implementation?",
+            "options": [
+              "Yes - Create prototype (recommended for complex deployments, unfamiliar tech stacks, high-risk services)",
+              "No - Skip prototyping and proceed to full implementation"
+            ],
+            "default": "No"
+          },
+          "when_to_recommend_yes": [
+            "Complex deployment (database permissions, message queues, external integrations)",
+            "Unfamiliar technology stack (first time using framework/platform)",
+            "Uncertain operational environment (cloud permissions, network policies)",
+            "High-risk service (score >= 2.6 from SE-02-A10 risk_assessment.json)"
+          ],
+          "purpose": "Quickly validate architecture assumptions before investing in full implementation",
+          "time_budget": "2-4 hours per service",
+          "what_to_implement": [
+            "Health endpoints (/health, /ready) - REAL",
+            "One API endpoint per interface - STUB (return hardcoded JSON)",
+            "Database connection - REAL (connect to actual database)",
+            "One migration - REAL (create one table)",
+            "Configuration loading - REAL (read environment variables)",
+            "Logging - REAL (emit structured logs)",
+            "Docker build - REAL (create working Dockerfile)"
+          ],
+          "what_NOT_to_implement": [
+            "Business logic (stub with hardcoded responses)",
+            "Complete data models (minimal schema, one table)",
+            "Complete test suite (smoke test only)",
+            "Full observability (basic logging sufficient)"
+          ],
+          "success_criteria": [
+            "Prototype service starts successfully",
+            "Health endpoint responds 200 OK",
+            "Database connection established as service user",
+            "Migration runs successfully",
+            "One API endpoint responds (stub data OK)",
+            "Docker build succeeds",
+            "Smoke test passes"
+          ],
+          "benefit": "Catch architectural issues (permissions, deployment config, infrastructure) in 2-4 hours instead of discovering after full implementation"
+        }
+      ],
+      "tools_used": [
+        "select_development_languages.py",
+        "bootstrap_development_context.py"
+      ],
+      "templates_used": [
+        "development_language_configuration_template.json",
+        "dev_working_memory_template.json",
+        "dev_progress_tracker_template.json"
+      ],
+      "outputs": [
+        "specs/machine/development_language_configuration.json",
+        "context/dev_working_memory.json",
+        "services/{service_name}/ (directory structure)",
+        "services/build_ready_index.json"
+      ],
+      "gates": [],
+      "next_step": "D-02"
+    },
+    {
+      "step_id": "D-02",
+      "name": "Core & Domain Model Realization",
+      "description": "Transform architecture specifications into code foundations",
+      "phase": "implementation",
+      "step_file": "workflow_steps/development/D-02-CoreAndDomain.json",
+      "maps_from": "Dev-02: Core & Domain Model Realization",
+      "actions": [
+        {
+          "action_id": "D-02-A01",
+          "description": "Implement domain models (greenfield) OR analyze existing implementation (meta-analysis/brownfield)",
+          "conditional_execution": {
+            "if_greenfield": {
+              "description": "Implement domain models from architecture",
+              "source": "data_models from service_architecture.json",
+              "purpose": "Create core business entities and value objects",
+              "pattern": "Domain-driven design principles"
+            },
+            "if_meta_analysis_or_brownfield": {
+              "description": "Analyze existing implementation quality",
+              "purpose": "Validate existing code against architecture, identify quality gaps",
+              "actions": [
+                "Read existing code (tools, services, components)",
+                "Analyze code quality (complexity, maintainability, documentation)",
+                "Compare implementation to architecture specifications",
+                "Identify gaps, technical debt, security issues",
+                "Document findings in analysis report"
+              ],
+              "output": "Code quality analysis report (e.g., TOOL_CODE_QUALITY_REPORT.md)",
+              "note": "For meta-analysis (Reflow analyzing itself), D-02 validates existing tools/workflows rather than implementing new code"
+            }
+          },
+          "source": "data_models from service_architecture.json (greenfield) OR existing codebase (meta-analysis)",
+          "pattern": "Domain-driven design principles (greenfield) OR code analysis best practices (meta-analysis)"
+        },
+        {
+          "action_id": "D-02-A02",
+          "description": "Implement business logic components",
+          "source": "components from service_architecture.json system_view",
+          "purpose": "Create services, repositories, use cases",
+          "follows": "Clean architecture or hexagonal architecture patterns"
+        },
+        {
+          "action_id": "D-02-A03",
+          "description": "Implement internal interfaces",
+          "source": "internal interfaces from component specifications",
+          "purpose": "Define contracts between components within a service"
+        },
+        {
+          "action_id": "D-02-A04",
+          "description": "Create unit tests for domain logic",
+          "coverage_requirement": "Minimum 80% code coverage",
+          "purpose": "Ensure domain logic correctness",
+          "location_pattern": "services/{service_name}/tests/unit/"
+        },
+        {
+          "action_id": "D-02-A99",
+          "description": "Prove It Works - Validate service runs with domain model implementation",
+          "when": "After all D-02 actions complete, before proceeding to D-03",
+          "purpose": "Catch deployment issues incrementally when introduced, not all at once during operational testing",
+          "new_in_version": "v3.6.0 - Early Testing Integration",
+          "time_budget": "15-30 minutes (mostly automated)",
+          "blocking": false,
+          "enforcement": "STRONGLY RECOMMENDED to fix issues before proceeding",
+          "validation_checks": [
+            "Docker build succeeds (docker build --no-cache)",
+            "Service starts in container",
+            "Health endpoint responds 200 OK",
+            "Logs clean (no ERROR/WARNING at startup)",
+            "Basic smoke test passes (create one entity via API)"
+          ],
+          "benefit": "Deployment issues caught incrementally (per development step) instead of all at once during operational testing"
+        }
+      ],
+      "tools_used": [],
+      "templates_used": ["Language-specific templates from templates/language_templates/"],
+      "outputs": [
+        "services/{service_name}/src/ (domain models, business logic)",
+        "services/{service_name}/tests/unit/ (unit tests)"
+      ],
+      "gates": [
+        {
+          "gate_id": "G-D-02",
+          "name": "Domain Model Completeness",
+          "checks": [
+            "All domain models from service_architecture.json implemented",
+            "Unit tests exist for business logic",
+            "Unit tests passing"
+          ],
+          "blocking": false
+        }
+      ],
+      "next_step": "D-03"
+    },
+    {
+      "step_id": "D-03",
+      "name": "Persistence & Migration Enablement",
+      "description": "Implement data persistence layer and migration lifecycle",
+      "phase": "implementation",
+      "step_file": "workflow_steps/development/D-03-Persistence.json",
+      "maps_from": "Dev-03: Persistence & Migration Enablement",
+      "actions": [
+        {
+          "action_id": "D-03-A01",
+          "description": "Set up database/storage technology",
+          "source": "deployment_architecture.storage from service_architecture.json",
+          "examples": ["PostgreSQL", "MongoDB", "Redis", "S3"],
+          "purpose": "Initialize data storage infrastructure"
+        },
+        {
+          "action_id": "D-03-A02",
+          "description": "Implement data access layer",
+          "pattern": "Repository pattern or Data Access Objects (DAO)",
+          "purpose": "Abstract persistence logic from business logic"
+        },
+        {
+          "action_id": "D-03-A03",
+          "description": "Create database migrations",
+          "tools": ["Alembic (Python)", "Flyway (Java)", "Liquibase", "migrate (Go)"],
+          "purpose": "Version-controlled database schema evolution"
+        },
+        {
+          "action_id": "D-03-A04",
+          "description": "Implement data validation",
+          "purpose": "Ensure data integrity at persistence layer",
+          "includes": "Constraints, triggers, validation logic"
+        },
+        {
+          "action_id": "D-03-A05",
+          "description": "Create persistence layer tests",
+          "types": ["Repository tests", "Migration tests", "Data integrity tests"],
+          "location_pattern": "services/{service_name}/tests/persistence/"
+        },
+        {
+          "action_id": "D-03-A99",
+          "description": "Prove It Works - Validate service runs with persistence layer",
+          "when": "After all D-03 actions complete, before proceeding to D-04",
+          "purpose": "Catch database and migration issues incrementally when introduced",
+          "new_in_version": "v3.6.0 - Early Testing Integration",
+          "time_budget": "15-30 minutes (mostly automated)",
+          "blocking": false,
+          "enforcement": "STRONGLY RECOMMENDED to fix issues before proceeding",
+          "validation_checks": [
+            "Docker build succeeds",
+            "Service starts with database connection",
+            "Health endpoint responds 200 OK",
+            "Database migrations run successfully",
+            "Logs clean (no ERROR/WARNING at startup)",
+            "CRUD smoke test passes (create, read, update, delete one entity)"
+          ],
+          "benefit": "Database permission and migration issues caught immediately, not during operational testing"
+        }
+      ],
+      "tools_used": [],
+      "outputs": [
+        "services/{service_name}/src/ (data access layer)",
+        "services/{service_name}/migrations/ (database migrations)",
+        "services/{service_name}/tests/persistence/ (persistence tests)"
+      ],
+      "gates": [],
+      "next_step": "D-04"
+    },
+    {
+      "step_id": "D-04",
+      "name": "Integration Surfaces & Security Hardening",
+      "description": "Implement external interfaces and security controls",
+      "phase": "implementation",
+      "step_file": "workflow_steps/development/D-04-IntegrationAndSecurity.json",
+      "maps_from": "Dev-04: Integration Surfaces & Security Hardening",
+      "actions": [
+        {
+          "action_id": "D-04-A01",
+          "description": "Implement API endpoints",
+          "source": "Interface Contract Documents (ICDs) from specs/machine/interfaces/",
+          "purpose": "Expose service capabilities via APIs",
+          "follows": "REST, GraphQL, gRPC, or other API patterns"
+        },
+        {
+          "action_id": "D-04-A02",
+          "description": "Implement API clients for dependencies",
+          "source": "Outbound interfaces from interface_registry.json",
+          "purpose": "Call other services or external systems"
+        },
+        {
+          "action_id": "D-04-A03",
+          "description": "Implement authentication",
+          "source": "Security constraints from service_architecture.json",
+          "methods": ["JWT", "OAuth 2.0", "API keys", "mTLS"],
+          "purpose": "Verify user/service identity"
+        },
+        {
+          "action_id": "D-04-A04",
+          "description": "Implement authorization",
+          "patterns": ["RBAC (Role-Based Access Control)", "ABAC (Attribute-Based)", "Policy-based"],
+          "purpose": "Control access to resources"
+        },
+        {
+          "action_id": "D-04-A05",
+          "description": "Implement input validation and sanitization",
+          "purpose": "Prevent injection attacks and malformed input",
+          "applies_to": "All API endpoints"
+        },
+        {
+          "action_id": "D-04-A06",
+          "description": "Verify interface contracts",
+          "tool": "verify_component_contract.py",
+          "command_pattern": "python3 {reflow_root}/tools/verify_component_contract.py {system_root} --service {service_name}",
+          "purpose": "Ensure implementations satisfy ICDs"
+        },
+        {
+          "action_id": "D-04-A07",
+          "description": "Create integration tests",
+          "types": ["API contract tests", "Integration tests", "Security tests"],
+          "location_pattern": "services/{service_name}/tests/integration/"
+        },
+        {
+          "action_id": "D-04-A99",
+          "description": "Prove It Works - Validate service runs with integration and security",
+          "when": "After all D-04 actions complete, before proceeding to D-05",
+          "purpose": "Catch integration and authentication issues incrementally when introduced",
+          "new_in_version": "v3.6.0 - Early Testing Integration",
+          "time_budget": "15-30 minutes (mostly automated)",
+          "blocking": false,
+          "enforcement": "STRONGLY RECOMMENDED to fix issues before proceeding",
+          "validation_checks": [
+            "Docker build succeeds",
+            "Service starts and connects to dependencies",
+            "Health endpoint responds 200 OK",
+            "Authentication works (valid token accepted, invalid rejected)",
+            "Logs clean (no ERROR/WARNING at startup)",
+            "Integration smoke test passes (call one endpoint, verify response)"
+          ],
+          "benefit": "Integration and security issues caught immediately, not during operational testing"
+        }
+      ],
+      "tools_used": ["verify_component_contract.py"],
+      "outputs": [
+        "services/{service_name}/src/ (API layer, clients, security)",
+        "services/{service_name}/tests/integration/ (integration tests)"
+      ],
+      "gates": [
+        {
+          "gate_id": "G-D-04",
+          "name": "Interface Contract Compliance",
+          "checks": [
+            "All ICDs implemented",
+            "verify_component_contract.py passes for all services",
+            "Integration tests passing",
+            "Security controls in place"
+          ],
+          "blocking": true
+        }
+      ],
+      "next_step": "D-05"
+    },
+    {
+      "step_id": "D-05",
+      "name": "Observability & Testing Pyramid",
+      "description": "Implement metrics, logs, traces, and comprehensive testing",
+      "phase": "quality",
+      "step_file": "workflow_steps/development/D-05-ObservabilityAndTesting.json",
+      "maps_from": "Dev-05: Observability & Testing Pyramid",
+      "actions": [
+        {
+          "action_id": "D-05-A01",
+          "description": "Implement metrics collection",
+          "frameworks": ["Prometheus", "StatsD", "CloudWatch", "DataDog"],
+          "metrics_types": ["Request rates", "Error rates", "Latency", "Business metrics"],
+          "purpose": "Monitor service health and performance"
+        },
+        {
+          "action_id": "D-05-A02",
+          "description": "Implement structured logging",
+          "frameworks": ["structlog (Python)", "winston (Node.js)", "logback (Java)", "zap (Go)"],
+          "log_levels": ["DEBUG", "INFO", "WARN", "ERROR"],
+          "purpose": "Enable debugging and troubleshooting"
+        },
+        {
+          "action_id": "D-05-A03",
+          "description": "Implement distributed tracing",
+          "frameworks": ["OpenTelemetry", "Jaeger", "Zipkin", "AWS X-Ray"],
+          "purpose": "Trace requests across service boundaries"
+        },
+        {
+          "action_id": "D-05-A04",
+          "description": "Implement health check endpoints",
+          "endpoints": ["/health (liveness)", "/ready (readiness)"],
+          "purpose": "Support orchestrator health checks"
+        },
+        {
+          "action_id": "D-05-A05",
+          "description": "Complete testing pyramid",
+          "test_types": [
+            "Unit tests (70-80% coverage)",
+            "Integration tests (15-20%)",
+            "E2E tests (5-10%)"
+          ],
+          "coverage_requirement": "Minimum 80% overall code coverage"
+        },
+        {
+          "action_id": "D-05-A06",
+          "description": "Run test coverage analysis",
+          "tools": ["coverage.py (Python)", "istanbul/nyc (JS)", "JaCoCo (Java)"],
+          "gate_enforcement": "Block if coverage < 80%"
+        },
+        {
+          "action_id": "D-05-A99",
+          "description": "Prove It Works - Validate service runs with observability instrumentation",
+          "when": "After all D-05 actions complete, before proceeding to D-06",
+          "purpose": "Catch observability and monitoring issues incrementally when introduced",
+          "new_in_version": "v3.6.0 - Early Testing Integration",
+          "time_budget": "15-30 minutes (mostly automated)",
+          "blocking": false,
+          "enforcement": "STRONGLY RECOMMENDED to fix issues before proceeding",
+          "validation_checks": [
+            "Docker build succeeds",
+            "Service starts with full observability",
+            "Health endpoint responds 200 OK",
+            "Metrics endpoint (/metrics) responds with Prometheus format",
+            "Logs emitted in structured JSON format",
+            "Logs clean (no ERROR/WARNING at startup)",
+            "Observability smoke test passes (verify metrics collected, logs emitted, traces work)"
+          ],
+          "benefit": "Observability issues caught immediately - ensures monitoring works before operational testing"
+        }
+      ],
+      "tools_used": [],
+      "outputs": [
+        "services/{service_name}/src/ (observability instrumentation)",
+        "services/{service_name}/tests/ (complete test suite)",
+        "Test coverage reports"
+      ],
+      "gates": [
+        {
+          "gate_id": "G-D-05",
+          "name": "Testing & Observability Gate",
+          "checks": [
+            "Test coverage >= 60% (minimum) and >= 80% (target)",
+            "All tests passing",
+            "Metrics collection implemented",
+            "Structured logging implemented",
+            "Health check endpoints working"
+          ],
+          "blocking": false,
+          "enforcement": {
+            "coverage_minimum": 60,
+            "coverage_target": 80,
+            "below_minimum": "ERROR - insufficient testing (< 60%), strongly recommend improving before proceeding",
+            "minimum_to_target": "WARNING - below target coverage (60-80%), consider improving tests",
+            "above_target": "PASS - excellent test coverage"
+          },
+          "note": "Changed from blocking to non-blocking in v3.4.0 (DEV-OBS-01) - allows workflow completion for large codebases while still enforcing quality standards via CI/CD"
+        }
+      ],
+      "next_step": "D-06"
+    },
+    {
+      "step_id": "D-06",
+      "name": "As-Built Architecture Generation",
+      "description": "Generate as-built architecture from implemented code and compare to as-designed",
+      "phase": "validation",
+      "step_file": "workflow_steps/development/D-06-AsBuiltArchitecture.json",
+      "actions": [
+        {
+          "action_id": "D-06-A01",
+          "description": "Generate as-built architecture graph",
+          "tool": "generate_as_built_architecture.py",
+          "command_pattern": "python3 {reflow_root}/tools/generate_as_built_architecture.py --system-root {system_root} --output specs/machine/graphs/system_of_systems_graph_as_built.json --compare-to specs/machine/graphs/system_of_systems_graph.json",
+          "purpose": "Reverse-engineer architecture from implemented services",
+          "method": "AST parsing + dependency analysis",
+          "detects": [
+            "REST endpoints (Flask/FastAPI decorators)",
+            "Function signatures",
+            "Dependencies (requirements.txt, imports)",
+            "Database connections",
+            "Message queues"
+          ],
+          "outputs": [
+            "specs/machine/graphs/system_of_systems_graph_as_built.json"
+          ]
+        },
+        {
+          "action_id": "D-06-A02",
+          "description": "Compare as-built to as-designed architecture",
+          "tool": "compare_architectures.py",
+          "command_pattern": "python3 {reflow_root}/tools/compare_architectures.py --from specs/machine/graphs/system_of_systems_graph.json --to specs/machine/graphs/system_of_systems_graph_as_built.json --output specs/machine/graphs/architecture_delta_designed_to_built_{date}.json",
+          "purpose": "Identify architectural deviations from design",
+          "note": "This runs automatically as part of D-06-A01 (--compare-to flag)",
+          "analyzes": [
+            "Added/removed services",
+            "Added/removed interfaces",
+            "Modified properties",
+            "Similarity score (Jaccard similarity)",
+            "Breaking vs non-breaking changes"
+          ],
+          "outputs": [
+            "specs/machine/graphs/architecture_delta_designed_to_built_{date}.json"
+          ]
+        },
+        {
+          "action_id": "D-06-A03",
+          "description": "Review delta report and document rationale",
+          "purpose": "Understand why implementation differs from design",
+          "process": [
+            "Read architecture_delta_designed_to_built_{date}.json",
+            "Review breaking_changes and non_breaking_changes",
+            "For each significant change, document rationale",
+            "Decide: update design OR fix implementation"
+          ],
+          "decision_criteria": {
+            "update_design_if": [
+              "Design was impractical or impossible to implement",
+              "Better solution discovered during implementation",
+              "Technical constraints not known during design phase"
+            ],
+            "fix_implementation_if": [
+              "Deviation was developer oversight or mistake",
+              "Original design is superior",
+              "Deviation introduces technical debt or security issues"
+            ]
+          },
+          "output_location": "docs/AS_BUILT_ARCHITECTURE_RATIONALE.md"
+        },
+        {
+          "action_id": "D-06-A04",
+          "description": "Update as-designed architecture if needed",
+          "conditional": "If delta analysis reveals design should change",
+          "process": [
+            "Update service_architecture.json files",
+            "Regenerate system_of_systems_graph.json",
+            "Update ICDs if interfaces changed",
+            "Document changes in version_manifest.json"
+          ],
+          "purpose": "Keep design documents aligned with validated implementation decisions"
+        }
+      ],
+      "tools_used": [
+        "generate_as_built_architecture.py",
+        "compare_architectures.py"
+      ],
+      "outputs": [
+        "specs/machine/graphs/system_of_systems_graph_as_built.json",
+        "specs/machine/graphs/architecture_delta_designed_to_built_{date}.json",
+        "docs/AS_BUILT_ARCHITECTURE_RATIONALE.md"
+      ],
+      "gates": [
+        {
+          "gate_id": "G-D-06",
+          "name": "As-Built Architecture Validation",
+          "checks": [
+            "As-built graph generated successfully",
+            "Delta report created",
+            "Similarity score >= 0.7 (70% match to designed architecture)",
+            "All breaking changes documented with rationale",
+            "Decision made: update design OR fix implementation"
+          ],
+          "blocking": false,
+          "note": "Non-blocking to allow controlled architectural drift with documentation"
+        }
+      ],
+      "next_step": "D-07"
+    },
+    {
+      "step_id": "D-07",
+      "name": "Pre-Deployment Integration Validation",
+      "description": "Comprehensive validation before operational testing - prevents 80-90% of deployment blockers",
+      "phase": "validation",
+      "step_file": "workflow_steps/development/D-07-PreDeploymentValidation.json",
+      "criticality": "CRITICAL - Prevents 'toss it over the fence' problem",
+      "new_in_version": "Reflow v3.6.0 - Early Testing Integration feature",
+      "actions": [
+        {
+          "action_id": "D-07-A01",
+          "description": "Dependency validation - ensure code imports match requirements.txt",
+          "tool": "validate_dependencies.py",
+          "prevents": "Category 1 issues - Missing dependencies (5 issues)"
+        },
+        {
+          "action_id": "D-07-A02",
+          "description": "Module structure validation - check __init__.py, circular imports, shadowing",
+          "tool": "validate_module_structure.py",
+          "prevents": "Category 2 issues - Module structure (3 issues)"
+        },
+        {
+          "action_id": "D-07-A03",
+          "description": "Configuration consistency - ensure code defaults match docker-compose.yml",
+          "tool": "validate_configuration_consistency.py",
+          "prevents": "Category 5 issues - Configuration drift (2 issues)"
+        },
+        {
+          "action_id": "D-07-A04",
+          "description": "Database permission validation - service user can run migrations",
+          "method": "Manual test with service user credentials",
+          "prevents": "Category 3 issues - Database permissions (4 issues)"
+        },
+        {
+          "action_id": "D-07-A05",
+          "description": "Docker build validation - builds succeed without cache",
+          "method": "docker build --no-cache",
+          "prevents": "Category 4 issues - Build infrastructure (1 issue)"
+        },
+        {
+          "action_id": "D-07-A06",
+          "description": "System-wide smoke test - all services start and communicate",
+          "method": "docker-compose up + end-to-end scenario",
+          "validates": "Complete system integration"
+        },
+        {
+          "action_id": "D-07-A07",
+          "description": "Contract validation - implementations match ICDs",
+          "tool": "verify_component_contract.py --strict",
+          "validates": "API contract compliance"
+        }
+      ],
+      "tools_used": [
+        "validate_dependencies.py (NEW)",
+        "validate_module_structure.py (NEW)",
+        "validate_configuration_consistency.py (NEW)",
+        "verify_component_contract.py (EXISTING)",
+        "Docker",
+        "Docker Compose"
+      ],
+      "outputs": [
+        "specs/machine/validation/dependency_validation_report.json",
+        "specs/machine/validation/module_structure_validation_report.json",
+        "specs/machine/validation/configuration_consistency_report.json",
+        "specs/machine/validation/contract_validation_report.json",
+        "specs/machine/pre_deployment_validation_report.json"
+      ],
+      "gates": [
+        {
+          "gate_id": "G-D-07",
+          "name": "Pre-Deployment Integration Validation Gate",
+          "checks": [
+            "Dependency validation passes (no missing packages)",
+            "Module structure validation passes (all __init__.py present, no circular imports)",
+            "Configuration consistency passes (code matches docker-compose)",
+            "Database permission validation passes (service user can run migrations)",
+            "Docker build validation passes (all images build successfully)",
+            "System smoke test passes (all services start and communicate)",
+            "Contract validation passes (all ICDs implemented correctly)"
+          ],
+          "blocking": true,
+          "enforcement": {
+            "tier_1_critical": [
+              "Dependency validation passes",
+              "Module structure validation passes",
+              "Configuration consistency validation passes",
+              "Contract validation passes"
+            ],
+            "tier_2_important": [
+              "Component delta alignment check",
+              "Architecture drift documentation",
+              "System smoke test"
+            ]
+          },
+          "impact": "Prevents 80-90% of operational testing blockers (15+ issues)",
+          "bypass_not_allowed": "This gate is ALWAYS enforced - no exceptions"
+        }
+      ],
+      "execution_time": "30-60 minutes (mostly automated)",
+      "next_step": "D-Post"
+    },
+    {
+      "step_id": "D-Post",
+      "name": "Feedback Loop Initialization",
+      "description": "Set up continuous improvement and feedback mechanisms",
+      "phase": "feedback",
+      "step_file": "workflow_steps/development/D-Post-Feedback.json",
+      "maps_from": "Dev-Post: Feedback Loop Initialization",
+      "actions": [
+        {
+          "action_id": "D-Post-A01",
+          "description": "Document development learnings",
+          "location": "docs/DEVELOPMENT_RETROSPECTIVE.md",
+          "includes": [
+            "What went well",
+            "What could be improved",
+            "Architecture vs implementation differences",
+            "Technical debt identified"
+          ]
+        },
+        {
+          "action_id": "D-Post-A02",
+          "description": "Update architecture artifacts if needed",
+          "purpose": "Reflect implementation reality in architecture docs",
+          "note": "Document deviations from original architecture"
+        },
+        {
+          "action_id": "D-Post-A03",
+          "description": "Create technical debt backlog",
+          "location": "docs/TECHNICAL_DEBT.md",
+          "purpose": "Track known issues and future improvements"
+        },
+        {
+          "action_id": "D-Post-A04",
+          "description": "Prepare for testing and operations phase",
+          "checklist": [
+            "All services implemented",
+            "All tests passing",
+            "Docker Compose file created for local testing",
+            "Development documentation complete"
+          ]
+        }
+      ],
+      "tools_used": [],
+      "outputs": [
+        "docs/DEVELOPMENT_RETROSPECTIVE.md",
+        "docs/TECHNICAL_DEBT.md",
+        "Updated architecture artifacts (if needed)"
+      ],
+      "gates": [],
+      "next_step": "complete"
+    }
+  ],
+  "completion": {
+    "description": "Development workflow complete - services implemented and tested",
+    "outputs_summary": [
+      "Fully implemented services in services/{service_name}/",
+      "Comprehensive test suite with >= 80% coverage",
+      "Observability instrumentation (metrics, logs, traces)",
+      "Security controls (authentication, authorization)",
+      "API implementations per ICDs",
+      "Development retrospective and learnings"
+    ],
+    "next_workflow": "04-testing_operations",
+    "transition_command": "workflow_driver.py {system_root} --next-workflow"
+  },
+  "llm_agent_guidance": {
+    "critical_reminders": [
+      "ALWAYS run select_development_languages.py first to establish language/framework choices",
+      "Use verify_component_contract.py to ensure ICD compliance",
+      "Enforce 80% test coverage minimum (gate G-D-05)",
+      "Create Docker Compose file during D-05 for local testing",
+      "Update dev_working_memory.json and dev_progress_tracker.json throughout"
+    ],
+    "common_mistakes": [
+      "Skipping language selection step",
+      "Not creating unit tests alongside implementation",
+      "Implementing APIs without referencing ICDs",
+      "Skipping observability instrumentation",
+      "Not running verify_component_contract.py"
+    ],
+    "quality_gates_mandatory": [
+      "G-D-04: Interface Contract Compliance",
+      "G-D-05: Testing & Observability Gate"
+    ],
+    "service_development_pattern": "Develop services iteratively, one at a time, following the workflow steps for each service",
+    "future_subdivision_note": "This workflow may be split into 03a (foundation), 03b (integration), 03c (quality) in future versions"
+  }
+}

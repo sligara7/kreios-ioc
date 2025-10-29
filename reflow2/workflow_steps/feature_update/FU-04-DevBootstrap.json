@@ -1,0 +1,31 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "FU-04 Development Bootstrap & Implementation",
+    "based_on": "feature_update_workflow.json P4",
+    "description": "Apply development steps for new/updated services; enforce both development and operational testing." 
+  },
+  "entry_conditions": {
+    "from": "FU-03",
+    "artifacts": ["specs/machine/build_ready_index.json", "specs/machine/index.json", "specs/human/feature/*"],
+    "context_refresh": true
+  },
+  "steps": [
+    { "id": "P4.1", "description": "Initialize or update dev trackers for affected services", "tool": "manual", "outputs": ["context/dev_progress_tracker.json", "context/dev_working_memory.json", "context/dev_current_focus.md"] },
+    { "id": "P4.2", "description": "Create/update operational testing artifacts for features (mission deltas, user scenarios, success criteria)", "tool": "manual", "outputs": ["specs/human/feature/feature_mission_deltas.md", "specs/human/feature/feature_user_scenarios.md", "specs/human/feature/feature_success_criteria.md"] },
+    { "id": "P4.3", "description": "Scaffold code, implement updated logic, update tests, docs, configs", "tool": "manual", "outputs": ["code/<service>/"] },
+    { "id": "P4.4", "description": "Develop operational test scenarios validating user value", "tool": "manual", "outputs": ["specs/human/operational_test_scenarios/"] }
+  ],
+  "artifact_routing": {
+    "context": "context/*",
+    "human": "specs/human/feature/",
+    "code": "code/<service>/"
+  },
+  "iteration_paths": {
+    "on_contract_change": "../feature_update/FU-02-ArchReengineering.json"
+  },
+  "handoff": {
+    "produces": ["context/dev_*", "code/<service>/", "specs/human/feature/*"],
+    "next_workflow": "../feature_update/FU-05-IntegrationValidationRelease.json"
+  }
+}

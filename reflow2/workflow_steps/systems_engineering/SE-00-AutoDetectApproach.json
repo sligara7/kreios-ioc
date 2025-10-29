@@ -1,0 +1,247 @@
+{
+  "step_metadata": {
+    "step_id": "SE-00",
+    "step_name": "Auto-Detect Integration Approach",
+    "version": "1.0.0",
+    "created_date": "2025-10-26",
+    "workflow": "01-systems_engineering",
+    "phase": "approach_detection",
+    "description": "Automatically detect whether to use bottom-up (existing components) or top-down (greenfield) approach by examining system directory",
+    "purpose": "Enable LLM to automatically choose the appropriate workflow path without human intervention",
+    "estimated_time": "2-5 minutes"
+  },
+  "inputs": {
+    "required": [
+      "context/working_memory.json (with system_root path configured)"
+    ],
+    "optional": []
+  },
+  "outputs": {
+    "required": [
+      "context/approach_detection_result.json (records detection decision and evidence)",
+      "context/working_memory.json (updated with detected_approach field)"
+    ],
+    "optional": []
+  },
+  "actions": [
+    {
+      "action_id": "SE-00-A01",
+      "action_name": "Examine System Directory Structure",
+      "description": "Scan system_root directory to identify existing components, code, or artifacts",
+      "instructions": [
+        "Read system_root path from context/working_memory.json",
+        "List all directories and files in system_root (recursive scan up to 3 levels deep)",
+        "Identify indicators of existing components:",
+        "  - Source code directories: services/, src/, lib/, packages/, components/, apps/, modules/",
+        "  - Package manifests: package.json, requirements.txt, Cargo.toml, pom.xml, go.mod, setup.py, pyproject.toml",
+        "  - Build files: Dockerfile, docker-compose.yml, Makefile, build.gradle, CMakeLists.txt",
+        "  - Architecture files: *.json in specs/machine/service_arch/",
+        "  - Source code files: *.py, *.js, *.ts, *.java, *.go, *.rs, *.cpp in src-like directories",
+        "Create evidence list documenting what was found"
+      ],
+      "tools": [
+        "Bash: ls -R <system_root> (to list directory structure)",
+        "Bash: find <system_root> -name 'package.json' -o -name 'requirements.txt' -o -name 'Dockerfile'",
+        "Glob: **/*.py, **/*.js, **/*.java (to find source code files)",
+        "Read: Any suspicious files to confirm they're real components (not just empty scaffolding)"
+      ],
+      "validation": [
+        "Evidence list contains specific file paths found",
+        "Directories scanned include at minimum: root, one level deep",
+        "Detection criteria clearly documented"
+      ]
+    },
+    {
+      "action_id": "SE-00-A02",
+      "action_name": "Classify System as Bottom-Up or Top-Down",
+      "description": "Analyze evidence and decide which approach to use",
+      "instructions": [
+        "Apply decision logic:",
+        "",
+        "BOTTOM-UP INDICATORS (if ANY found, use bottom-up):",
+        "  1. Source code directories with actual code (>100 lines total across all files)",
+        "  2. Package manifests with dependencies listed",
+        "  3. Multiple services/packages/components (>1)",
+        "  4. Existing architecture files in specs/machine/",
+        "  5. Git history with >5 commits (not just initial commit)",
+        "  6. Build/deployment files (Dockerfile, docker-compose.yml)",
+        "",
+        "TOP-DOWN INDICATORS (if NONE of above found, use top-down):",
+        "  1. Empty system_root (only context/ and docs/ directories)",
+        "  2. Only foundational documents (SYSTEM_MISSION_STATEMENT.md, USER_SCENARIOS.md)",
+        "  3. No source code files",
+        "  4. Git repo with ≤5 commits (likely just setup)",
+        "  5. No package manifests or build files",
+        "",
+        "DECISION RULE:",
+        "  - If ≥2 bottom-up indicators found → BOTTOM-UP (route to BU-01)",
+        "  - If 0-1 bottom-up indicators and system seems empty → TOP-DOWN (route to SE-01)",
+        "  - If ambiguous (exactly 1 weak indicator) → Ask user to confirm",
+        "",
+        "Document decision with:",
+        "  - Detected approach (bottom_up, top_down, or ambiguous)",
+        "  - Evidence found (list of indicators)",
+        "  - Reasoning (why this decision was made)",
+        "  - Next step (BU-01 or SE-01)"
+      ],
+      "validation": [
+        "Decision is one of: bottom_up, top_down, or ambiguous",
+        "Evidence list supports the decision",
+        "Reasoning is clear and follows decision rule",
+        "Next step correctly maps to decision (BU-01 for bottom-up, SE-01 for top-down)"
+      ]
+    },
+    {
+      "action_id": "SE-00-A03",
+      "action_name": "Record Detection Result",
+      "description": "Create approach_detection_result.json with detection decision and evidence",
+      "instructions": [
+        "Create context/approach_detection_result.json with structure:",
+        "{",
+        "  \"detection_metadata\": {",
+        "    \"detection_date\": \"YYYY-MM-DD\",",
+        "    \"system_root\": \"<path>\",",
+        "    \"detection_version\": \"SE-00 v1.0.0\"",
+        "  },",
+        "  \"detected_approach\": \"bottom_up\" | \"top_down\" | \"ambiguous\",",
+        "  \"evidence\": {",
+        "    \"bottom_up_indicators\": [",
+        "      {\"indicator\": \"source_code_directories\", \"found\": true, \"details\": \"services/, src/\"},",
+        "      {\"indicator\": \"package_manifests\", \"found\": true, \"details\": \"requirements.txt, package.json\"}",
+        "    ],",
+        "    \"top_down_indicators\": [",
+        "      {\"indicator\": \"empty_directory\", \"found\": false}",
+        "    ],",
+        "    \"files_found\": [\"<list of significant files found>\"]",
+        "  },",
+        "  \"reasoning\": \"<explain why this decision was made>\",",
+        "  \"confidence\": \"high\" | \"medium\" | \"low\",",
+        "  \"next_step\": \"BU-01\" | \"SE-01\" | \"ASK_USER\",",
+        "  \"recommendation\": \"<guidance for LLM or user>\"",
+        "}",
+        "",
+        "If detected_approach is 'ambiguous', include:",
+        "  \"user_question\": {",
+        "    \"question\": \"This system has some existing components but appears incomplete. Should we use bottom-up (integrate existing) or top-down (redesign from scratch)?\",",
+        "    \"context\": \"<summary of what was found>\",",
+        "    \"options\": [",
+        "      {\"choice\": \"bottom_up\", \"when\": \"Preserve and integrate existing components\"},",
+        "      {\"choice\": \"top_down\", \"when\": \"Start fresh with new architecture\"}",
+        "    ]",
+        "  }"
+      ],
+      "template_reference": "No template - SE-00 creates this file dynamically",
+      "validation": [
+        "File created at context/approach_detection_result.json",
+        "All required fields present",
+        "detected_approach matches evidence",
+        "next_step is valid (BU-01, SE-01, or ASK_USER)"
+      ]
+    },
+    {
+      "action_id": "SE-00-A04",
+      "action_name": "Update Working Memory with Detected Approach",
+      "description": "Record detection decision in working_memory.json for workflow routing",
+      "instructions": [
+        "Read context/working_memory.json",
+        "Add/update field: \"detected_approach\": \"bottom_up\" | \"top_down\"",
+        "Add/update field: \"approach_detection_date\": \"YYYY-MM-DD\"",
+        "Add/update field: \"approach_detection_confidence\": \"high\" | \"medium\" | \"low\"",
+        "If approach is bottom_up, add field: \"bottom_up_source\": \"auto_detected\"",
+        "If approach is top_down, add field: \"top_down_source\": \"auto_detected\"",
+        "Save working_memory.json"
+      ],
+      "validation": [
+        "working_memory.json updated successfully",
+        "detected_approach field present and valid",
+        "Approach matches detection result from SE-00-A03"
+      ]
+    },
+    {
+      "action_id": "SE-00-A05",
+      "action_name": "Route to Appropriate Workflow Step",
+      "description": "Inform user of decision and proceed to next step",
+      "instructions": [
+        "Read detected_approach from approach_detection_result.json",
+        "",
+        "If detected_approach is 'bottom_up':",
+        "  - Output message: \"✓ Auto-detection: BOTTOM-UP approach selected. Found existing components: [list key evidence]. Proceeding to BU-01 (Component Inventory).\"",
+        "  - Set next step: BU-01",
+        "",
+        "If detected_approach is 'top_down':",
+        "  - Output message: \"✓ Auto-detection: TOP-DOWN approach selected. System directory is greenfield (empty or docs-only). Proceeding to SE-01 (Service Identification).\"",
+        "  - Set next step: SE-01",
+        "",
+        "If detected_approach is 'ambiguous':",
+        "  - Use AskUserQuestion tool to present options",
+        "  - Wait for user response",
+        "  - Update approach_detection_result.json with user's choice",
+        "  - Route to BU-01 (bottom-up) or SE-01 (top-down) based on user response",
+        "",
+        "Update context/working_memory.json:",
+        "  - Set current_step to next step (BU-01 or SE-01)",
+        "  - Update operations_since_refresh"
+      ],
+      "validation": [
+        "User informed of detection decision",
+        "If ambiguous, user question presented and answered",
+        "working_memory.json current_step updated to BU-01 or SE-01",
+        "Workflow ready to proceed to next step"
+      ]
+    }
+  ],
+  "quality_gate": {
+    "gate_id": "SE-00-QG",
+    "gate_name": "Approach Detection Quality Gate",
+    "gate_type": "validation",
+    "blocking": false,
+    "description": "Verify approach detection was successful and decision is reasonable",
+    "checks": [
+      {
+        "check_id": "SE-00-QG-01",
+        "name": "Detection Result Exists",
+        "type": "file_exists",
+        "target": "context/approach_detection_result.json",
+        "severity": "error",
+        "resolution": "Re-run SE-00-A03 to create detection result file"
+      },
+      {
+        "check_id": "SE-00-QG-02",
+        "name": "Decision is Valid",
+        "type": "field_validation",
+        "target": "context/approach_detection_result.json",
+        "field": "detected_approach",
+        "valid_values": ["bottom_up", "top_down"],
+        "severity": "error",
+        "resolution": "If ambiguous, user must choose. Re-run SE-00-A05 to get user input."
+      },
+      {
+        "check_id": "SE-00-QG-03",
+        "name": "Evidence Supports Decision",
+        "type": "manual_review",
+        "instructions": "Review approach_detection_result.json evidence field. Does it support the detected_approach decision?",
+        "severity": "warning",
+        "resolution": "If evidence doesn't support decision, re-run SE-00-A02 with corrected logic"
+      },
+      {
+        "check_id": "SE-00-QG-04",
+        "name": "Next Step Correct",
+        "type": "field_validation",
+        "target": "context/approach_detection_result.json",
+        "field": "next_step",
+        "expected": "BU-01 if bottom_up, SE-01 if top_down",
+        "severity": "error",
+        "resolution": "Fix next_step field in approach_detection_result.json to match detected approach"
+      }
+    ]
+  },
+  "transition": {
+    "next_step_logic": "Dynamic based on detected_approach",
+    "next_step_determination": [
+      "Read detected_approach from context/approach_detection_result.json",
+      "If bottom_up → next_step = BU-01",
+      "If top_down → next_step = SE-01"
+    ],
+    "note": "This step enables automatic routing without human intervention"
+  }
+}

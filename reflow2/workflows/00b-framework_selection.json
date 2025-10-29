@@ -1,0 +1,474 @@
+{
+  "workflow_metadata": {
+    "workflow_id": "00b-framework_selection",
+    "name": "Framework Selection Workflow",
+    "version": "3.7.0",
+    "description": "Detailed framework analysis and selection with 9-action questionnaire and scoring",
+    "created_from": "00-setup.json v1.0.0 - S-01A step extracted",
+    "last_updated": "2025-10-27",
+    "purpose": "Help users select optimal architectural framework through structured analysis",
+    "context_reduction": "Reduced from 1,102 lines to ~500 lines (55% reduction)",
+    "optional": true,
+    "when_to_skip": "User already knows which framework to use (e.g., UAF for IT systems)"
+  },
+  "prerequisites": {
+    "required_workflows": [
+      "00a-basic_setup"
+    ],
+    "required_files": [
+      "context/working_memory.json (with paths configured)",
+      "docs/SYSTEM_MISSION_STATEMENT.md",
+      "docs/USER_SCENARIOS.md",
+      "docs/SUCCESS_CRITERIA.md"
+    ]
+  },
+  "workflow_steps": [
+    {
+      "step_id": "S-01A",
+      "name": "Architectural Framework Selection",
+      "description": "Critically analyze and select the architectural framework appropriate for the system being modeled",
+      "phase": "initialization",
+      "step_file": "workflow_steps/setup/S-01A-FrameworkSelection.json",
+      "rationale": "Framework selection is an ARCHITECTURAL DECISION, not a configuration choice. Wrong framework = wrong insights. This step requires EXPLICIT ANALYSIS of all frameworks against system semantics and user confirmation before proceeding.",
+      "critical_lesson": "LESSON-01: Do NOT default to UAF! Analyze system semantics (state machines? services? agents? species?) against ALL frameworks. Framework choice determines which NetworkX analyses are available.",
+      "actions": [
+        {
+          "action_id": "S-01A-A01",
+          "description": "Analyze system domain and characteristics with semantic matching",
+          "purpose": "Understand system semantics BEFORE selecting framework - match abstractions, not just domain",
+          "rationale": "LESSON-04: Framework abstractions must match system semantics. Workflows are state machines (not services), even though both could be 'engineered systems'. Wrong abstraction = wrong insights.",
+          "llm_instructions": [
+            "Ask user to describe the system in their own words",
+            "Apply semantic matching questionnaire (below) to understand system nature",
+            "Document answers for framework comparison"
+          ],
+          "semantic_matching_questionnaire": {
+            "question_1": {
+              "question": "What are your primary entities (nodes)?",
+              "answers_map_to": {
+                "Services that communicate via APIs": "UAF framework",
+                "States in a process with transitions": "Decision Flow framework",
+                "Agents with relationships": "Social Network framework",
+                "Species in an ecosystem": "Ecological framework",
+                "Genes, proteins, or molecules": "Systems Biology framework",
+                "Adaptive agents that learn": "Complex Adaptive Systems framework"
+              },
+              "critical": "Match entity semantics, not just domain. A workflow step is a STATE, not a SERVICE."
+            },
+            "question_2": {
+              "question": "What are your connections (edges)?",
+              "answers_map_to": {
+                "API calls or data interfaces": "UAF framework",
+                "State transitions with conditions": "Decision Flow framework",
+                "Social relationships or interactions": "Social Network framework",
+                "Energy/matter flow or species interactions": "Ecological framework",
+                "Molecular interactions (activation, inhibition)": "Systems Biology framework",
+                "Adaptive interactions with feedback": "Complex Adaptive Systems framework"
+              },
+              "critical": "Edges represent different things in each framework. Workflow transitions \u2260 API calls."
+            },
+            "question_3": {
+              "question": "Do edges have conditions or branching?",
+              "answers_map_to": {
+                "Yes, if/else routing or decision points": "Decision Flow framework (conditional transitions)",
+                "Yes, but based on agent decisions": "Social Network or CAS framework",
+                "No, always connected": "UAF, Social Network (static connections)",
+                "Yes, based on environmental factors": "Ecological or Systems Biology framework"
+              }
+            },
+            "question_4": {
+              "question": "Are cycles expected behavior or errors?",
+              "answers_map_to": {
+                "Expected - feedback loops are essential": "Systems Biology, CAS, Ecological (regulatory feedback)",
+                "Expected - rework loops are normal": "Decision Flow (validation failures, retries)",
+                "Errors - circular dependencies are bad": "UAF (service dependencies should be acyclic)",
+                "Neither - cycles not relevant": "Consider simpler modeling approach"
+              },
+              "critical": "Cycle semantics determine framework choice. UAF cycles = bugs. Biology cycles = features."
+            },
+            "question_5": {
+              "question": "Do you need to analyze flow, throughput, or bottlenecks?",
+              "answers_map_to": {
+                "Yes, need to find workflow bottlenecks": "Decision Flow (requires edge weights: probabilities)",
+                "Yes, need to track energy flow": "Ecological (requires edge weights: energy transfer rates)",
+                "Yes, need to analyze reaction rates": "Systems Biology (requires edge weights: reaction rates)",
+                "No, just need connectivity analysis": "Any framework works (centrality, community, etc.)"
+              },
+              "critical": "Flow analysis REQUIRES edge weights. If you need flow, choose framework that supports weights."
+            },
+            "question_6": {
+              "question": "What is the system's primary behavior?",
+              "answers_map_to": {
+                "Sequential processing with decision points": "Decision Flow framework",
+                "Services responding to requests": "UAF framework",
+                "Agents interacting and influencing each other": "Social Network or CAS framework",
+                "Species competing and cooperating": "Ecological framework",
+                "Molecules regulating each other": "Systems Biology framework",
+                "Emergent behavior from simple rules": "Complex Adaptive Systems framework"
+              }
+            }
+          },
+          "semantic_matching_decision_tree": {
+            "start": "What are your nodes?",
+            "if_states": "Are transitions conditional?",
+            "if_conditional_transitions": "\u2192 Decision Flow Framework",
+            "if_sequential_only": "\u2192 Decision Flow or UAF (check if states vs services)",
+            "if_services": "Do services have human users?",
+            "if_services_with_users": "\u2192 UAF with IT requirements (security, deployment, UX)",
+            "if_services_internal": "\u2192 UAF (simpler security acceptable)",
+            "if_agents": "Do agents adapt and learn?",
+            "if_adaptive_agents": "\u2192 Complex Adaptive Systems",
+            "if_static_agents": "\u2192 Social Network Analysis",
+            "if_species": "\u2192 Ecological Systems Framework",
+            "if_molecules": "\u2192 Systems Biology Framework",
+            "if_hybrid": "\u2192 Custom Framework (research domain)"
+          },
+          "examples_correct_vs_incorrect": {
+            "correct": [
+              "Microservices system \u2192 UAF (services communicating via APIs)",
+              "Reflow workflows \u2192 Decision Flow (states with conditional transitions)",
+              "Gene regulatory network \u2192 Systems Biology (molecular interactions)",
+              "Corporate org chart \u2192 Social Network (people with relationships)",
+              "Food web \u2192 Ecological (species with predation/competition)",
+              "Stock market \u2192 CAS (adaptive agents with emergent behavior)"
+            ],
+            "incorrect": [
+              "\u274c Reflow workflows \u2192 UAF (WRONG: steps \u2260 services, misses decision logic)",
+              "\u274c Social network \u2192 UAF (WRONG: relationships \u2260 interfaces)",
+              "\u274c Food web \u2192 UAF (WRONG: predation \u2260 API calls)",
+              "\u274c Gene network \u2192 Social Network (WRONG: molecular regulation \u2260 social relationships)"
+            ]
+          },
+          "output": "System characteristics summary with semantic matching answers"
+        },
+        {
+          "action_id": "S-01A-A02",
+          "description": "Analyze ALL frameworks against system characteristics",
+          "purpose": "Evaluate EVERY framework, not just pick one",
+          "llm_instructions": [
+            "Load definitions/framework_registry.json",
+            "For EACH of the 7 frameworks (UAF, Decision Flow, Systems Biology, Social Network, Ecological, CAS, Custom):",
+            "  - Evaluate: Does system domain match framework domain?",
+            "  - Evaluate: Do system entities match framework node types?",
+            "  - Evaluate: Do system connections match framework edge types?",
+            "  - Evaluate: Which NetworkX analyses does this framework enable?",
+            "  - Evaluate: What insights would this framework reveal?",
+            "  - Evaluate: What insights would this framework MISS?",
+            "Create comparison table showing each framework's fit"
+          ],
+          "required_fields_to_check": [
+            "framework.domain",
+            "framework.node_types",
+            "framework.edge_types",
+            "framework.recommended_analyses",
+            "framework.edge_schema (does it support weights?)"
+          ],
+          "output": "Framework analysis comparison table"
+        },
+        {
+          "action_id": "S-01A-A03",
+          "description": "Map NetworkX analyses to each framework",
+          "purpose": "Show which analyses each framework enables/blocks",
+          "llm_instructions": [
+            "For each framework, list which NetworkX analyses are:",
+            "  - AVAILABLE: Can be run with this framework",
+            "  - BLOCKED: Cannot be run (e.g., flow analysis requires edge weights)",
+            "  - SEMANTIC: Have different meaning (cycles = rework loops vs circular deps)",
+            "Create NetworkX analysis availability matrix",
+            "Highlight analyses that are HIGH priority for this system"
+          ],
+          "example_output": {
+            "uaf": {
+              "flow_analysis": "BLOCKED - No edge weights support",
+              "cycle_detection": "AVAILABLE - Cycles indicate circular dependencies (BAD)",
+              "dag_analysis": "AVAILABLE - Verify no circular service dependencies"
+            },
+            "decision_flow": {
+              "flow_analysis": "AVAILABLE - Uses transition probabilities to find critical paths",
+              "cycle_detection": "AVAILABLE - Cycles indicate rework loops (EXPECTED)",
+              "dag_analysis": "AVAILABLE - Find sequential workflow paths"
+            }
+          },
+          "output": "NetworkX analysis availability matrix"
+        },
+        {
+          "action_id": "S-01A-A04",
+          "description": "Score and recommend framework with objective criteria",
+          "purpose": "Present LLM's framework recommendation to user with objective scoring",
+          "rationale": "LESSON-06: Use objective scoring criteria to make framework selection transparent and defensible",
+          "llm_instructions": [
+            "Based on steps A01-A03 analysis, score EACH framework on 5 criteria",
+            "Use scoring rubric below to calculate total scores",
+            "Select framework with HIGHEST total score",
+            "Prepare recommendation message including:",
+            "  1. Recommended framework (highest score)",
+            "  2. Score breakdown showing WHY this framework won",
+            "  3. Comparison with 2nd and 3rd place frameworks",
+            "  4. WHAT insights this framework will reveal",
+            "  5. WHICH NetworkX analyses will be enabled",
+            "Format as clear, structured message with scores visible"
+          ],
+          "framework_scoring_rubric": {
+            "criterion_1_domain_match": {
+              "name": "Domain Match",
+              "weight": 2.0,
+              "description": "How well does the framework's target domain match the system's domain?",
+              "scoring": {
+                "10": "Perfect match (e.g., microservices \u2192 UAF, workflows \u2192 Decision Flow)",
+                "7-9": "Good match with minor misalignment",
+                "4-6": "Partial match, framework can work but not ideal",
+                "1-3": "Poor match, framework not designed for this domain",
+                "0": "Complete mismatch"
+              }
+            },
+            "criterion_2_semantic_match": {
+              "name": "Semantic Match",
+              "weight": 2.5,
+              "description": "Do system entities match framework node/edge abstractions?",
+              "scoring": {
+                "10": "Perfect semantic match (states \u2192 Decision Flow, services \u2192 UAF, species \u2192 Ecological)",
+                "7-9": "Good match with reasonable interpretation",
+                "4-6": "Forced fit, requires mental gymnastics",
+                "1-3": "Poor fit, wrong abstractions (e.g., workflow steps as 'services')",
+                "0": "Semantics completely incompatible"
+              },
+              "critical": "MOST IMPORTANT criterion. Wrong abstractions = wrong insights."
+            },
+            "criterion_3_analysis_match": {
+              "name": "Required Analyses Availability",
+              "weight": 2.0,
+              "description": "Does framework enable the NetworkX analyses you need?",
+              "scoring": {
+                "10": "All required analyses available (e.g., need flow \u2192 framework has edge weights)",
+                "7-9": "Most analyses available, workarounds possible",
+                "4-6": "Some analyses available, significant gaps",
+                "1-3": "Few analyses available, major limitations",
+                "0": "Critical analyses blocked (e.g., need flow but no edge weights)"
+              }
+            },
+            "criterion_4_edge_weight_feasibility": {
+              "name": "Edge Weight Feasibility",
+              "weight": 1.5,
+              "description": "If framework requires edge weights, can you provide them?",
+              "scoring": {
+                "10": "Edge weights not needed OR easily obtainable (historical data, domain knowledge)",
+                "7-9": "Can estimate weights with reasonable accuracy",
+                "4-6": "Weights difficult to obtain, rough estimates only",
+                "1-3": "Weights very difficult, mostly guessing",
+                "0": "Cannot provide weights but framework requires them",
+                "N/A": "Framework doesn't use edge weights (score 10 by default)"
+              }
+            },
+            "criterion_5_complexity": {
+              "name": "Framework Complexity",
+              "weight": 1.0,
+              "description": "Prefer simpler frameworks if they meet requirements equally well",
+              "scoring": {
+                "10": "Very simple, easy to understand and apply",
+                "7-9": "Moderate complexity, manageable",
+                "4-6": "Complex, requires significant learning",
+                "1-3": "Very complex, steep learning curve",
+                "0": "Extremely complex, not practical"
+              },
+              "note": "Only use as tiebreaker if scores are close"
+            }
+          },
+          "scoring_process": {
+            "step_1": "Score each framework on all 5 criteria (0-10 scale)",
+            "step_2": "Multiply each score by its weight",
+            "step_3": "Sum weighted scores to get total (max 80 points)",
+            "step_4": "Select framework with highest total score",
+            "step_5": "Document scores for transparency"
+          },
+          "example_scoring_output": {
+            "system": "Reflow Workflow System",
+            "frameworks_scored": {
+              "decision_flow": {
+                "total_score": "9.2/10 (73.6/80 points)",
+                "breakdown": {
+                  "domain_match": "10/10 \u00d7 2.0 = 20.0 (workflow system)",
+                  "semantic_match": "10/10 \u00d7 2.5 = 25.0 (states, not services)",
+                  "analysis_match": "9/10 \u00d7 2.0 = 18.0 (flow, cycles, paths all available)",
+                  "edge_weight_feasibility": "8/10 \u00d7 1.5 = 12.0 (can estimate probabilities)",
+                  "complexity": "8/10 \u00d7 1.0 = 8.0 (moderate)"
+                },
+                "recommendation": "\u2705 RECOMMENDED - Highest score, perfect semantic match"
+              },
+              "uaf": {
+                "total_score": "4.2/10 (33.6/80 points)",
+                "breakdown": {
+                  "domain_match": "8/10 \u00d7 2.0 = 16.0 (engineered system)",
+                  "semantic_match": "2/10 \u00d7 2.5 = 5.0 (services \u2260 states)",
+                  "analysis_match": "3/10 \u00d7 2.0 = 6.0 (DAG ok, but no flow)",
+                  "edge_weight_feasibility": "2/10 \u00d7 1.5 = 3.0 (no weight support)",
+                  "complexity": "8/10 \u00d7 1.0 = 8.0 (simple)"
+                },
+                "recommendation": "\u274c NOT RECOMMENDED - Poor semantic match, missing flow analysis"
+              },
+              "complex_adaptive": {
+                "total_score": "6.5/10 (52.0/80 points)",
+                "breakdown": {
+                  "domain_match": "7/10 \u00d7 2.0 = 14.0 (emergent behavior)",
+                  "semantic_match": "6/10 \u00d7 2.5 = 15.0 (adaptive agents)",
+                  "analysis_match": "7/10 \u00d7 2.0 = 14.0 (cycles, SCC available)",
+                  "edge_weight_feasibility": "6/10 \u00d7 1.5 = 9.0 (interaction strength unclear)",
+                  "complexity": "5/10 \u00d7 1.0 = 5.0 (complex)"
+                },
+                "recommendation": "\u26a0\ufe0f SECOND PLACE - Could work but less clear than Decision Flow"
+              }
+            }
+          },
+          "recommendation_template": {
+            "recommended_framework": "framework_id (highest score)",
+            "total_score": "X.X/10 (XX.X/80 points)",
+            "score_breakdown": "Show weighted scores for all criteria",
+            "comparison_with_alternatives": "Show 2nd and 3rd place scores",
+            "rationale": "Why this framework won (semantic match, analysis availability)",
+            "reveals": [
+              "Insight 1",
+              "Insight 2"
+            ],
+            "enables_analyses": [
+              "flow",
+              "cycles",
+              "centrality"
+            ],
+            "alternatives_rejected": {
+              "framework_name": "Rejected due to low score on [criterion]"
+            }
+          },
+          "output": "Framework recommendation with objective scoring"
+        },
+        {
+          "action_id": "S-01A-A05",
+          "description": "Present recommendation to user and request confirmation",
+          "purpose": "USER MUST EXPLICITLY CONFIRM framework selection",
+          "user_prompt": {
+            "message_format": "Framework Recommendation:\n\nRecommended: {framework_name}\n\nRationale:\n{rationale}\n\nThis framework reveals:\n{reveals_list}\n\nNetworkX analyses enabled:\n{enabled_analyses}\n\nAlternatives considered:\n{alternatives_rejected}\n\n\u26a0\ufe0f IMPORTANT: Framework selection determines entire analysis approach. Switching later requires re-doing all architecture files.\n\nConfirm: Proceed with {framework_name}? [Y/N]",
+            "required": true,
+            "blocking": true
+          },
+          "user_response_handling": {
+            "if_yes": "Proceed to action S-01A-A06",
+            "if_no": "Ask user which framework they prefer, re-analyze with that framework, re-present confirmation",
+            "if_uncertain": "Provide additional guidance on framework tradeoffs"
+          },
+          "output": "User confirmation (Y/N)"
+        },
+        {
+          "action_id": "S-01A-A06",
+          "description": "User confirmed framework - load framework definition",
+          "condition": "User confirmed YES in S-01A-A05",
+          "command_pattern": "Read framework_registry.json and architectural_definitions_{framework}.json",
+          "file_locations": [
+            "{reflow_root}/definitions/framework_registry.json",
+            "{reflow_root}/definitions/architectural_definitions_{selected_framework}.json"
+          ],
+          "note": "If custom framework selected, LLM researches domain and creates custom definitions file"
+        },
+        {
+          "action_id": "S-01A-A07",
+          "description": "Update working_memory.json with framework selection and analysis results",
+          "purpose": "Document framework decision with complete rationale",
+          "updates": {
+            "framework_configuration": {
+              "framework_id": "{selected_framework_id}",
+              "framework_name": "{framework_display_name}",
+              "component_term": "{node_term}",
+              "connection_term": "{edge_term}",
+              "architecture_file_type": "{architecture_file_type}",
+              "selected_framework_rationale": "{detailed_rationale_from_A04}",
+              "user_confirmed": true,
+              "confirmation_timestamp": "{timestamp}"
+            },
+            "framework_analysis": {
+              "system_characteristics": "{summary_from_A01}",
+              "frameworks_evaluated": "{list_of_all_frameworks_analyzed}",
+              "recommended_analyses": "{enabled_analyses_from_A03}",
+              "alternatives_rejected": "{alternatives_from_A04}"
+            }
+          },
+          "store_in": "context/working_memory.json"
+        },
+        {
+          "action_id": "S-01A-A08",
+          "description": "If custom framework: LLM research and definition creation",
+          "condition": "selected_framework == 'custom'",
+          "if_custom": {
+            "research_steps": [
+              "1. Ask user to describe the system domain and key entities",
+              "2. Research domain literature (web search for 5-10 min)",
+              "3. Identify common modeling approaches for this domain",
+              "4. Create architectural_definitions_custom.json following pattern of other frameworks",
+              "5. Create custom_node_template.json for architecture files",
+              "6. User reviews and approves generated framework"
+            ],
+            "research_areas": [
+              "Standard modeling approaches for this domain",
+              "Common terminology (what are the 'nodes'? what are the 'edges'?)",
+              "Validation criteria specific to this domain",
+              "Quality attributes relevant to this system type"
+            ],
+            "output_files": [
+              "{reflow_root}/definitions/architectural_definitions_custom.json",
+              "{reflow_root}/templates/custom_node_template.json"
+            ]
+          }
+        },
+        {
+          "action_id": "S-01A-A09",
+          "description": "Display framework confirmation summary",
+          "output_message": "\u2713 Framework selected: {framework_name}\\n\u2713 User confirmed: {confirmation_timestamp}\\n\u2713 System will use '{component_term}' nodes connected by '{connection_term}' edges\\n\u2713 NetworkX analyses enabled: {enabled_analyses}\\n\u2713 Definitions: {definitions_path}\\n\u2713 Template: {template_file}\\n\\nFramework selection complete. Rationale documented in working_memory.json."
+        }
+      ],
+      "tools_used": [],
+      "outputs": [
+        "context/working_memory.json updated with framework selection and analysis rationale",
+        "Framework analysis documented: system characteristics, alternatives evaluated, NetworkX analyses enabled",
+        "Optionally: architectural_definitions_custom.json (if custom selected)"
+      ],
+      "gates": [
+        {
+          "gate_id": "G-S-01",
+          "name": "Framework Selection Confirmation (BLOCKING)",
+          "type": "BLOCKING",
+          "severity": "critical",
+          "rationale": "Framework selection is an architectural decision that determines entire analysis approach. User must explicitly confirm before proceeding.",
+          "checks": [
+            "System characteristics analyzed (working_memory.json framework_analysis.system_characteristics)",
+            "ALL frameworks evaluated - at least 5 frameworks (working_memory.json framework_analysis.frameworks_evaluated)",
+            "NetworkX analyses mapped to framework (working_memory.json framework_analysis.recommended_analyses)",
+            "User explicitly confirmed framework selection (working_memory.json framework_configuration.user_confirmed == true)",
+            "Detailed rationale documented (working_memory.json framework_configuration.selected_framework_rationale)"
+          ],
+          "failure_action": "Cannot proceed to S-02 without user confirmation. Re-execute S-01A-A05 to obtain confirmation.",
+          "success_message": "\u2713 Framework selection confirmed by user. Rationale and analysis documented."
+        }
+      ],
+      "notes": [
+        "CRITICAL: Framework selection is NOT a default choice - it requires explicit analysis",
+        "All frameworks map to the same core abstraction (nodes + edges) but enable different analyses",
+        "Wrong framework = wrong insights (Example: UAF on workflows misses decision logic)",
+        "Time investment: 10-15 min framework analysis saves hours of rework later",
+        "Tools like system_of_systems_graph_v2.py work across all frameworks via framework adapters"
+      ]
+    }
+  ],
+  "quality_gates": {
+    "gates": [
+      {
+        "gate_id": "G-S-01A",
+        "step_id": "S-01A",
+        "name": "Framework Selection Validation",
+        "checks": [
+          "Framework selected and recorded in working_memory.json",
+          "Framework rationale documented",
+          "User confirmed framework choice"
+        ],
+        "severity": "critical",
+        "blocking": true
+      }
+    ]
+  },
+  "next_workflow": "01a-approach_detection"
+}

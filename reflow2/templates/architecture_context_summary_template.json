@@ -1,0 +1,31 @@
+{
+  "template_version": "1.0",
+  "template_description": "Template for ARCHITECTURE_CONTEXT_SUMMARY.md to support visualization generation",
+  "purpose": "Provide comprehensive context for generating accurate Mermaid diagrams",
+  "template_content": "# Architecture Context Summary - {SYSTEM_NAME}\n\n## Overview\nThis document provides comprehensive context for generating architecture visualizations, ensuring all components, interfaces, and relationships are accurately represented.\n\n**Generated:** {TIMESTAMP}\n**System:** {SYSTEM_NAME}\n**Total Components:** {COMPONENT_COUNT}\n\n---\n\n## Level 1 Systems/Components\n\n| Component ID | Name | Type | Status | Parent System | Description |\n|--------------|------|------|--------|---------------|-------------|\n| {L1_COMPONENT_ID} | {L1_NAME} | {L1_TYPE} | {L1_STATUS} | {L1_PARENT} | {L1_DESCRIPTION} |\n\n---\n\n## Level 2 Components\n\n### Components within {LEVEL1_PARENT_NAME}\n\n| Component ID | Name | Type | Status | Level 1 Parent | Description |\n|--------------|------|------|--------|-----------------|-------------|\n| {L2_COMPONENT_ID} | {L2_NAME} | {L2_TYPE} | {L2_STATUS} | {L2_PARENT} | {L2_DESCRIPTION} |\n\n---\n\n## Level 3 Decompositions\n\n*Only list components that underwent Level 3 deep decomposition*\n\n| Component ID | Name | Level 2 Parent | Decomposition Type | Internal Elements |\n|--------------|------|----------------|--------------------|-----------------|\n| {L3_COMPONENT_ID} | {L3_NAME} | {L3_PARENT} | {L3_TYPE} | {L3_ELEMENTS} |\n\n---\n\n## Implementation Status Summary\n\n### Existing Components\n- **{EXISTING_COMPONENT}**: {EXISTING_DESCRIPTION}\n\n### Recommended Components  \n- **{RECOMMENDED_COMPONENT}**: {RECOMMENDED_DESCRIPTION}\n\n### Hypothetical Components\n- **{HYPOTHETICAL_COMPONENT}**: {HYPOTHETICAL_DESCRIPTION}\n\n### External Systems\n- **{EXTERNAL_SYSTEM}**: {EXTERNAL_DESCRIPTION}\n\n---\n\n## Primary Interfaces\n\n| Interface Name | Source Component | Target Component | Type | Protocol | Status |\n|----------------|------------------|------------------|------|----------|--------|\n| {INTERFACE_NAME} | {SOURCE_ID} | {TARGET_ID} | {INTERFACE_TYPE} | {PROTOCOL} | {STATUS} |\n\n---\n\n## External Dependencies\n\n| External System | Interface | Dependency Type | Integration Points |\n|-----------------|-----------|-----------------|--------------------|\n| {EXTERNAL_SYSTEM} | {EXT_INTERFACE} | {DEP_TYPE} | {INTEGRATION_POINTS} |\n\n---\n\n## Visualization Generation Notes\n\n### Level 1 Diagram Requirements\n- **Total Level 1 components:** {L1_COUNT}\n- **Recommended diagram type:** {L1_DIAGRAM_TYPE}\n- **Split strategy:** {L1_SPLIT_STRATEGY}\n\n### Level 2 Diagram Requirements\n- **Level 1 parents with Level 2 children:** {L2_PARENTS}\n- **Recommended organization:** {L2_ORGANIZATION}\n\n### Level 3 Diagram Requirements\n- **Components with Level 3 decomposition:** {L3_COMPONENTS}\n- **Recommended diagram types:** {L3_DIAGRAM_TYPES}\n\n---\n\n## Component Hierarchy Tree\n\n```\n{SYSTEM_NAME}/\n├── {LEVEL1_COMPONENT_1}/\n│   ├── {LEVEL2_COMPONENT_1_1}\n│   ├── {LEVEL2_COMPONENT_1_2}\n│   └── {LEVEL2_COMPONENT_1_3}/\n│       ├── {LEVEL3_ELEMENT_1}\n│       └── {LEVEL3_ELEMENT_2}\n├── {LEVEL1_COMPONENT_2}/\n│   └── {LEVEL2_COMPONENT_2_1}\n└── {EXTERNAL_SYSTEM} (external)\n```\n\n---\n\n## Quality Verification\n\n- [ ] All service_architecture.json files reviewed\n- [ ] Component classifications verified\n- [ ] Interface definitions complete\n- [ ] Implementation statuses confirmed\n- [ ] External dependencies identified\n- [ ] Hierarchy levels properly structured\n- [ ] Ready for visualization generation",
+  "required_sections": [
+    "Level 1 Systems/Components table",
+    "Level 2 Components tables (organized by Level 1 parent)",
+    "Level 3 Decompositions table (if applicable)",
+    "Implementation Status Summary with descriptions",
+    "Primary Interfaces table with protocols",
+    "External Dependencies table",
+    "Visualization Generation Notes",
+    "Component Hierarchy Tree",
+    "Quality Verification checklist"
+  ],
+  "data_sources": [
+    "specs/machine/index.json",
+    "specs/machine/service_arch/*/service_architecture.json",
+    "specs/machine/interfaces/*",
+    "working_memory.json for system context"
+  ],
+  "validation_rules": [
+    "All components from index.json must be included",
+    "Implementation status must be one of: existing/recommended/hypothetical",
+    "Interface types must match architectural_definitions.json",
+    "Hierarchy levels must be consistent with decomposition performed",
+    "External systems must be clearly identified",
+    "Component counts must match actual architecture files"
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "template_version": "2.0", 
+  "template_description": "Enhanced Service Requirements Document (SRD) for independent development",
+  "component_id": "UNIQUE_COMPONENT_IDENTIFIER",
+  "purpose": "WHAT_THIS_COMPONENT_DOES_IN_ONE_SENTENCE",
+  "system_type": "software|biological|social|mechanical|hybrid",
+  "responsibilities": [
+    "SPECIFIC_RESPONSIBILITY_1",
+    "SPECIFIC_RESPONSIBILITY_2"
+  ],
+  "functional_requirements": [
+    {
+      "requirement_id": "FR-001",
+      "description": "WHAT_MUST_BE_DONE",
+      "acceptance_criteria": "HOW_TO_VERIFY_COMPLETION",
+      "priority": "critical|high|medium|low",
+      "test_strategy": "HOW_TO_TEST_THIS_REQUIREMENT"
+    }
+  ],
+  "interfaces_provided": [
+    {
+      "interface_id": "INTERFACE_ID_1",
+      "contract_reference": "PATH_TO_ICD_FILE"
+    }
+  ],
+  "interfaces_consumed": [
+    {
+      "interface_id": "INTERFACE_ID_2", 
+      "contract_reference": "PATH_TO_ICD_FILE"
+    }
+  ],
+  "internal_state": {
+    "stateful": true,
+    "state_description": "WHAT_STATE_IS_MAINTAINED",
+    "state_persistence": "HOW_STATE_SURVIVES_RESTARTS_IF_APPLICABLE",
+    "state_invariants": [
+      "CONDITIONS_THAT_MUST_ALWAYS_HOLD"
+    ]
+  },
+  "data_model": {
+    "entities": [
+      {
+        "entity_name": "ENTITY_1",
+        "description": "WHAT_THIS_ENTITY_REPRESENTS",
+        "attributes": ["ATTRIBUTE_1", "ATTRIBUTE_2"],
+        "relationships": ["HOW_IT_RELATES_TO_OTHER_ENTITIES"]
+      }
+    ],
+    "invariants": [
+      "CONDITIONS_THAT_MUST_ALWAYS_HOLD_ACROSS_DATA"
+    ]
+  },
+  "non_functional_requirements": {
+    "performance": {
+      "throughput": "SPECIFIC_METRICS",
+      "latency": "SPECIFIC_METRICS",
+      "resource_usage": "MEMORY_CPU_STORAGE_LIMITS"
+    },
+    "reliability": {
+      "uptime_target": "99.9%|99.99%|specific_target",
+      "error_rate_target": "ACCEPTABLE_ERROR_RATE",
+      "recovery_time": "TIME_TO_RECOVER_FROM_FAILURE"
+    },
+    "scalability": {
+      "horizontal_scaling": "CAN_ADD_MORE_INSTANCES",
+      "vertical_scaling": "CAN_INCREASE_RESOURCES", 
+      "scaling_limits": "MAXIMUM_SCALE_CONSTRAINTS"
+    }
+  },
+  "development_guidance": {
+    "implementation_patterns": [
+      "RECOMMENDED_DESIGN_PATTERNS",
+      "ARCHITECTURAL_PATTERNS_TO_USE"
+    ],
+    "anti_patterns": [
+      "THINGS_TO_AVOID",
+      "COMMON_MISTAKES_TO_PREVENT"
+    ],
+    "testing_strategy": {
+      "unit_testing": "HOW_TO_TEST_INTERNAL_LOGIC",
+      "integration_testing": "HOW_TO_TEST_INTERFACE_INTERACTIONS",
+      "contract_testing": "HOW_TO_VERIFY_CONTRACT_COMPLIANCE"
+    },
+    "technology_constraints": [
+      "REQUIRED_TECHNOLOGIES",
+      "FORBIDDEN_TECHNOLOGIES"
+    ]
+  },
+  "dependency_analysis": {
+    "direct_dependencies": ["COMPONENT_B", "COMPONENT_C"],
+    "transitive_dependencies": {
+      "COMPONENT_D": ["via COMPONENT_B"],
+      "COMPONENT_E": ["via COMPONENT_C"]
+    },
+    "dependency_closure_complete": true,
+    "missing_dependencies": [],
+    "circular_dependencies": []
+  },
+  "integration_package": {
+    "development_artifacts": [
+      "component_specification.json",
+      "interfaces_provided/",
+      "interfaces_consumed/", 
+      "integration_tests/",
+      "data_models/",
+      "mocks/",
+      "development_guide.md"
+    ],
+    "contract_verification": {
+      "verification_tool": "PATH_TO_VERIFICATION_SCRIPT",
+      "automated_tests": "PATH_TO_AUTOMATED_TEST_SUITE",
+      "compliance_checks": [
+        "ALL_PROVIDED_INTERFACES_IMPLEMENTED",
+        "ALL_INTERFACE_CONTRACTS_SATISFIED",
+        "ALL_FUNCTIONAL_REQUIREMENTS_TESTABLE"
+      ]
+    }
+  },
+  "maturity_tracking": {
+    "current_level": 1,
+    "target_level": 5,
+    "maturity_levels": {
+      "1_identified": {
+        "complete": true,
+        "criteria": "Component identified with purpose"
+      },
+      "2_interfaces_defined": {
+        "complete": false,
+        "criteria": "All interfaces identified and contracts specified"
+      },
+      "3_requirements_complete": {
+        "complete": false,
+        "criteria": "All functional and non-functional requirements specified"
+      },
+      "4_tests_generated": {
+        "complete": false,
+        "criteria": "Integration tests and verification tools ready"
+      },
+      "5_ready_for_development": {
+        "complete": false,
+        "criteria": "Complete independent development package available"
+      }
+    },
+    "blocking_issues": [],
+    "next_actions": []
+  },
+  "system_agnostic_adaptations": {
+    "if_software": {
+      "deployment_model": "containerized|serverless|traditional",
+      "runtime_environment": "REQUIRED_RUNTIME_DETAILS"
+    },
+    "if_biological": {
+      "biological_system": "cellular|organ|organism",
+      "interaction_mechanisms": ["biochemical_pathways", "electrical_signals"]
+    },
+    "if_social": {
+      "organizational_context": "team|department|company|society",
+      "authority_relationships": ["REPORTING_STRUCTURES"],
+      "communication_channels": ["FORMAL_INFORMAL_CHANNELS"]
+    },
+    "if_mechanical": {
+      "physical_properties": "MATERIAL_PROPERTIES",
+      "force_mechanisms": ["FORCE_TRANSMISSION_METHODS"],
+      "environmental_constraints": ["OPERATING_CONDITIONS"]
+    }
+  }
+}

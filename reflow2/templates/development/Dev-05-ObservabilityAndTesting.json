@@ -1,0 +1,41 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Dev-05 Observability & Testing Pyramid",
+    "based_on": "service_development_workflow.json D7–D8",
+    "description": "Implement metrics, logs, traces, health; build out unit/contract/integration/e2e/perf tests."
+  },
+  "entry_conditions": {
+    "from": "Dev-04",
+    "artifacts": ["specs/machine/service_arch/<service>/testing_requirements.json", "specs/machine/service_arch/<service>/observability.json"]
+  },
+  "steps": [
+    { "id": "D7.1", "description": "Map telemetry signals to code injection points", "tool": "manual" },
+    { "id": "D7.2", "description": "Add structured logging with correlation IDs", "tool": "manual" },
+    { "id": "D7.3", "description": "Emit performance & business metrics", "tool": "manual" },
+    { "id": "D7.4", "description": "Add distributed tracing spans for critical flows", "tool": "manual" },
+    { "id": "D7.5", "description": "Implement health/liveness/readiness endpoints", "tool": "manual" },
+    { "id": "D8.1", "description": "Unit tests for domain & helpers", "tool": "manual" },
+    { "id": "D8.2", "description": "Contract tests for each external interface", "tool": "manual" },
+    { "id": "D8.3", "description": "Integration tests across service boundaries", "tool": "manual" },
+    { "id": "D8.4", "description": "End-to-end scenario tests for critical user flows", "tool": "manual" },
+    { "id": "D8.5", "description": "Performance smoke tests", "tool": "manual" },
+    { "id": "D8.6", "description": "Coverage & quality report generation", "tool": "bash" }
+  ],
+  "artifact_routing": {
+    "tests": "code/<service>/tests/",
+    "reports": "specs/human/reports/",
+    "machine_specs": "specs/machine/service_arch/<service>/"
+  },
+  "iteration_paths": {
+    "on_missing_contracts": "../architecture/Arch-06-ImplArtifactsAndCompletion.json",
+    "on_test_failures_requiring_contract_change": "../feature_update/FU-02-ArchReengineering.json"
+  },
+  "validation": {
+    "exit_criteria": ["Required telemetry present", "Critical paths tested", "Baseline perf within targets"]
+  },
+  "handoff": {
+    "produces": ["code/<service>/tests/", "specs/human/reports/*"],
+    "next_workflow": "../development/Dev-06-CICDAndDeployment.json"
+  }
+}

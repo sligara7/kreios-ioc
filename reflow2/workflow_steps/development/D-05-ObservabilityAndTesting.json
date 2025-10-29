@@ -1,0 +1,100 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "Dev-05 Observability & Testing Pyramid",
+    "based_on": "service_development_workflow.json D7–D8",
+    "description": "Implement metrics, logs, traces, health; build out unit/contract/integration/e2e/perf tests."
+  },
+  "entry_conditions": {
+    "from": "Dev-04",
+    "artifacts": ["specs/machine/service_arch/<service>/testing_requirements.json", "specs/machine/service_arch/<service>/observability.json"]
+  },
+  "steps": [
+    { "id": "D7.1", "description": "Map telemetry signals to code injection points", "tool": "manual" },
+    { "id": "D7.2", "description": "Add structured logging with correlation IDs", "tool": "manual" },
+    { "id": "D7.3", "description": "Emit performance & business metrics", "tool": "manual" },
+    { "id": "D7.4", "description": "Add distributed tracing spans for critical flows", "tool": "manual" },
+    { "id": "D7.5", "description": "Implement health/liveness/readiness endpoints", "tool": "manual" },
+    { "id": "D8.1", "description": "Unit tests for domain & helpers", "tool": "manual" },
+    { "id": "D8.2", "description": "Contract tests for each external interface", "tool": "manual" },
+    { "id": "D8.3", "description": "Integration tests across service boundaries", "tool": "manual" },
+    { "id": "D8.4", "description": "End-to-end scenario tests for critical user flows", "tool": "manual" },
+    { "id": "D8.5", "description": "Performance smoke tests", "tool": "manual" },
+    { "id": "D8.6", "description": "Coverage & quality report generation", "tool": "bash" }
+  ],
+  "artifact_routing": {
+    "tests": "code/<service>/tests/",
+    "reports": "specs/human/reports/",
+    "machine_specs": "specs/machine/service_arch/<service>/"
+  },
+  "iteration_paths": {
+    "on_missing_contracts": "../architecture/Arch-06-ImplArtifactsAndCompletion.json",
+    "on_test_failures_requiring_contract_change": "../feature_update/FU-02-ArchReengineering.json"
+  },
+  "validation": {
+    "exit_criteria": ["Required telemetry present", "Critical paths tested", "Baseline perf within targets"],
+    "quality_gates": {
+      "test_coverage": {
+        "tool": "pytest --cov=src --cov-report=json --cov-report=term",
+        "blocking": true,
+        "description": "Enforce minimum test coverage standards across service code",
+        "requirements": {
+          "overall_coverage_minimum": 60,
+          "domain_logic_coverage_minimum": 80,
+          "critical_paths_coverage": 100,
+          "all_endpoints_tested": true
+        },
+        "validation_steps": [
+          "Run pytest with coverage analysis",
+          "Check overall coverage >= 60%",
+          "Verify domain logic coverage >= 80%",
+          "Ensure all public endpoints have at least one test",
+          "Confirm critical business paths are fully tested"
+        ],
+        "output_analysis": {
+          "coverage_json": "Parse coverage.json for detailed metrics",
+          "uncovered_endpoints": "Identify endpoints without test coverage",
+          "domain_modules": "Calculate coverage for services/ and domain logic",
+          "critical_paths": "Verify business-critical flows are tested"
+        }
+      },
+      "test_quality": {
+        "description": "Verify test suite quality and completeness",
+        "blocking": true,
+        "checks": [
+          "Unit tests exist for all domain services",
+          "Integration tests cover service boundaries",
+          "Contract tests validate all external interfaces",
+          "End-to-end tests cover critical user flows",
+          "No skipped or disabled tests without justification"
+        ]
+      },
+      "observability_verification": {
+        "description": "Ensure observability instrumentation is properly implemented",
+        "blocking": false,
+        "checks": [
+          "Structured logging with correlation IDs present",
+          "Metrics exported for key business operations",
+          "Distributed tracing spans on critical paths",
+          "Health/readiness/liveness endpoints functional"
+        ]
+      }
+    },
+    "on_validation_failure": {
+      "action": "BLOCK",
+      "message": "Cannot proceed to Dev-06. Address test coverage and quality issues first.",
+      "remediation_steps": [
+        "Review coverage report to identify untested code",
+        "Add tests for uncovered endpoints and domain logic",
+        "Ensure all critical paths have comprehensive test coverage",
+        "Fix any failing tests before proceeding",
+        "Re-run: python3 workflow_driver.py <system> --validate"
+      ],
+      "coverage_report_location": "code/<service>/htmlcov/index.html"
+    }
+  },
+  "handoff": {
+    "produces": ["code/<service>/tests/", "specs/human/reports/*"],
+    "next_workflow": "../development/Dev-06-CICDAndDeployment.json"
+  }
+}

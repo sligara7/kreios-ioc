@@ -1,0 +1,251 @@
+{
+  "template_version": "1.0",
+  "template_id": "architecture_delta_report",
+  "template_name": "Architecture Delta Report Template",
+  "description": "Template for comparing two architecture graphs and documenting differences",
+  "created": "2025-10-26",
+  "last_updated": "2025-10-26",
+  "purpose": "Track architectural changes between different lifecycle stages (as-designed, as-built, as-fielded)",
+  "use_cases": [
+    "Compare as-designed to as-built architecture",
+    "Compare as-designed to as-fielded architecture",
+    "Compare as-built to as-fielded architecture",
+    "Track architectural drift over time"
+  ],
+  "delta_metadata": {
+    "report_id": "DELTA-{date}-{from_type}-{to_type}",
+    "comparison_date": "YYYY-MM-DD",
+    "from_architecture": {
+      "file_path": "path/to/from/architecture.json",
+      "architecture_type": "as_designed | as_built | as_fielded",
+      "generation_date": "YYYY-MM-DD"
+    },
+    "to_architecture": {
+      "file_path": "path/to/to/architecture.json",
+      "architecture_type": "as_designed | as_built | as_fielded",
+      "generation_date": "YYYY-MM-DD"
+    },
+    "comparison_tool": "compare_architectures.py v{version}"
+  },
+  "similarity_score": {
+    "overall": 0.0,
+    "interpretation": "HIGH (>=0.8) | MEDIUM (0.5-0.8) | LOW (<0.5)",
+    "breakdown": {
+      "nodes": 0.0,
+      "edges": 0.0,
+      "properties": 0.0
+    },
+    "note": "Jaccard similarity: overall = 0.4 × nodes + 0.4 × edges + 0.2 × properties"
+  },
+  "node_deltas": {
+    "added": [
+      {
+        "node_id": "new_service_id",
+        "node_type": "service | component | deployed_service",
+        "name": "Service Name",
+        "properties": {
+          "description": "Why this node was added"
+        }
+      }
+    ],
+    "removed": [
+      {
+        "node_id": "removed_service_id",
+        "node_type": "service | component | deployed_service",
+        "name": "Service Name",
+        "properties": {
+          "description": "Why this node was removed"
+        }
+      }
+    ],
+    "modified": [
+      {
+        "node_id": "modified_service_id",
+        "changed_properties": [
+          "property_name_1",
+          "property_name_2"
+        ],
+        "from": {
+          "property_name_1": "old_value",
+          "property_name_2": "old_value"
+        },
+        "to": {
+          "property_name_1": "new_value",
+          "property_name_2": "new_value"
+        }
+      }
+    ]
+  },
+  "edge_deltas": {
+    "added": [
+      {
+        "from": "source_service_id",
+        "to": "target_service_id",
+        "edge_type": "interface | runtime_connection",
+        "interface_type": "rest_api | grpc | message_queue",
+        "properties": {
+          "description": "Why this edge was added"
+        }
+      }
+    ],
+    "removed": [
+      {
+        "from": "source_service_id",
+        "to": "target_service_id",
+        "edge_type": "interface | runtime_connection",
+        "interface_type": "rest_api | grpc | message_queue",
+        "properties": {
+          "description": "Why this edge was removed"
+        }
+      }
+    ],
+    "modified": [
+      {
+        "from_node": "source_service_id",
+        "to_node": "target_service_id",
+        "changed_properties": [
+          "property_name_1",
+          "property_name_2"
+        ],
+        "from": {
+          "property_name_1": "old_value",
+          "property_name_2": "old_value"
+        },
+        "to": {
+          "property_name_1": "new_value",
+          "property_name_2": "new_value"
+        }
+      }
+    ]
+  },
+  "change_classification": {
+    "breaking_changes": [
+      {
+        "change_id": "BC-NODE-{node_id} | BC-EDGE-{from}-{to} | BC-MOD-{node_id}",
+        "type": "removed_node | removed_interface | modified_capabilities",
+        "description": "Human-readable description of the breaking change",
+        "impact": "Description of impact on dependent services or system",
+        "recommendation": "Suggested mitigation or fix"
+      }
+    ],
+    "non_breaking_changes": [
+      {
+        "change_id": "NBC-NODE-{node_id} | NBC-EDGE-{from}-{to} | NBC-MOD-{node_id}",
+        "type": "added_node | added_interface | modified_node",
+        "description": "Human-readable description of the non-breaking change",
+        "impact": "Description of positive impact (e.g., 'Backward compatible addition')"
+      }
+    ]
+  },
+  "recommendations": [
+    "Actionable recommendation 1 based on similarity score",
+    "Actionable recommendation 2 based on breaking changes",
+    "Actionable recommendation 3 based on non-breaking changes"
+  ],
+  "analysis_notes": {
+    "interpretation_guide": {
+      "similarity_overall": {
+        ">=0.8": "HIGH similarity - excellent alignment between architectures",
+        "0.5-0.8": "MEDIUM similarity - some drift detected, review deltas",
+        "<0.5": "LOW similarity - significant drift, investigate causes"
+      },
+      "breaking_changes": {
+        "count_>0": "CRITICAL: Breaking changes detected - version increment required",
+        "count_=0": "No breaking changes detected - architectures are compatible"
+      },
+      "non_breaking_changes": {
+        "description": "Additions that don't break existing functionality",
+        "action": "Consider incorporating into as-designed architecture for future iterations"
+      }
+    },
+    "common_delta_patterns": {
+      "designed_to_built": {
+        "typical_changes": [
+          "Endpoints added for debugging/admin",
+          "Dependencies changed due to implementation constraints",
+          "Interfaces simplified or combined"
+        ],
+        "acceptable_drift": "10-20% (similarity 0.8-0.9)",
+        "red_flags": "Removed interfaces, changed data models without versioning"
+      },
+      "designed_to_fielded": {
+        "typical_changes": [
+          "Port mappings changed for deployment",
+          "Services scaled (replicas)",
+          "Configuration environment-specific"
+        ],
+        "acceptable_drift": "20-30% (similarity 0.7-0.8)",
+        "red_flags": "Services not running, health checks failing, unexpected topology"
+      },
+      "built_to_fielded": {
+        "typical_changes": [
+          "Environment variables",
+          "Resource limits",
+          "Network configuration"
+        ],
+        "acceptable_drift": "10-15% (similarity 0.85-0.9)",
+        "red_flags": "Code vs deployment mismatch, configuration drift"
+      }
+    }
+  },
+  "usage_examples": {
+    "compare_designed_to_built": {
+      "command": "python3 {reflow_root}/tools/compare_architectures.py --from specs/machine/graphs/system_of_systems_graph.json --to specs/machine/graphs/system_of_systems_graph_as_built.json --output specs/machine/graphs/architecture_delta_designed_to_built_{date}.json",
+      "purpose": "Validate implementation against design",
+      "when": "After development workflow complete (D-06)"
+    },
+    "compare_designed_to_fielded": {
+      "command": "python3 {reflow_root}/tools/compare_architectures.py --from specs/machine/graphs/system_of_systems_graph.json --to specs/machine/graphs/system_of_systems_graph_as_fielded.json --output specs/machine/graphs/architecture_delta_designed_to_fielded_{date}.json",
+      "purpose": "Validate deployed system against design",
+      "when": "After operational testing (TO-06)"
+    },
+    "compare_built_to_fielded": {
+      "command": "python3 {reflow_root}/tools/compare_architectures.py --from specs/machine/graphs/system_of_systems_graph_as_built.json --to specs/machine/graphs/system_of_systems_graph_as_fielded.json --output specs/machine/graphs/architecture_delta_built_to_fielded_{date}.json",
+      "purpose": "Identify deployment-specific changes",
+      "when": "After operational testing (TO-06)"
+    }
+  },
+  "versioning": {
+    "semantic_versioning": "Use semantic versioning for architecture graphs",
+    "version_increment_rules": {
+      "major": "Breaking changes (removed nodes/edges, incompatible interface changes)",
+      "minor": "Non-breaking additions (new nodes/edges, backward-compatible changes)",
+      "patch": "Property modifications only (no structural changes)"
+    },
+    "example": "If designed architecture is v1.0.0 and delta shows breaking changes → as-built should be v2.0.0"
+  },
+  "quality_gates": {
+    "G-D-06": {
+      "workflow": "03-development",
+      "name": "As-Built Architecture Validation",
+      "checks": [
+        "As-built graph generated successfully",
+        "Delta report created",
+        "Similarity score >= 0.7 (70% match to designed architecture)",
+        "All breaking changes documented with rationale"
+      ],
+      "blocking": false
+    },
+    "G-TO-06": {
+      "workflow": "04-testing_operations",
+      "name": "As-Fielded Architecture Validation",
+      "checks": [
+        "As-fielded graph generated successfully",
+        "All deployed services healthy",
+        "Delta reports created",
+        "Similarity score >= 0.6 (60% match to designed architecture)",
+        "All critical deviations documented with rationale"
+      ],
+      "blocking": false
+    }
+  },
+  "related_templates": [
+    "system_of_systems_graph_template.json",
+    "service_architecture_template.json"
+  ],
+  "related_tools": [
+    "generate_as_built_architecture.py",
+    "generate_as_fielded_architecture.py",
+    "compare_architectures.py"
+  ]
+}

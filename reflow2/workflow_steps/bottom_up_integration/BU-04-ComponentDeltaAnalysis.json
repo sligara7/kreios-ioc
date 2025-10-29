@@ -1,0 +1,115 @@
+{
+  "workflow_metadata": {
+    "version": "1.0.0",
+    "name": "BU-04 Component Delta Analysis",
+    "description": "Generate EXACT component-level changes (deltas) - function/class/module level granularity - required for integration"
+  },
+  "entry_conditions": {
+    "from": "BU-03-IntegrationGapAnalysis",
+    "artifacts": [
+      "specs/machine/component_inventory.json",
+      "specs/machine/integration_gaps.json"
+    ]
+  },
+  "steps": [
+    {
+      "id": "BU-04.1",
+      "name": "Generate Component Deltas",
+      "description": "For each component requiring changes, generate exact delta specification",
+      "tool": "{reflow_root}/tools/generate_component_deltas.py",
+      "command": "python3 {reflow_root}/tools/generate_component_deltas.py --component {component_id} --gaps {system_root}/specs/machine/integration_gaps.json --inventory {system_root}/specs/machine/component_inventory.json --output {system_root}/specs/machine/component_deltas/{component_id}_delta.json --granularity module",
+      "granularity_options": ["function", "class", "module", "file"],
+      "outputs": [
+        "Component delta JSON for each component",
+        "Exact code changes: new_function, modify_function, new_module, new_class, etc.",
+        "Function signatures, implementation notes, pseudocode",
+        "Dependency changes (added/removed/upgraded packages)",
+        "Configuration changes (environment variables, config files)",
+        "Test requirements for each change",
+        "Effort estimates per change"
+      ]
+    },
+    {
+      "id": "BU-04.2",
+      "name": "Review Delta Feasibility",
+      "description": "Review each component delta to ensure changes are feasible and don't break existing functionality",
+      "tool": "manual",
+      "review_criteria": [
+        "No breaking changes to existing APIs (unless explicitly planned)",
+        "Backward compatibility maintained",
+        "Dependencies are compatible",
+        "Estimated effort is reasonable",
+        "Test coverage plan is adequate"
+      ]
+    },
+    {
+      "id": "BU-04.3",
+      "name": "Validate Component Deltas",
+      "description": "Run validation tool to check delta feasibility against actual component source code",
+      "tool": "{reflow_root}/tools/validate_component_deltas.py",
+      "command": "python3 {reflow_root}/tools/validate_component_deltas.py --component-delta {system_root}/specs/machine/component_deltas/{component_id}_delta.json --component-source /path/to/{component}/src --check-feasibility",
+      "validation_checks": [
+        "Proposed changes don't conflict with existing code",
+        "New functions/classes don't duplicate existing ones",
+        "Dependencies are compatible with existing requirements",
+        "Breaking change flag is accurate"
+      ]
+    },
+    {
+      "id": "BU-04.4",
+      "name": "Prioritize Component Deltas",
+      "description": "Prioritize delta implementation based on integration phases",
+      "tool": "manual",
+      "outputs": ["Prioritized delta implementation order"]
+    },
+    {
+      "id": "BU-04.5",
+      "name": "Generate Delta Summary Report",
+      "description": "Create human-readable summary of all component deltas",
+      "tool": "manual",
+      "output_path": "{system_root}/docs/COMPONENT_DELTAS_SUMMARY.md",
+      "includes": [
+        "Total components requiring changes",
+        "Total changes by type (new_function, modify_function, etc.)",
+        "Estimated total effort",
+        "Breaking changes count",
+        "High-risk changes",
+        "Dependencies to add/upgrade/remove"
+      ]
+    }
+  ],
+  "validation": {
+    "checks": [
+      "All critical gaps have corresponding component deltas",
+      "All deltas have effort estimates",
+      "All deltas specify exact locations (file paths, function/class names)",
+      "Test requirements defined for all changes",
+      "Dependency changes are documented"
+    ]
+  },
+  "handoff": {
+    "produces": [
+      "specs/machine/component_deltas/{component_id}_delta.json (per component)",
+      "docs/COMPONENT_DELTAS_SUMMARY.md"
+    ],
+    "next_workflow": "BU-05-IntegrationArchitectureDesign.json"
+  },
+  "llm_agent_guidance": {
+    "critical_reminders": [
+      "This is the MOST CRITICAL step - generates EXACT code changes needed",
+      "Granularity matters: function-level is most common, module-level for complex changes",
+      "For each change, specify: exact file path, function signature, rationale, effort",
+      "generate_component_deltas.py uses LLM to analyze code and suggest changes",
+      "Validate deltas against actual source code to prevent conflicts",
+      "Breaking changes MUST be flagged - affects version increment (major vs minor)"
+    ],
+    "delta_example": {
+      "change_id": "DELTA-001",
+      "change_type": "new_function",
+      "location": "src/auth_library/session.py",
+      "function_signature": "def get_user_permissions(user_id: str, resource: str) -> List[str]:",
+      "rationale": "Enable permission checking from rbac_service",
+      "estimated_effort": "2 hours"
+    }
+  }
+}

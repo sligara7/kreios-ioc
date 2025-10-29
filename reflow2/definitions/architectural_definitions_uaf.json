@@ -1,0 +1,687 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "framework": "UAF 1.2",
+    "framework_standard": "ISO/IEC 19540-1:2022 and ISO/IEC 19540-2:2022",
+    "description": "Architectural definitions for LLM-driven system decomposition based on Unified Architecture Framework (UAF) version 1.2",
+    "purpose": "Standardized terminology for service_architecture.json generation and system analysis aligned with UAF 1.2 Domain Metamodel (DMM) and UAF Modeling Language (UAFML)",
+    "last_updated": "2025-10-14",
+    "uaf_components": {
+      "dmm": "Domain Metamodel (DMM) - Part 1: Formal metamodel with VIEW specifications",
+      "uafml": "UAF Modeling Language (UAFML) - Part 2: UML/SysML implementation",
+      "appendices": ["Traceability", "Sample Problem", "Enterprise Architecture Guide"]
+    }
+  },
+  "core_concepts": {
+    "service": {
+      "definition": "Black-box functionality or capability exposed to external consumers",
+      "characteristics": [
+        "Encapsulates internal implementation details",
+        "Provides specific capabilities through well-defined interfaces",
+        "Can be composed of multiple internal components/functions",
+        "Has clear boundaries and responsibilities"
+      ],
+      "uaf_reference": "ServiceFunction and ServiceInterface specifications from UAF 1.2 DMM with enhanced Service-Resource relationships",
+      "examples": [
+        "Queue Server Service",
+        "Device Monitoring Service", 
+        "Coordination Service",
+        "Authentication Service"
+      ]
+    },
+    "interface": {
+      "definition": "Boundary specification for data exchange and communication between services",
+      "characteristics": [
+        "Defines data transport mechanisms and protocols",
+        "Specifies communication patterns (request/response, publish/subscribe, etc.)",
+        "Enables but does not perform data transformations",
+        "External boundaries for system integration"
+      ],
+      "uaf_reference": "ServiceInterface and ResourceServiceInterface contracts from UAF 1.2 with enhanced Service-to-Resource connectivity and Information Element flows",
+      "examples": [
+        "REST API",
+        "WebSocket connection",
+        "EPICS Channel Access protocol",
+        "Redis pub/sub interface",
+        "HTTP/HTTPS endpoints"
+      ]
+    },
+    "function": {
+      "definition": "Internal behavior or operation within a service that transforms inputs to outputs",
+      "characteristics": [
+        "Performs specific data processing or business logic",
+        "Internal to service implementation",
+        "May coordinate with other functions within the same service",
+        "Not directly exposed to external consumers"
+      ],
+      "uaf_reference": "Function specifications from UAF 1.2 DMM with Activity and Behavior modeling patterns",
+      "examples": [
+        "Data validation function",
+        "Message routing function",
+        "Authentication verification function",
+        "State management function"
+      ]
+    }
+  },
+  "hierarchy_levels": {
+    "level_0": {
+      "name": "System Classification",
+      "purpose": "Determine the starting point for decomposition",
+      "options": {
+        "system_of_systems": {
+          "description": "Multiple independent systems working together",
+          "decompose_to": "Level 1: Individual Systems, Level 2: System Components",
+          "example": "Distributed microservices platform"
+        },
+        "individual_system": {
+          "description": "Single cohesive system with multiple components",
+          "decompose_to": "Level 1: Major Components, Level 2: Minor Components",
+          "example": "Web application with frontend, backend, database"
+        },
+        "major_component": {
+          "description": "Large component within a system",
+          "decompose_to": "Level 1: Submodules, Level 2: Functions/Classes",
+          "example": "Authentication service with user management and token handling"
+        }
+      }
+    },
+    "level_1": {
+      "name": "Primary Decomposition",
+      "purpose": "Break down Level 0 into major architectural elements",
+      "characteristics": [
+        "Major functional boundaries",
+        "Independent development possible",
+        "Clear interface definitions required"
+      ]
+    },
+    "level_2": {
+      "name": "Secondary Decomposition", 
+      "purpose": "Break down Level 1 elements into detailed components",
+      "characteristics": [
+        "Detailed implementation guidance",
+        "Service-level specifications",
+        "Interface contract definitions"
+      ]
+    },
+    "level_3": {
+      "name": "Deep Decomposition (Conditional)",
+      "purpose": "Additional decomposition for complex or critical interfaces",
+      "trigger_conditions": [
+        "Interface marked 'recommended' with no existing implementation",
+        "Interface requires >3 method calls or data transformation",
+        "Interface is safety/security critical",
+        "Interface coordinates >2 services",
+        "Interface bridges with external systems",
+        "Interface is performance bottleneck (>5 connections)"
+      ]
+    }
+  },
+  "implementation_status": {
+    "existing": {
+      "definition": "Component is already implemented and operational",
+      "justification_required": "Reference to existing code, deployment, or documentation"
+    },
+    "recommended": {
+      "definition": "Component should be implemented based on analysis",
+      "justification_required": "Rationale for why this component is needed"
+    },
+    "hypothetical": {
+      "definition": "Component might be needed but requires further investigation",
+      "justification_required": "Uncertainty factors and investigation needed"
+    }
+  },
+  "validation_types": {
+    "template_validation": {
+      "purpose": "Ensure all files conform to required JSON schemas",
+      "tool": "validate_architecture.py"
+    },
+    "graph_validation": {
+      "purpose": "Detect architectural issues like cycles and orphaned nodes",
+      "tool": "system_of_systems_graph.py"
+    },
+    "interface_validation": {
+      "purpose": "Verify interface contracts are complete and consistent",
+      "tool": "generate_interface_contracts.py"
+    },
+    "deployment_validation": {
+      "purpose": "Reconcile logical architecture with deployment reality",
+      "method": "Manual analysis of deployment artifacts"
+    }
+  },
+  "uaf_view_mappings": {
+    "description": "Mapping between UAF 1.2 standard views and Reflow artifacts to show compliance",
+    "metadata_view": {
+      "uaf_name": "Metadata (Md)",
+      "purpose": "Project information, taxonomies, standards, and references",
+      "reflow_artifacts": [
+        "working_memory.json - Project paths and workflow state",
+        "version_manifest.json - Architecture versioning and history",
+        "README.md files - Project documentation"
+      ],
+      "uaf_diagrams": ["Md-Taxonomy", "Md-Standards"],
+      "compliance_level": "partial"
+    },
+    "operational_view": {
+      "uaf_name": "Operational (Op)",
+      "purpose": "What operational activities are performed and who performs them",
+      "reflow_artifacts": [
+        "docs/SYSTEM_MISSION_STATEMENT.md - Mission and purpose",
+        "docs/USER_SCENARIOS.md - Operational scenarios and use cases",
+        "docs/SUCCESS_CRITERIA.md - Operational success metrics",
+        "specs/human/service_arch/{service}/system_description.md - Service operational context"
+      ],
+      "uaf_diagrams": ["Op-Activity", "Op-Scenario", "Op-Performer"],
+      "compliance_level": "informal"
+    },
+    "service_view": {
+      "uaf_name": "Service (Sv)",
+      "purpose": "What services are provided, how they interact, and their contracts",
+      "reflow_artifacts": [
+        "service_architecture.json - Service definitions and interfaces",
+        "specs/machine/interfaces/*.json - Interface Contract Documents (ICDs)",
+        "specs/machine/graphs/system_of_systems_graph.json - Service interactions",
+        "specs/machine/index.json - Service registry"
+      ],
+      "uaf_diagrams": ["Sv-Service", "Sv-Interface", "Sv-Function"],
+      "compliance_level": "formal"
+    },
+    "resource_view": {
+      "uaf_name": "Resource (Rs)",
+      "purpose": "What resources are needed (compute, storage, network, software)",
+      "reflow_artifacts": [
+        "service_architecture.json - deployment section (containers, databases, dependencies)",
+        "docker-compose.yml - Resource orchestration",
+        "deploy/ directory - Kubernetes/infrastructure definitions",
+        "services/{service}/pyproject.toml or requirements.txt - Software dependencies"
+      ],
+      "uaf_diagrams": ["Rs-Resource", "Rs-Port", "Rs-Connector"],
+      "compliance_level": "partial"
+    },
+    "project_view": {
+      "uaf_name": "Project (Pr)",
+      "purpose": "Project timelines, milestones, and capabilities being delivered",
+      "reflow_artifacts": [
+        "context/step_progress_tracker.json - Workflow progress",
+        "context/working_memory.json - Current workflow state",
+        "specs/machine/architecture_issues.json - Quality gate tracking"
+      ],
+      "uaf_diagrams": ["Pr-Project", "Pr-Roadmap"],
+      "compliance_level": "informal"
+    },
+    "actual_resource_view": {
+      "uaf_name": "Actual Resource (Ar)",
+      "purpose": "Physical/deployed resources and their actual state",
+      "reflow_artifacts": [
+        "docker-compose.yml - Deployed containers",
+        "deploy/ directory - Actual infrastructure configurations",
+        ".github/workflows/ or .gitlab-ci.yml - CI/CD deployments"
+      ],
+      "uaf_diagrams": ["Ar-Actual"],
+      "compliance_level": "partial"
+    },
+    "information_view": {
+      "uaf_name": "Information (If)",
+      "purpose": "Information/data structures exchanged between services",
+      "reflow_artifacts": [
+        "service_architecture.json - data_models section",
+        "specs/machine/interfaces/*.json - Interface data schemas",
+        "services/{service}/src/models/ - Implementation data models"
+      ],
+      "uaf_diagrams": ["If-Information"],
+      "compliance_level": "partial"
+    },
+    "compliance_notes": {
+      "formal": "Direct 1:1 mapping with UAF elements, machine-readable and validated",
+      "partial": "Contains UAF-equivalent information but in different format",
+      "informal": "Human-readable documents serving UAF view purpose without formal structure"
+    }
+  },
+  "validation_rules": {
+    "description": "Comprehensive validation rules enforced during architecture development",
+    "VR-01_template_compliance": {
+      "rule_id": "VR-01",
+      "name": "Template Compliance",
+      "severity": "error",
+      "description": "All service_architecture.json files must conform to required JSON schema",
+      "enforcement_tool": "validate_architecture.py",
+      "enforcement_phase": "SE-05 (after each service architecture created)",
+      "quality_gate": "QG-01: Architecture Validation",
+      "failure_action": "Block progression until fixed"
+    },
+    "VR-02_circular_dependencies": {
+      "rule_id": "VR-02",
+      "name": "Circular Dependency Detection",
+      "severity": "error",
+      "description": "Services must not have circular dependencies in the system graph",
+      "enforcement_tool": "system_of_systems_graph.py --analyze-issues",
+      "enforcement_phase": "SE-06 (system graph generation)",
+      "quality_gate": "QG-01: Architecture Validation",
+      "failure_action": "Block progression, recommend architectural refactoring"
+    },
+    "VR-03_orphaned_nodes": {
+      "rule_id": "VR-03",
+      "name": "Orphaned Node Detection",
+      "severity": "warning",
+      "description": "Services should not be isolated without any interfaces to other services",
+      "enforcement_tool": "system_of_systems_graph.py --analyze-issues",
+      "enforcement_phase": "SE-06",
+      "quality_gate": "QG-01: Architecture Validation",
+      "failure_action": "Warn but allow progression with justification"
+    },
+    "VR-04_missing_interfaces": {
+      "rule_id": "VR-04",
+      "name": "Missing Interface Detection",
+      "severity": "warning",
+      "description": "Dependencies declared but interfaces not defined",
+      "enforcement_tool": "system_of_systems_graph.py --analyze-issues",
+      "enforcement_phase": "SE-06",
+      "quality_gate": "QG-02: Interface Registry Consistency",
+      "failure_action": "Warn and recommend interface definition"
+    },
+    "VR-05_protocol_consistency": {
+      "rule_id": "VR-05",
+      "name": "Protocol Consistency",
+      "severity": "warning",
+      "description": "Connected services should use compatible communication protocols",
+      "enforcement_tool": "system_of_systems_graph.py --analyze-issues",
+      "enforcement_phase": "SE-06",
+      "quality_gate": "QG-02: Interface Registry Consistency",
+      "failure_action": "Warn and suggest protocol alignment"
+    },
+    "VR-06_async_sync_consistency": {
+      "rule_id": "VR-06",
+      "name": "Async/Sync Framework Consistency",
+      "severity": "warning",
+      "description": "Async HTTP frameworks (uvicorn/FastAPI) should use async database drivers (asyncpg, motor, async SQLAlchemy)",
+      "enforcement_tool": "system_of_systems_graph.py --analyze-issues",
+      "enforcement_phase": "SE-06",
+      "quality_gate": "QG-01: Architecture Validation",
+      "failure_action": "Warn and recommend async database driver",
+      "rationale": "Prevents blocking I/O in async event loops, improves performance and scalability"
+    },
+    "VR-07_security_gaps": {
+      "rule_id": "VR-07",
+      "name": "Security Gap Detection",
+      "severity": "warning",
+      "description": "Public-facing services should have authentication/authorization defined",
+      "enforcement_tool": "system_of_systems_graph.py --analyze-issues",
+      "enforcement_phase": "SE-06",
+      "quality_gate": "QG-08: Security Scanning",
+      "failure_action": "Warn and recommend security hardening"
+    },
+    "VR-08_performance_bottlenecks": {
+      "rule_id": "VR-08",
+      "name": "Performance Bottleneck Detection",
+      "severity": "info",
+      "description": "Services with high fan-in (>5 dependencies) may be bottlenecks",
+      "enforcement_tool": "system_of_systems_graph.py --analyze-issues",
+      "enforcement_phase": "SE-06",
+      "quality_gate": "QG-09: Performance Testing",
+      "failure_action": "Informational only, suggest load testing"
+    },
+    "VR-09_contract_completeness": {
+      "rule_id": "VR-09",
+      "name": "Interface Contract Completeness",
+      "severity": "error",
+      "description": "All interfaces must have complete ICDs with endpoints, data models, and error handling",
+      "enforcement_tool": "generate_interface_contracts.py",
+      "enforcement_phase": "AV-02 (ICD generation)",
+      "quality_gate": "QG-03: Contract Completeness",
+      "failure_action": "Block progression until ICDs completed"
+    },
+    "VR-10_test_coverage": {
+      "rule_id": "VR-10",
+      "name": "Test Coverage Requirement",
+      "severity": "error",
+      "description": "Services must achieve ≥80% code coverage with passing tests",
+      "enforcement_tool": "pytest --cov (in service directory)",
+      "enforcement_phase": "D-03 (implementation complete)",
+      "quality_gate": "QG-04: Test Coverage ≥80%",
+      "failure_action": "Block progression until coverage achieved"
+    },
+    "VR-11_observability": {
+      "rule_id": "VR-11",
+      "name": "Observability Instrumentation",
+      "severity": "error",
+      "description": "Services must implement logging, metrics, and tracing instrumentation",
+      "enforcement_tool": "Manual code review or static analysis",
+      "enforcement_phase": "D-03",
+      "quality_gate": "QG-05: Observability Instrumentation",
+      "failure_action": "Block progression until instrumented"
+    },
+    "VR-12_docker_validation": {
+      "rule_id": "VR-12",
+      "name": "Docker Compose Validation",
+      "severity": "error",
+      "description": "docker-compose.yml must pass validation and successfully start all services",
+      "enforcement_tool": "docker-compose config && docker-compose up",
+      "enforcement_phase": "TO-03 (deployment validation)",
+      "quality_gate": "QG-06: Docker Compose Validation",
+      "failure_action": "Block progression until deployment works"
+    },
+    "VR-13_operational_testing": {
+      "rule_id": "VR-13",
+      "name": "Operational Testing",
+      "severity": "error",
+      "description": "System must pass DTE (Development Test Environment) and OTE (Operational Test Environment) testing",
+      "enforcement_tool": "pytest integration tests, end-to-end tests",
+      "enforcement_phase": "TO-05 (operational testing)",
+      "quality_gate": "QG-07: Operational Testing",
+      "failure_action": "Block progression until tests pass"
+    }
+  },
+  "quality_attributes": {
+    "description": "Non-functional requirements and their measurement criteria",
+    "performance": {
+      "definition": "System responsiveness and throughput under load",
+      "metrics": [
+        {
+          "name": "latency_p50",
+          "unit": "milliseconds",
+          "target": "<100ms",
+          "measurement": "HTTP response time at 50th percentile"
+        },
+        {
+          "name": "latency_p95",
+          "unit": "milliseconds",
+          "target": "<500ms",
+          "measurement": "HTTP response time at 95th percentile"
+        },
+        {
+          "name": "throughput",
+          "unit": "requests per second",
+          "target": "≥100 rps per service",
+          "measurement": "Sustained request rate under normal load"
+        }
+      ],
+      "validation_gate": "QG-09: Performance Testing",
+      "severity": "warning",
+      "documentation_location": "specs/human/service_arch/{service}/system_description.md - Performance section"
+    },
+    "security": {
+      "definition": "Protection against unauthorized access and data breaches",
+      "metrics": [
+        {
+          "name": "authentication",
+          "measurement": "All public APIs require valid authentication tokens",
+          "enforcement": "API gateway or service-level middleware"
+        },
+        {
+          "name": "authorization",
+          "measurement": "Role-based access control (RBAC) enforced on sensitive operations",
+          "enforcement": "Permission checks in business logic"
+        },
+        {
+          "name": "encryption_in_transit",
+          "measurement": "TLS 1.2+ for all external communications",
+          "enforcement": "HTTPS/TLS configuration"
+        },
+        {
+          "name": "encryption_at_rest",
+          "measurement": "Sensitive data encrypted in databases",
+          "enforcement": "Database encryption or application-level encryption"
+        },
+        {
+          "name": "vulnerability_scanning",
+          "measurement": "No critical vulnerabilities in dependencies",
+          "enforcement": "safety, bandit, or similar tools in CI/CD"
+        }
+      ],
+      "validation_gate": "QG-08: Security Scanning",
+      "severity": "warning",
+      "documentation_location": "service_architecture.json - security section"
+    },
+    "reliability": {
+      "definition": "System ability to function correctly over time",
+      "metrics": [
+        {
+          "name": "uptime",
+          "unit": "percentage",
+          "target": "≥99.9%",
+          "measurement": "Service availability over 30-day period"
+        },
+        {
+          "name": "error_rate",
+          "unit": "percentage",
+          "target": "<0.1%",
+          "measurement": "Percentage of requests resulting in 5xx errors"
+        },
+        {
+          "name": "mttr",
+          "unit": "minutes",
+          "target": "<15 min",
+          "measurement": "Mean time to recovery from failures"
+        }
+      ],
+      "validation_gate": "QG-07: Operational Testing",
+      "severity": "warning",
+      "patterns": ["Circuit breakers", "Retry with exponential backoff", "Health checks", "Graceful degradation"]
+    },
+    "scalability": {
+      "definition": "System ability to handle increased load",
+      "metrics": [
+        {
+          "name": "horizontal_scaling",
+          "measurement": "Services can scale from 1 to N instances without code changes",
+          "enforcement": "Stateless design, externalized configuration"
+        },
+        {
+          "name": "resource_efficiency",
+          "measurement": "Linear or sub-linear resource growth with load increase",
+          "enforcement": "Load testing and profiling"
+        }
+      ],
+      "validation_gate": "QG-09: Performance Testing",
+      "severity": "info",
+      "patterns": ["Stateless services", "Database connection pooling", "Caching strategies", "Load balancing"]
+    },
+    "maintainability": {
+      "definition": "Ease of modifying and extending the system",
+      "metrics": [
+        {
+          "name": "test_coverage",
+          "unit": "percentage",
+          "target": "≥80%",
+          "measurement": "Code coverage from unit and integration tests"
+        },
+        {
+          "name": "code_quality",
+          "measurement": "No linting errors, type checking passes",
+          "enforcement": "ruff, mypy, or language-specific linters"
+        },
+        {
+          "name": "documentation_completeness",
+          "measurement": "All public APIs documented, ADRs for major decisions",
+          "enforcement": "Manual review"
+        }
+      ],
+      "validation_gate": "QG-04: Test Coverage ≥80%, QG-10: Documentation Completeness",
+      "severity": "error (coverage), warning (documentation)",
+      "patterns": ["Clean architecture", "SOLID principles", "API versioning", "Changelog maintenance"]
+    },
+    "observability": {
+      "definition": "Ability to understand system behavior from external outputs",
+      "metrics": [
+        {
+          "name": "structured_logging",
+          "measurement": "All services emit JSON logs with correlation IDs",
+          "enforcement": "Logging middleware/library configuration"
+        },
+        {
+          "name": "metrics_collection",
+          "measurement": "Key metrics (request rate, error rate, latency) exposed",
+          "enforcement": "Prometheus metrics endpoint or similar"
+        },
+        {
+          "name": "distributed_tracing",
+          "measurement": "Request flows traceable across service boundaries",
+          "enforcement": "OpenTelemetry or similar instrumentation"
+        },
+        {
+          "name": "health_endpoints",
+          "measurement": "/health and /ready endpoints implemented",
+          "enforcement": "Kubernetes liveness/readiness probes"
+        }
+      ],
+      "validation_gate": "QG-05: Observability Instrumentation",
+      "severity": "error",
+      "patterns": ["Centralized logging", "Metrics aggregation", "Alerting rules", "Dashboards"]
+    }
+  },
+  "uaf_element_types": {
+    "description": "Mapping between UAF 1.2 DMM elements and Reflow JSON structures",
+    "ServiceFunction": {
+      "uaf_definition": "A capability or function performed by a service",
+      "uaf_reference": "UAF 1.2 DMM Section 8.3 - Service View",
+      "reflow_mapping": "service_architecture.json (root object)",
+      "required_properties": [
+        "service_id",
+        "service_name",
+        "version",
+        "classification",
+        "interfaces",
+        "deployment"
+      ],
+      "optional_properties": [
+        "data_models",
+        "dependencies",
+        "security",
+        "constraints"
+      ],
+      "example_path": "specs/machine/service_arch/character_service/service_architecture.json"
+    },
+    "ServiceInterface": {
+      "uaf_definition": "A boundary where a service provides or consumes capabilities",
+      "uaf_reference": "UAF 1.2 DMM Section 8.3.2 - Service Interfaces",
+      "reflow_mapping": "service_architecture.json - interfaces[] array",
+      "required_properties": [
+        "name",
+        "interface_type",
+        "protocol",
+        "direction"
+      ],
+      "optional_properties": [
+        "data_format",
+        "authentication",
+        "rate_limiting",
+        "endpoints"
+      ],
+      "example": {
+        "name": "character_api",
+        "interface_type": "REST API",
+        "protocol": "HTTP/HTTPS",
+        "direction": "provided",
+        "data_format": "JSON",
+        "endpoints": ["/characters", "/characters/{id}"]
+      }
+    },
+    "ResourcePort": {
+      "uaf_definition": "An interaction point on a resource (compute, storage, network)",
+      "uaf_reference": "UAF 1.2 DMM Section 9.3 - Resource View",
+      "reflow_mapping": "service_architecture.json - deployment.ports[] or deployment.databases[]",
+      "required_properties": [
+        "port_number or database_name",
+        "protocol",
+        "purpose"
+      ],
+      "example": {
+        "port": 8000,
+        "protocol": "HTTP",
+        "purpose": "REST API endpoint"
+      }
+    },
+    "InformationElement": {
+      "uaf_definition": "A piece of information exchanged between services",
+      "uaf_reference": "UAF 1.2 DMM Section 10.2 - Information View",
+      "reflow_mapping": "service_architecture.json - data_models[] or specs/machine/interfaces/{interface}_contract.json",
+      "required_properties": [
+        "name",
+        "type",
+        "description"
+      ],
+      "optional_properties": [
+        "validation_rules",
+        "example",
+        "constraints"
+      ],
+      "example": {
+        "name": "Character",
+        "type": "object",
+        "description": "D&D 5e character representation",
+        "properties": {
+          "name": "string",
+          "level": "integer",
+          "class": "string"
+        }
+      }
+    },
+    "OperationalActivity": {
+      "uaf_definition": "An activity performed in the operational domain",
+      "uaf_reference": "UAF 1.2 DMM Section 7.2 - Operational View",
+      "reflow_mapping": "docs/USER_SCENARIOS.md or specs/human/service_arch/{service}/system_description.md",
+      "format": "Human-readable markdown describing use cases",
+      "example_content": "User creates a new D&D character by providing name, class, and race. System validates choices against game rules and generates initial stats."
+    },
+    "Dependency": {
+      "uaf_definition": "A relationship where one service requires capabilities from another",
+      "uaf_reference": "Derived from UAF ServiceInterface relationships",
+      "reflow_mapping": "service_architecture.json - dependencies[] array",
+      "required_properties": [
+        "service_id",
+        "dependency_type",
+        "required_interfaces"
+      ],
+      "optional_properties": [
+        "criticality",
+        "fallback_strategy"
+      ],
+      "example": {
+        "service_id": "game_rules_service",
+        "dependency_type": "synchronous",
+        "required_interfaces": ["rules_validation_api"],
+        "criticality": "high"
+      }
+    },
+    "DeploymentSpecification": {
+      "uaf_definition": "Physical deployment configuration for a service",
+      "uaf_reference": "UAF 1.2 Actual Resource View",
+      "reflow_mapping": "service_architecture.json - deployment{} object",
+      "required_properties": [
+        "deployment_type",
+        "runtime_environment"
+      ],
+      "common_properties": [
+        "container_image",
+        "resource_requirements",
+        "environment_variables",
+        "health_checks",
+        "scaling_policy"
+      ],
+      "example": {
+        "deployment_type": "containerized",
+        "container_image": "character_service:1.0.0",
+        "runtime_environment": "Python 3.11 with FastAPI",
+        "resource_requirements": {
+          "cpu": "0.5 cores",
+          "memory": "512MB"
+        }
+      }
+    },
+    "ArchitecturalConstraint": {
+      "uaf_definition": "A limitation or requirement that shapes the architecture",
+      "uaf_reference": "UAF 1.2 constraints and parameters",
+      "reflow_mapping": "service_architecture.json - constraints[] array",
+      "types": [
+        "performance_constraint",
+        "security_constraint",
+        "compliance_constraint",
+        "technology_constraint"
+      ],
+      "example": {
+        "type": "performance_constraint",
+        "description": "Character creation must complete in <500ms",
+        "rationale": "User experience requirement for responsive UI"
+      }
+    }
+  }
+}

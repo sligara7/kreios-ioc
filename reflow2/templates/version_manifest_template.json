@@ -1,0 +1,144 @@
+{
+  "template_metadata": {
+    "name": "Version Manifest Template",
+    "version": "1.0.0",
+    "description": "Comprehensive version tracking for all architecture artifacts",
+    "purpose": "Track complete version history enabling rollback, comparison, and mixed-version validation"
+  },
+  "services": {
+    "example_service": {
+      "latest_version": "v1.0.0-20251024",
+      "versions": [
+        {
+          "version": "v1.0.0-20251024",
+          "architecture_file": "service_architecture_v1.0.0-20251024.json",
+          "documentation_file": "system_description_v1.0.0-20251024.md",
+          "created_date": "2025-10-24",
+          "change_type": "initial",
+          "description": "Initial architecture definition",
+          "author": "LLM agent or human architect name",
+          "breaking_changes": false
+        }
+      ],
+      "usage_notes": [
+        "For each service, replace 'example_service' with actual service name",
+        "Add new version entry for each architecture update",
+        "Update latest_version to point to newest version",
+        "NEVER remove old version entries - maintain complete history",
+        "change_type: initial | major | minor | patch",
+        "breaking_changes: true for major version changes"
+      ]
+    }
+  },
+  "version_indexes": [
+    {
+      "name": "latest",
+      "file": "index.json",
+      "description": "Points to latest versions of all services via symlinks",
+      "created_date": "2025-10-24",
+      "is_default": true
+    }
+  ],
+  "version_indexes_usage_notes": [
+    "The 'latest' index always exists and uses symlinks",
+    "Add entries here when creating version-specific indexes for mixed-version testing",
+    "Example: name='v2.0-auth-v1.0-gateway-20251030', file='index_v2.0-auth-v1.0-gateway-20251030.json'",
+    "Each version-specific index enables testing specific service version combinations"
+  ],
+  "system_graphs": [
+    {
+      "version": "latest",
+      "file": "system_of_systems_graph.json",
+      "index_used": "index.json",
+      "generated_date": "2025-10-24",
+      "tool_version": "system_of_systems_graph.py v1.x",
+      "is_default": true
+    }
+  ],
+  "system_graphs_usage_notes": [
+    "The 'latest' graph is generated from index.json using symlinks",
+    "Add entries when generating version-specific graphs from version-specific indexes",
+    "Graph version should match the index version used to generate it",
+    "Example: version='v2.0-auth-v1.0-gateway-20251030' uses index_v2.0-auth-v1.0-gateway-20251030.json"
+  ],
+  "semantic_versioning_rules": {
+    "major": {
+      "increment": "v1.x.x → v2.0.0",
+      "when": "Breaking interface changes, fundamental architecture changes",
+      "examples": [
+        "Changed authentication API from JWT to OAuth 2.0 (breaks existing clients)",
+        "Removed or renamed interface endpoints",
+        "Changed data model in incompatible way",
+        "Fundamental service decomposition changes"
+      ],
+      "breaking_changes": true
+    },
+    "minor": {
+      "increment": "v1.0.x → v1.1.0",
+      "when": "New capabilities, non-breaking interface additions",
+      "examples": [
+        "Added new optional API endpoints",
+        "Added new optional fields to existing data models",
+        "Enhanced existing capabilities without changing contracts",
+        "New service added to system"
+      ],
+      "breaking_changes": false
+    },
+    "patch": {
+      "increment": "v1.0.0 → v1.0.1",
+      "when": "Bug fixes, clarifications, documentation improvements",
+      "examples": [
+        "Fixed errors in architecture documentation",
+        "Clarified ambiguous specifications",
+        "Updated descriptions for clarity",
+        "Corrected typos or formatting"
+      ],
+      "breaking_changes": false
+    }
+  },
+  "rollback_procedure": {
+    "description": "How to rollback to a previous version if issues are found",
+    "steps": [
+      "1. Identify the version to rollback to from the versions array",
+      "2. Update symlinks in specs/machine/service_arch/{service}/ to point to older version",
+      "3. Update symlinks in specs/human/service_arch/{service}/ to point to matching human doc",
+      "4. Update this file: set latest_version to the rollback version",
+      "5. Regenerate system_of_systems_graph.json using system_of_systems_graph.py",
+      "6. Run validate_architecture.py to ensure rolled-back version is still valid",
+      "7. All historical versions remain preserved for future reference"
+    ],
+    "note": "Rollback is non-destructive - all versions remain available"
+  },
+  "mixed_version_validation_guide": {
+    "description": "How to test specific combinations of service versions",
+    "use_cases": [
+      "Test compatibility before deploying partial upgrades",
+      "Validate that service A v2.0 works with service B v1.0",
+      "Create regression test baselines",
+      "Document known-good version combinations"
+    ],
+    "steps": [
+      "1. Create version-specific index: index_v{scenario}-{date}.json",
+      "2. Point directly to specific versioned files (not symlinks)",
+      "3. Run: python3 tools/validate_architecture.py --index index_v{scenario}-{date}.json",
+      "4. Run: python3 tools/system_of_systems_graph.py index_v{scenario}-{date}.json",
+      "5. Add entries to version_indexes and system_graphs arrays in this file",
+      "6. Document compatibility results in specs/human/reports/"
+    ]
+  },
+  "interface_registry_versioning": {
+    "note": "interface_registry.json typically has single version per system",
+    "when_to_version": "Major interface contract changes across multiple services",
+    "pattern": "interface_registry_v{version}-{date}.json (rare, usually not needed)"
+  },
+  "best_practices": [
+    "Always create human doc (system_description) to match every architecture version",
+    "Use semantic versioning consistently (major.minor.patch)",
+    "Document what changed in each version's description field",
+    "Never delete old versions - they enable rollback and comparison",
+    "Use symlinks for 'latest' to avoid updating index.json constantly",
+    "Create version-specific indexes for mixed-version testing scenarios",
+    "Update this manifest file every time architecture changes",
+    "Preserve complete version history for audit and traceability"
+  ]
+}

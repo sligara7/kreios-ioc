@@ -1,0 +1,188 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/sligara7/reflow/schemas/service_architecture.json",
+  "title": "UAF Service Architecture",
+  "description": "Schema for service architecture files used by Reflow's system_of_systems_graph_v2.py and other tools",
+  "type": "object",
+  "required": ["service_id", "service_name", "interfaces"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to this JSON schema file"
+    },
+    "template_version": {
+      "type": "string",
+      "description": "Version of the template used to create this file"
+    },
+    "service_id": {
+      "type": "string",
+      "description": "Unique identifier for this service (lowercase, underscores, no hyphens)",
+      "pattern": "^[a-z_][a-z0-9_]*$",
+      "examples": ["user_service", "auth_api", "data_processor"]
+    },
+    "service_name": {
+      "type": "string",
+      "description": "Human-readable service name",
+      "minLength": 1,
+      "examples": ["User Service", "Authentication API", "Data Processor"]
+    },
+    "hierarchical_tier": {
+      "type": "string",
+      "enum": ["tier_0_system_of_systems", "tier_1_systems", "tier_2_components"],
+      "description": "Hierarchical tier of this service"
+    },
+    "component_classification": {
+      "type": "string",
+      "enum": ["service", "function", "external", "interface_protocol"],
+      "description": "Classification of this component"
+    },
+    "purpose": {
+      "type": "string",
+      "description": "Purpose and responsibilities of this service"
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "List of service_ids that this service depends on",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z_][a-z0-9_]*$"
+      },
+      "uniqueItems": true
+    },
+    "interfaces": {
+      "type": "array",
+      "description": "List of interfaces (APIs, messages, data contracts) provided or consumed by this service",
+      "items": {
+        "$ref": "#/definitions/interface"
+      }
+    },
+    "is_external": {
+      "type": "boolean",
+      "description": "Whether this is an external service (not part of this system)"
+    },
+    "parent_system": {
+      "type": "string",
+      "description": "Parent system name if this is part of a larger system"
+    },
+    "security": {
+      "type": "object",
+      "description": "Security requirements and configurations"
+    },
+    "deployment": {
+      "type": "object",
+      "description": "Deployment configuration",
+      "properties": {
+        "ports": {
+          "type": "object",
+          "description": "Port assignments for this service"
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "description": "Performance characteristics and requirements"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of this architecture file (semver-date format recommended)"
+    },
+    "implementation_status": {
+      "type": "string",
+      "enum": ["existing", "recommended", "hypothetical"],
+      "description": "Whether this service exists, is recommended, or is hypothetical"
+    }
+  },
+  "definitions": {
+    "interface": {
+      "type": "object",
+      "required": ["name", "interface_type", "direction"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of this interface",
+          "minLength": 1
+        },
+        "interface_type": {
+          "type": "string",
+          "description": "Type of interface",
+          "enum": [
+            "http_endpoint",
+            "message",
+            "data_contract",
+            "service_dependency",
+            "auth_requirement",
+            "cache_requirement",
+            "storage_requirement",
+            "architectural_constraint",
+            "consumed",
+            "produced"
+          ]
+        },
+        "direction": {
+          "type": "string",
+          "description": "Direction of interface flow",
+          "enum": ["consumed", "produced", "bidirectional"]
+        },
+        "connected_services": {
+          "type": "array",
+          "description": "List of service_ids connected via this interface",
+          "items": {
+            "type": "string"
+          }
+        },
+        "communication_pattern": {
+          "type": "string",
+          "enum": ["synchronous", "asynchronous", "bidirectional"],
+          "description": "Communication pattern for this interface"
+        },
+        "dependency_type": {
+          "type": "string",
+          "enum": ["direct", "indirect", "external"],
+          "description": "Type of dependency"
+        },
+        "path": {
+          "type": "string",
+          "description": "API path (for HTTP endpoints)",
+          "pattern": "^/.*"
+        },
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+          "description": "HTTP method (for HTTP endpoints)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of this interface"
+        },
+        "auth_required": {
+          "type": "boolean",
+          "description": "Whether authentication is required"
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of this interface"
+        },
+        "implementation_status": {
+          "type": "string",
+          "enum": ["existing", "recommended", "hypothetical"],
+          "description": "Implementation status"
+        },
+        "data_model": {
+          "type": "object",
+          "description": "Data model for this interface (schema, fields, etc.)"
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "errorMessage": {
+    "required": {
+      "service_id": "Missing required field 'service_id' at TOP LEVEL (not nested in metadata)",
+      "service_name": "Missing required field 'service_name' at TOP LEVEL",
+      "interfaces": "Missing required field 'interfaces'"
+    },
+    "properties": {
+      "service_id": "service_id must be lowercase with underscores (e.g., 'user_service', not 'UserService' or 'user-service')"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "template_version": "1.0",
+  "template_description": "Template for dev_working_memory.json - development context tracking",
+  "system_name": "REPLACE_WITH_SYSTEM_NAME",
+  "active_service": "CURRENT_SERVICE_ID",
+  "stage": "D1",
+  "operations_since_refresh": 0,
+  "last_refresh_timestamp": "YYYY-MM-DDTHH:MM:SSZ",
+  "pending_quality_gates": ["SPEC_ALIGNMENT"],
+  "open_blockers": [],
+  "recent_actions": [],
+  "next_action": "CONCISE_DIRECTIVE",
+  "token_pressure_mitigation": {
+    "services_open": 1,
+    "max_services_concurrent": 3,
+    "current_task_size": "small",
+    "compression_applied": false,
+    "micro_batching_active": false
+  },
+  "snapshot_management": {
+    "last_snapshot_timestamp": "YYYY-MM-DDTHH:MM:SSZ",
+    "operations_since_snapshot": 0,
+    "snapshot_frequency": 2,
+    "risk_escalation_triggered": false
+  },
+  "context_validation": {
+    "working_directory_verified": true,
+    "tracking_files_synchronized": true,
+    "degradation_signals": [],
+    "artifacts_loaded": []
+  },
+  "development_metrics": {
+    "stage_start_time": "YYYY-MM-DDTHH:MM:SSZ",
+    "actions_completed_this_stage": 0,
+    "validation_attempts": 0,
+    "validation_successes": 0,
+    "conflicts_detected": 0
+  }
+}

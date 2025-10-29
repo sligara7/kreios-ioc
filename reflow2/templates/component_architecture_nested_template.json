@@ -1,0 +1,232 @@
+{
+  "$schema": "component_architecture_nested_schema.json",
+  "template_version": "1.0.0",
+  "template_description": "ENHANCED template for nested/hierarchical component architecture with parent-child relationships across tiers",
+  "service_name": "REPLACE_WITH_COMPONENT_NAME",
+  "service_id": "REPLACE_WITH_COMPONENT_ID",
+  "hierarchical_tier": "tier_0_system_of_systems | tier_1_systems | tier_2_services | tier_3_components | tier_4_modules",
+  "tier_depth": 0,
+  "tier_context": {
+    "tier_explanation": "EXPLAIN: What this tier represents in your system hierarchy",
+    "tier_naming_convention": "DESCRIBE: Naming convention for this tier (e.g., tier_3 uses snake_case, tier_4 uses module names)",
+    "tier_responsibilities": "DESCRIBE: What kinds of components belong at this tier"
+  },
+  "parent_component": {
+    "component_id": "REPLACE_WITH_PARENT_ID",
+    "component_name": "REPLACE_WITH_PARENT_NAME",
+    "tier": "tier_1_systems | tier_2_services | tier_3_components",
+    "architecture_file": "RELATIVE_PATH: ../parent_architecture.json",
+    "relationship_type": "contains | composed_of | deployed_with",
+    "relationship_description": "EXPLAIN: How this component relates to parent"
+  },
+  "child_components": [
+    {
+      "component_id": "child_component_1",
+      "component_name": "Child Component 1",
+      "tier": "tier_3_components | tier_4_modules",
+      "architecture_file": "RELATIVE_PATH: components/child_component_1/component_architecture.json",
+      "purpose": "Brief description of child component's role",
+      "integration_status": "integrated | partially_integrated | not_integrated",
+      "criticality": "critical | high | medium | low"
+    }
+  ],
+  "is_leaf_component": false,
+  "leaf_component_details": {
+    "note": "Only populate if is_leaf_component=true (no child components)",
+    "implementation_type": "python_module | python_class | python_function | npm_module | java_class",
+    "source_file": "OPTIONAL: Exact source file if leaf component",
+    "lines_of_code": 0
+  },
+  "component_classification": "service | function | external | interface_protocol | adapter | mediator | library | module",
+  "purpose": "REPLACE_WITH_PURPOSE_DESCRIPTION",
+  "integration_role": "existing_component | new_adapter | new_mediator | modified_component",
+  "integration_context": {
+    "from_inventory": "component_inventory.json",
+    "integration_goal": "Brief: What this component contributes to overall integration",
+    "delta_changes_applied": {
+      "delta_file": "OPTIONAL: component_deltas/{component_id}_delta.json",
+      "applied_date": "YYYY-MM-DD",
+      "applied_changes": ["DELTA-001", "DELTA-002", "DELTA-003"],
+      "unapplied_changes": [],
+      "change_summary": "Brief summary of modifications made for integration"
+    }
+  },
+  "dependencies": [
+    "DEPENDENT_SERVICE_ID_1",
+    "DEPENDENT_SERVICE_ID_2"
+  ],
+  "tier_crossing_dependencies": [
+    {
+      "dependency_id": "CROSS-01",
+      "from_tier": "tier_3_components",
+      "to_tier": "tier_2_services",
+      "dependency_component": "rbac_service",
+      "crossing_mechanism": "http_client | in_process_call | message_queue",
+      "justification": "EXPLAIN: Why cross-tier dependency is necessary",
+      "architectural_smell": false,
+      "smell_notes": "OPTIONAL: If true, explain why this cross-tier dependency is problematic"
+    }
+  ],
+  "interfaces": [
+    {
+      "name": "INTERFACE_NAME",
+      "interface_type": "http_endpoint | message | data_contract | service_dependency | auth_requirement | cache_requirement | storage_requirement | architectural_constraint",
+      "communication_pattern": "synchronous | asynchronous | bidirectional",
+      "dependency_type": "direct | indirect | external",
+      "direction": "provided | consumed | bidirectional",
+      "tier_crossing": "OPTIONAL: same_tier | tier_2_to_tier_1 | tier_3_to_tier_2 | tier_4_to_tier_3",
+      "integration_mechanism": {
+        "mechanism_type": "rest_api | grpc | message_queue | shared_database | in_process_call | file_system",
+        "adapter_component": "OPTIONAL: ID of adapter component if integration requires mediation",
+        "adapter_architecture_file": "OPTIONAL: Path to adapter's architecture file"
+      },
+      "connected_component": {
+        "component_id": "COMPONENT_ID",
+        "component_tier": "tier_X",
+        "interface_on_component": "INTERFACE_NAME_ON_OTHER_SIDE"
+      },
+      "path": "OPTIONAL: /api/path (for HTTP endpoints)",
+      "method": "OPTIONAL: GET | POST | PUT | DELETE | PATCH (for HTTP endpoints)",
+      "description": "INTERFACE_DESCRIPTION",
+      "auth_required": false,
+      "version": "1.0",
+      "implementation_status": "existing | recommended | hypothetical | modified_for_integration",
+      "source_verification": "Based on actual source code | Recommended solution | Modified during integration"
+    }
+  ],
+  "is_external": false,
+  "parent_system": "REPLACE_WITH_PARENT_SYSTEM_NAME",
+  "security": {
+    "api_key_authentication": false,
+    "ssl_tls": false,
+    "additional_requirements": []
+  },
+  "deployment": {
+    "deployment_tier": "DESCRIBE: How this tier is deployed (e.g., tier_2 deployed as containers, tier_3 as Python packages, tier_4 as modules within packages)",
+    "ansible_managed": false,
+    "systemd_service": false,
+    "python_uvicorn": false,
+    "docker_container": false,
+    "embedded_in_parent": false,
+    "deployment_notes": "OPTIONAL: Additional deployment context for this tier",
+    "ports": {
+      "primary": {
+        "port": 8000,
+        "protocol": "HTTP",
+        "purpose": "Main API endpoint",
+        "binding": "0.0.0.0",
+        "public_facing": true,
+        "note": "Only applicable for tier_2 services and above"
+      }
+    }
+  },
+  "performance": {
+    "expected_load": "low | medium | high",
+    "scaling_strategy": "horizontal | vertical | none | inherited_from_parent",
+    "resource_requirements": {}
+  },
+  "version": "X.Y+YYYY-MM-DD",
+  "source_references": {
+    "github_repo": "OPTIONAL: GitHub repository URL if component exists",
+    "documentation_links": ["OPTIONAL: Documentation URLs"],
+    "analysis_date": "YYYY-MM-DD",
+    "confidence_level": "high | medium | low"
+  },
+  "implementation_status": "existing | recommended | hypothetical | modified_for_integration | newly_created_adapter",
+  "verification_notes": "EXPLAIN: Whether this is based on actual source analysis, recommendations, or modifications made during integration",
+  "justification": {
+    "rationale": "REQUIRED when status is 'recommended', 'hypothetical', or 'newly_created_adapter': Specific reason for this design choice",
+    "integration_rationale": "OPTIONAL: If this component was created/modified for integration, explain why",
+    "tier_placement_rationale": "EXPLAIN: Why this component belongs at this tier",
+    "alternative_approaches": "OPTIONAL: Other approaches considered and why this was chosen"
+  },
+  "nested_architecture_metadata": {
+    "total_tiers_in_system": 0,
+    "this_component_tier": 0,
+    "max_depth_below": 0,
+    "total_child_components": 0,
+    "total_descendant_components": 0,
+    "architecture_file_relationships": {
+      "parent_file": "OPTIONAL: Path to parent architecture file",
+      "child_files": ["OPTIONAL: Paths to child architecture files"],
+      "sibling_files": ["OPTIONAL: Paths to sibling component architecture files (same parent)"]
+    },
+    "graph_generation_notes": "system_of_systems_graph_v2.py will recursively traverse child_components to build complete multi-tier graph"
+  },
+  "INSTRUCTIONS": {
+    "purpose": "ENHANCED template for multi-tier, nested architectures supporting both top-down decomposition and bottom-up integration",
+    "key_enhancements_over_standard_template": [
+      "parent_component field: Links to parent tier",
+      "child_components array: Links to child tier components",
+      "tier_depth field: Indicates depth in hierarchy (0=SoS, 1=system, 2=service, 3=component, 4=module)",
+      "is_leaf_component flag: Indicates no further decomposition",
+      "tier_crossing_dependencies: Tracks dependencies that cross tier boundaries",
+      "integration_role: Distinguishes existing vs new adapter/mediator components",
+      "delta_changes_applied: Links to component deltas showing what changed for integration"
+    ],
+    "when_to_use_nested_template": [
+      "Bottom-up integration: Starting with existing components and integrating them",
+      "Deep decomposition: Need to represent tiers beyond tier_2 (services)",
+      "Adapter/mediator creation: Creating integration adapters between components",
+      "Multi-level systems: System of systems with 3+ hierarchical levels"
+    ],
+    "tier_guidelines": {
+      "tier_0_system_of_systems": "Highest level - federation of multiple independent systems (e.g., 'E-commerce Platform')",
+      "tier_1_systems": "Independent systems that can operate standalone (e.g., 'Payment System', 'Inventory System')",
+      "tier_2_services": "Individual services within a system (e.g., 'payment_processor', 'transaction_ledger')",
+      "tier_3_components": "Components/packages within services (e.g., 'stripe_adapter', 'auth_library')",
+      "tier_4_modules": "Modules/classes within components (e.g., 'oauth_handler', 'session_manager')",
+      "tier_5_plus": "OPTIONAL: Functions, methods within modules (rarely modeled at this level)"
+    },
+    "directory_structure_for_nested_architectures": {
+      "example": "specs/machine/systems/auth_system/services/auth_service/components/auth_library/modules/token_validator/module_architecture.json",
+      "pattern": "specs/machine/{tier_1_name}/services/{tier_2_name}/components/{tier_3_name}/modules/{tier_4_name}/architecture.json",
+      "symlink_usage": "Each tier can have symlink 'current_architecture.json' pointing to latest versioned file"
+    },
+    "parent_child_relationships": {
+      "parent_component": "MUST reference valid parent at tier-1",
+      "child_components": "MUST reference valid children at tier+1",
+      "circular_references": "NOT ALLOWED - parent cannot be descendant of child",
+      "cross_tier_skipping": "AVOID - tier_4 should not depend directly on tier_1 (use mediation through tier_2/tier_3)"
+    },
+    "integration_role_usage": {
+      "existing_component": "Component exists and is being integrated as-is",
+      "modified_component": "Existing component modified for integration (delta_changes_applied populated)",
+      "new_adapter": "New adapter component created to bridge integration gap",
+      "new_mediator": "New mediator component created to coordinate multiple components"
+    },
+    "required_fields": [
+      "service_name",
+      "service_id",
+      "hierarchical_tier",
+      "tier_depth",
+      "component_classification",
+      "purpose",
+      "interfaces",
+      "is_external",
+      "version"
+    ],
+    "required_fields_if_not_leaf": [
+      "child_components (if is_leaf_component=false)"
+    ],
+    "required_fields_if_not_root": [
+      "parent_component (if tier_depth > 0)"
+    ],
+    "validation_rules": [
+      "service_id must be lowercase with underscores",
+      "version must follow semver-date: X.Y+YYYY-MM-DD",
+      "tier_depth must match hierarchical_tier (tier_0=0, tier_1=1, tier_2=2, tier_3=3, tier_4=4)",
+      "parent_component.tier must be tier_depth - 1",
+      "child_components[*].tier must be tier_depth + 1",
+      "is_leaf_component=true implies child_components is empty",
+      "is_leaf_component=false implies child_components has at least one entry"
+    ],
+    "output_locations": {
+      "tier_0": "specs/machine/system_architecture.json",
+      "tier_1": "specs/machine/systems/{system_id}/system_architecture.json",
+      "tier_2": "specs/machine/systems/{system_id}/services/{service_id}/service_architecture.json",
+      "tier_3": "specs/machine/systems/{system_id}/services/{service_id}/components/{component_id}/component_architecture.json",
+      "tier_4": "specs/machine/systems/{system_id}/services/{service_id}/components/{component_id}/modules/{module_id}/module_architecture.json"
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "template_version": "1.1",
+  "template_description": "Enhanced template for interface_registry.json with async/pub-sub support",
+  "registry_version": "1.1",
+  "system_name": "REPLACE_WITH_SYSTEM_NAME",
+  "creation_date": "YYYY-MM-DD",
+  "interfaces": {
+    "COMPONENT_ID_1": {
+      "INTERFACE_NAME_1": {
+        "path": "OPTIONAL: /api/path (for HTTP endpoints)",
+        "method": "OPTIONAL: GET|POST|PUT|DELETE (for HTTP endpoints)",
+        "auth_required": true,
+        "interface_type": "REQUIRED: http_endpoint | message | data_contract | service_dependency | auth_requirement | cache_requirement | storage_requirement | architectural_constraint | interface_protocol",
+        "communication_pattern": "REQUIRED: synchronous | asynchronous | bidirectional",
+        "async_details": {
+          "message_broker": "OPTIONAL: rabbitmq | redis | kafka | zeromq",
+          "exchange_name": "OPTIONAL: exchange or topic name",
+          "routing_key": "OPTIONAL: routing key or queue name",
+          "message_format": "OPTIONAL: json | protobuf | avro | xml"
+        }
+      },
+      "INTERFACE_NAME_2": {
+        "interface_type": "service_dependency",
+        "communication_pattern": "synchronous",
+        "auth_required": false
+      }
+    },
+    "COMPONENT_ID_2": {
+      "INTERFACE_NAME_3": {
+        "path": "/api/example",
+        "method": "POST",
+        "auth_required": true,
+        "interface_type": "http_endpoint",
+        "communication_pattern": "synchronous"
+      },
+      "ASYNC_INTERFACE_EXAMPLE": {
+        "interface_type": "message",
+        "communication_pattern": "asynchronous",
+        "auth_required": false,
+        "async_details": {
+          "message_broker": "rabbitmq",
+          "exchange_name": "events_exchange",
+          "routing_key": "user.created",
+          "message_format": "json"
+        }
+      }
+    }
+  },
+  "internal_only_services": {
+    "description": "Services marked as internal-only to suppress irrelevant auth warnings",
+    "services": {
+      "INTERNAL_SERVICE_ID": {
+        "internal_only": true,
+        "justification": "Service is gated by gateway/network policy",
+        "security_boundary": "internal_network | gateway_protected | service_mesh"
+      }
+    }
+  },
+  "schema_management": {
+    "schema_version": "1.0",
+    "schema_registry_url": "OPTIONAL: URL to schema registry",
+    "validation_rules": [
+      "All message interfaces must specify message_format",
+      "Async interfaces must specify message_broker",
+      "Internal-only services must have justification"
+    ]
+  },
+  "INSTRUCTIONS": {
+    "purpose": "This file is required by validate_architecture.py tool for interface consistency checking",
+    "generation": "Extract all interfaces from service_architecture.json files and consolidate into this registry format",
+    "interface_types": [
+      "http_endpoint - REST/HTTP API endpoints",
+      "message - Message queue/ZMQ/pub-sub interfaces", 
+      "data_contract - Data format specifications",
+      "service_dependency - Dependencies on other services",
+      "auth_requirement - Authentication/authorization requirements",
+      "cache_requirement - Caching layer requirements",
+      "storage_requirement - Database/storage requirements",
+      "architectural_constraint - System-wide constraints",
+      "interface_protocol - Low-level protocols (EPICS/CA, etc.)"
+    ],
+    "communication_patterns": [
+      "synchronous - Request-response, caller waits",
+      "asynchronous - Fire-and-forget, pub-sub, event-driven", 
+      "bidirectional - Two-way communication, both parties can initiate"
+    ],
+    "async_support": [
+      "Use async_details for pub/sub dependencies to avoid orphaned component warnings",
+      "Specify message_broker to enable proper graph analysis",
+      "Include routing details for complete interface specification"
+    ],
+    "internal_only_support": [
+      "Mark services as internal_only to suppress auth warnings",
+      "Provide justification for internal-only classification",
+      "Specify security boundary type for validation"
+    ],
+    "required_fields": ["registry_version", "system_name", "creation_date", "interfaces"],
+    "validation_notes": "All interface entries must match those defined in corresponding service_architecture.json files"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "workflow_metadata": {
+    "version": "0.1.0",
+    "name": "FU-05 Integration, Validation & Release Preparation",
+    "based_on": "feature_update_workflow.json P5",
+    "description": "Integrate new/updated services, validate end-to-end including operational effectiveness, and prepare release."
+  },
+  "entry_conditions": {
+    "from": "FU-04",
+    "artifacts": ["code/<service>/", "specs/machine/index.json", "specs/human/feature/*"]
+  },
+  "steps": [
+    { "id": "P5.1", "description": "Update integration tests to include new/updated services", "tool": "manual" },
+    { "id": "P5.2", "description": "Run system graph & architecture validation tools", "tool": "bash", "outputs": ["specs/machine/graphs/system_of_systems_graph.json", "specs/human/reports/validation_reports/"] },
+    { "id": "P5.3", "description": "Validate all contracts, data models, deployment", "tool": "manual" },
+    { "id": "P5.4", "description": "Execute operational test scenarios to validate feature effectiveness and user value", "tool": "manual", "output": "specs/human/reports/operational_validation_report.md" },
+    { "id": "P5.5", "description": "Conduct user acceptance validation using feature_user_scenarios.md", "tool": "manual", "output": "specs/human/reports/user_acceptance_results.md" },
+    { "id": "P5.6", "description": "Measure success criteria defined in feature_success_criteria.md", "tool": "manual" },
+    { "id": "P5.7", "description": "Update documentation and runbooks as needed", "tool": "manual" },
+    { "id": "P5.8", "description": "Prepare release notes and migration instructions focusing on user experience", "tool": "manual", "outputs": ["specs/human/release_notes.md", "specs/human/migration_instructions.md"] }
+  ],
+  "artifact_routing": {
+    "machine": "specs/machine/*",
+    "human": "specs/human/*",
+    "reports": "specs/human/reports/"
+  },
+  "iteration_paths": {
+    "on_mission_misalignment": "../feature_update/FU-02-ArchReengineering.json",
+    "on_contract_break": "../feature_update/FU-02-ArchReengineering.json"
+  },
+  "handoff": {
+    "produces": [
+      "specs/human/reports/operational_validation_report.md",
+      "specs/human/reports/user_acceptance_results.md",
+      "specs/human/release_notes.md",
+      "specs/human/migration_instructions.md"
+    ],
+    "next_workflow": "../development/Dev-06-CICDAndDeployment.json"
+  }
+}
