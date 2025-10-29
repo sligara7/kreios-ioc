@@ -1,0 +1,53 @@
+---
+
+- name: Check if config file already exists
+  ansible.builtin.stat:
+    path: "{{ deploy_ioc_iocs_directory }}/{{ deploy_ioc_ioc_name }}/config"
+  register: deploy_ioc_config_file_exists
+
+- name: Get existing port number
+  when: deploy_ioc_config_file_exists.stat.exists
+  block:
+    - name: Check if port number is already assigned
+      ansible.builtin.shell:
+        cmd: set -o pipefail && cat config | grep ^PORT | awk -F '=' '{print($2)}' # yamllint disable-line rule:line-length
+        chdir: "{{ deploy_ioc_iocs_directory }}/{{ deploy_ioc_ioc_name }}"
+      register: deploy_ioc_current_port
+      changed_when: deploy_ioc_current_port.rc == 0
+
+    - name: Set port number to existing one
+      ansible.builtin.set_fact:
+        deploy_ioc_nextport: "{{ deploy_ioc_current_port.stdout }}"
+      when: deploy_ioc_current_port.stdout != ""
+
+- name: Find next available port
+  when: not deploy_ioc_config_file_exists.stat.exists
+  block:
+    - name: Find largest port number in use
+      ansible.builtin.shell:
+        # yamllint disable rule:line-length
+        cmd: find -maxdepth 2 -name config -type f -exec cat {} \; | grep ^PORT | awk -F '=' '{print($2)}' | sort -n | tail -1 # noqa: risky-shell-pipe
+        # yamllint enable rule:line-length
+        chdir: "{{ deploy_ioc_iocs_directory }}"
+      register: deploy_ioc_current_max_port
+      changed_when: deploy_ioc_current_max_port.rc == 0
+
+    - name: Set next port number
+      ansible.builtin.set_fact:
+        deploy_ioc_nextport:
+          "{{ deploy_ioc_current_max_port.stdout | int + deploy_ioc_loop_index + 1 }}" # yamllint disable-line rule:line-length
+      when:
+        deploy_ioc_current_max_port.stdout != "" and
+        (deploy_ioc_current_max_port.stdout | int) > (deploy_ioc_nextport | int)
+
+- name: Print next port number
+  ansible.builtin.debug:
+    msg: "{{ deploy_ioc_nextport }}"
+
+- name: Install Manage-IOCs config file
+  ansible.builtin.template:
+    src: "templates/config.j2"
+    dest: "{{ deploy_ioc_iocs_directory }}/{{ deploy_ioc_ioc_name }}/config"
+    owner: "{{ host_config.softioc_user }}"
+    group: "{{ host_config.softioc_group }}"
+    mode: "0664"

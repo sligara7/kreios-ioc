@@ -1,0 +1,8 @@
+---
+kinetix-det1:
+  type: adkinetix
+  environment:
+    PREFIX: "XF:31ID1-ES{Kinetix-Det:1}"
+    PORT: "KTX"
+    XSIZE: 3200
+    YSIZE: 3200

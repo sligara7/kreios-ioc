@@ -1,0 +1,1 @@
+define({numchunks:1,prefix:'Index_Chunk',terms:[{t:'Anode',c:0,$:1},{t:'Cooling',c:0,$:1},{t:'Emission',c:0,$:1},{t:'Filament',c:0,$:1},{t:'HV',c:0,$:1},{t:'Operate',c:0,$:1},{t:'Operating Mode',c:0,$:1},{t:'Temperature',c:0,$:1},{t:'Water Cooling',c:0,$:1},{t:'XR 50',c:0,$:1}]});

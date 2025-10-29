@@ -1,0 +1,1 @@
+define({'/Content/Software/OperatingMode.htm':{i:[1],t:['Operating the X-Ray Source'],b:['']},'/Content/Software/OverviewFeatures.htm':{i:[3],t:['Overview of all Features'],b:['']},'/Content/Software/SetParameters.htm':{i:[2],t:['Setting Operating Parameters'],b:['']},'/Content/Software/XR50Intro.htm':{i:[0],t:['XR 50'],b:['']}});

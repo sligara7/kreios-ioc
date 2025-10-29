@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" lang="en-us" xml:lang="en-us" data-mc-search-type="Stem" data-mc-help-system-file-name="Default.xml" data-mc-path-to-help-system="../../../" data-mc-target-type="WebHelp2" data-mc-runtime-file-type="Topic" data-mc-preload-images="false" data-mc-in-preview-mode="false" data-mc-medium="non-print" data-mc-toc-path="Plot View|Data Operations|Peak Operations">
+    <!-- saved from url=(0016)http://localhost -->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="../../../Skins/Default/Stylesheets/Slideshow.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../../Skins/Default/Stylesheets/TextEffects.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../../Skins/Default/Stylesheets/Topic.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../../Skins/Default/Stylesheets/Components/Styles.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../../Skins/Default/Stylesheets/Components/Tablet.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../../Skins/Default/Stylesheets/Components/Mobile.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../../Resources/TableStyles/Normal.css" rel="stylesheet" data-mc-stylesheet-type="table" /><title>Peak Location</title>
+        <link href="../../../Resources/Stylesheets/Styles.css" rel="stylesheet" type="text/css" />
+        <script src="../../../Resources/Scripts/custom.modernizr.js" type="text/javascript">
+        </script>
+        <script src="../../../Resources/Scripts/jquery.min.js" type="text/javascript">
+        </script>
+        <script src="../../../Resources/Scripts/require.min.js" type="text/javascript">
+        </script>
+        <script src="../../../Resources/Scripts/require.config.js" type="text/javascript">
+        </script>
+        <script src="../../../Resources/Scripts/foundation.min.js" type="text/javascript">
+        </script>
+        <script src="../../../Resources/Scripts/plugins.min.js" type="text/javascript">
+        </script>
+        <script src="../../../Resources/Scripts/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <h3><a name="kanchor115"></a>Peak Fit</h3>
+        <p>The Peak Fit operation fits a user-selected function to the selected peak.</p>
+        <p>&#160;</p>
+        <p>You can select which background operation is used (see <a href="../Fitting/Background.htm" class="MCXref xref">Background</a> for a description of all available options) and set the fitting algorithm to operate on asymmetrical peaks, as necessary. </p>
+        <p>&#160;</p>
+        <div class="MCDropDown MCDropDown_Open dropDown"><span class="MCDropDownHead dropDownHead"><a href="javascript:void(0);" class="MCDropDownHotSpot dropDownHotspot MCDropDownHotSpot_"><img class="MCDropDown_Image_Icon" src="../../../Skins/Default/Stylesheets/Images/transparent.gif" height="11" width="16" alt="Closed" data-mc-alt2="Open" />Restrict range</a></span>
+            <div class="MCDropDownBody dropDownBody">
+                <p>The operation runs with the selected region of interest. This region is shown in the <span class="GUIItem">Restrict Range</span> section. If no region is selected, the operation runs on the whole spectrum.</p>
+                <p>&#160;</p>
+                <p>You can change the region of interest using one of the following methods:</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Check the <span class="GUIItem">Restrict Range</span> option box and enter start and end values in the fields provided. The operation will run again automatically in the specified range.</p>
+                <p>&#160;</p>
+                <p>
+                    <img src="../../../Resources/Images/RestrictRange.png">
+                    </img>
+                </p>
+                <p>&#160;</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Select the operation in the data browser, then drag the bars at the edge of the operation region. The screenshot below shows a range selected for a background subtraction operation.</p>
+                <p>&#160;</p>
+                <p class="Note" data-mc-autonum="&lt;b&gt;NOTE: &lt;/b&gt;"><span class="autonumber"><span><b>NOTE: </b></span></span>
+                    <br />The shaded area has the same color as the operation. You can change this by clicking the line of the operation and <a href="../../../PlotViewI/DataBrowser/DataAppearance.htm">selecting a new color</a>.</p>
+                <p>&#160;</p>
+                <p><a class="MCPopupThumbnailLink MCPopupThumbnailHover" href="../../../Resources/Images/RestrictBackgroundOperation.png"><img class="MCPopupThumbnail img imgThumb" data-mc-width="471" data-mc-height="320" src="../../../Resources/Images/RestrictBackgroundOperation_thumb_0_48.png" tabindex="" /></a>
+                </p>
+                <p>&#160;</p>
+                <p>Unchecking this box will set the range to the whole spectrum.</p>
+            </div>
+        </div>
+        <p>&#160;</p>
+        <div class="MCDropDown MCDropDown_Open dropDown"><span class="MCDropDownHead dropDownHead"><a href="javascript:void(0);" class="MCDropDownHotSpot dropDownHotspot MCDropDownHotSpot_"><img class="MCDropDown_Image_Icon" src="../../../Skins/Default/Stylesheets/Images/transparent.gif" height="11" width="16" alt="Closed" data-mc-alt2="Open" />Input parameters</a></span>
+            <div class="MCDropDownBody dropDownBody">
+                <p>The input parameters allow you to alter the operation. The table below lists all the input parameters for the Peak Identification operation. After setting the parameters, click <span class="GUIItem">Apply</span> to run the operation with the new settings.</p>
+                <p>&#160;</p>
+                <table style="width: 100%;mc-table-style: url('../../../Resources/TableStyles/Normal.css');" class="TableStyle-Normal" cellspacing="0">
+                    <col class="TableStyle-Normal-Column-Column1" style="width: 190px;">
+                    </col>
+                    <col class="TableStyle-Normal-Column-Column1">
+                    </col>
+                    <thead>
+                        <tr class="TableStyle-Normal-Head-Header1">
+                            <th class="TableStyle-Normal-HeadE-Column1-Header1">Input parameter </th>
+                            <th class="TableStyle-Normal-HeadD-Column1-Header1">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="TableStyle-Normal-Body-Body1">
+                            <td class="TableStyle-Normal-BodyE-Column1-Body1">Background method</td>
+                            <td class="TableStyle-Normal-BodyD-Column1-Body1">See <a href="../Fitting/Background.htm">Background</a> for a description of all available background subtraction methods.</td>
+                        </tr>
+                        <tr class="TableStyle-Normal-Body-Body2">
+                            <td class="TableStyle-Normal-BodyE-Column1-Body2">Peak shape</td>
+                            <td class="TableStyle-Normal-BodyD-Column1-Body2">Select the function used to calculate the peak shape. The sections below describe the options.</td>
+                        </tr>
+                        <tr class="TableStyle-Normal-Body-Body1">
+                            <td class="TableStyle-Normal-BodyE-Column1-Body1"><a name="kanchor116"></a>Asymmetric peak</td>
+                            <td class="TableStyle-Normal-BodyD-Column1-Body1">Check this if the peak shape is asymmetric.</td>
+                        </tr>
+                        <tr class="TableStyle-Normal-Body-Body2">
+                            <td class="TableStyle-Normal-BodyE-Column1-Body2">FWHM annotation</td>
+                            <td class="TableStyle-Normal-BodyD-Column1-Body2">Defines the text shown in the plot—see <a href="../../Syntax.htm" class="MCXref xref">Annotation Syntax</a>.</td>
+                        </tr>
+                        <tr class="TableStyle-Normal-Body-Body1">
+                            <td class="TableStyle-Normal-BodyB-Column1-Body1">Peak annotation</td>
+                            <td class="TableStyle-Normal-BodyA-Column1-Body1">Defines the text shown in the plot—see <a href="../../Syntax.htm" class="MCXref xref">Annotation Syntax</a>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>&#160;</p>
+                <p>There are two buttons below the input parameter table:</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span><span class="GUIItem">Apply</span>—runs the operation with the selected input parameters.</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span><span class="GUIItem">Reset Params</span>—sets the input parameters to their default values.</p>
+            </div>
+        </div>
+        <p>&#160;</p>
+        <p>The <span class="GUIItem">Output Parameters</span> section contains the results of the operation.</p>
+        <p>&#160;</p>
+        <p>
+            <img src="../../../Resources/Images/DOPeakFit_591x356.png" style="width: 591;height: 356;" />
+        </p>
+        <p>&#160;</p>
+        <p>The following sections describe the different available fitting methods</p>
+        <p>&#160;</p>
+        <div class="MCDropDown MCDropDown_Open dropDown"><span class="MCDropDownHead dropDownHead"><a href="javascript:void(0);" class="MCDropDownHotSpot dropDownHotspot MCDropDownHotSpot_"><img class="MCDropDown_Image_Icon" src="../../../Skins/Default/Stylesheets/Images/transparent.gif" height="11" width="16" alt="Closed" data-mc-alt2="Open" />DSG—Doniac-Sunjic-Gauss</a></span>
+            <div class="MCDropDownBody dropDownBody">
+                <p>Theoretical considerations of the energy loss of photoelectrons in metals lead to the asymmetrical Doniac-Sunjic function:</p>
+                <p>&#160;</p>
+                <p class="Equation">
+                    <img src="../../../GeneratedImages/Equations/Equation1.png" style="width: 241px;height: 57px;" alt="" class="MCEquation mcReset" />
+                </p>
+                <p>&#160;</p>
+                <p>where:</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>α is the asymmetry parameter—with α = 0, this is equivalent to a Lorenzian</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>e is related to the position of maximum intensity</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>f is related to the half-width</p>
+                <p>&#160;</p>
+                <p>In the DSG fit, the Doniac-Sunjic is convoluted with a Gaussian:</p>
+                <p>&#160;</p>
+                <p class="Equation">
+                    <img src="../../../GeneratedImages/Equations/Equation2.png" style="width: 373px;height: 17px;" alt="" class="MCEquation mcReset" />
+                </p>
+                <p>&#160;</p>
+                <p>where:</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>e<sub>DS</sub> is related to the position of maximum intensity in the D-S function</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>e<sub>G</sub> is the peak position of the Gaussian</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>f<sub>DS</sub> is related to the half-width in the D-S function</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>f<sub>G</sub> is the half-width of the Gaussian.</p>
+            </div>
+        </div>
+        <p>&#160;</p>
+        <div class="MCDropDown MCDropDown_Open dropDown"><span class="MCDropDownHead dropDownHead"><a href="javascript:void(0);" class="MCDropDownHotSpot dropDownHotspot MCDropDownHotSpot_"><img class="MCDropDown_Image_Icon" src="../../../Skins/Default/Stylesheets/Images/transparent.gif" height="11" width="16" alt="Closed" data-mc-alt2="Open" />GLP—Gauss-Lorenz Product</a></span>
+            <div class="MCDropDownBody dropDownBody">
+                <p>The Gauss-Lorenz product results from multiplying Gaussian and Lorenzian functions together:</p>
+                <p>&#160;</p>
+                <p class="Equation">
+                    <img src="../../../GeneratedImages/Equations/Equation3.png" style="width: 236px;height: 71px;" alt="" class="MCEquation mcReset" />
+                </p>
+                <p>&#160;</p>
+                <p>where:</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>E is the center of the curve</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>F is the half-width</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>m is a mix parameter</p>
+            </div>
+        </div>
+        <p>&#160;</p>
+        <div class="MCDropDown MCDropDown_Open dropDown"><span class="MCDropDownHead dropDownHead"><a href="javascript:void(0);" class="MCDropDownHotSpot dropDownHotspot MCDropDownHotSpot_"><img class="MCDropDown_Image_Icon" src="../../../Skins/Default/Stylesheets/Images/transparent.gif" height="11" width="16" alt="Closed" data-mc-alt2="Open" />GLS—Gauss-Lorenz Sum</a></span>
+            <div class="MCDropDownBody dropDownBody">
+                <p>The Gauss-Lorenz product results from adding Gaussian and Lorenzian functions together:</p>
+                <p>&#160;</p>
+                <p class="Equation">
+                    <img src="../../../GeneratedImages/Equations/Equation4.png" style="width: 326px;height: 53px;" alt="" class="MCEquation mcReset" />
+                </p>
+                <p>&#160;</p>
+                <p>where:</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>E is the center of the curve</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>F is the half-width</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>m is a mix parameter</p>
+            </div>
+        </div>
+        <p>&#160;</p>
+        <div class="MCDropDown MCDropDown_Open dropDown"><span class="MCDropDownHead dropDownHead"><a href="javascript:void(0);" class="MCDropDownHotSpot dropDownHotspot MCDropDownHotSpot_"><img class="MCDropDown_Image_Icon" src="../../../Skins/Default/Stylesheets/Images/transparent.gif" height="11" width="16" alt="Closed" data-mc-alt2="Open" />Voigt</a></span>
+            <div class="MCDropDownBody dropDownBody">
+                <p>In order to obtain a realistic line shape for peaks in a spectrum, a Voigt function is used. This is a convolution of a Gaussian and Lorenzian function:</p>
+                <p>&#160;</p>
+                <p class="Equation">
+                    <img src="../../../GeneratedImages/Equations/Equation5.png" style="width: 236px;height: 17px;" alt="" class="MCEquation mcReset" />
+                </p>
+                <p>&#160;</p>
+                <p>where:</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>E is the center of the curve</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>F<sub>G</sub> is the half-width of the Gausssian</p>
+                <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>F<sub>L</sub> is the half-width of the Lorenzian</p>
+                <p>&#160;</p>
+                <p>The numerical solution of the convolution integral is very time consuming. For this reason, <span class="MyVariablesSoftware">SpecsLab Prodigy</span> uses an approximation based on the principle of Fourier transformations such that the Fourier transform is equal to the product of the individual Fourier transforms:</p>
+                <p>&#160;</p>
+                <p class="Equation">
+                    <img src="../../../GeneratedImages/Equations/Equation6.png" style="width: 117px;height: 17px;" alt="" class="MCEquation mcReset" />
+                </p>
+            </div>
+        </div>
+    </body>
+</html>

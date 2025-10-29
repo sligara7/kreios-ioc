@@ -1,0 +1,19 @@
+
+{% if ioc.environment.CONFIG_FILE is defined %}
+## Restore the configuration from file
+dbpf("$(SYS)$(DEV):CONFIG_FILE", "{{ ioc.environment.CONFIG_FILE }}")
+dbpf("$(SYS)$(DEV):CONFIG_READ.PROC", 1)
+
+{% endif %}
+{% if ioc.encoder_resolution is defined %}
+# Restore encoder resolutions
+dbpf("$(SYS)$(DEV):M1:MRES", {{ ioc.encoder_resolution[0] }})
+dbpf("$(SYS)$(DEV):M2:MRES", {{ ioc.encoder_resolution[1] }})
+dbpf("$(SYS)$(DEV):M3:MRES", {{ ioc.encoder_resolution[2] }})
+dbpf("$(SYS)$(DEV):M4:MRES", {{ ioc.encoder_resolution[3] }})
+
+{% endif %}
+dbpf("$(SYS)$(DEV):M1:SETPOS.PROC", 1)
+dbpf("$(SYS)$(DEV):M2:SETPOS.PROC", 1)
+dbpf("$(SYS)$(DEV):M3:SETPOS.PROC", 1)
+dbpf("$(SYS)$(DEV):M4:SETPOS.PROC", 1)

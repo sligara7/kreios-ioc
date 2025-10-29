@@ -1,0 +1,103 @@
+## Register all support components
+dbLoadDatabase("{{ deploy_ioc_required_module_path }}/dbd/{{ deploy_ioc_executable }}.dbd")
+{{ deploy_ioc_executable }}_registerRecordDeviceDriver pdbbase
+
+# Configure modbus connections for each unit
+
+{% for ioLogik in ioc.devices %}
+############  Config for ioLogik #{{ loop.index }} -  {{ ioLogik.model }}  ############
+
+epicsEnvSet("IOLOGIK_ID", "IOL{{ loop.index }}")
+
+drvAsynIPPortConfigure("$(IOLOGIK_ID)", "{{ ioLogik.ip }}:502", 0, 0, 1)
+modbusInterposeConfig("$(IOLOGIK_ID)", 0, 2000, 0)
+
+{% if ioLogik.model == "E1210" %}
+# MOXA E1210 DIs (if NOT counter mode) : function 2 (Read Discrete Inputs), address 0, length 16, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DI", "$(IOLOGIK_ID)", 0, 2, 0, 16, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1211" %}
+# MOXA E1211 DOs (if NOT pulse mode) : function 5 (Write Single Coil), address 0, length 16, data_type = UINT16, # pollMsec = for write func (4,..) any non-zero val to read first
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO", "$(IOLOGIK_ID)", 0, 5, 0, 16, "UINT16",   1, "ioLogik")
+
+# MOXA E1211 DOs (if NOT pulse mode) : function 1 (Read Coils), address 0, length 16, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO_RBV", "$(IOLOGIK_ID)", 0, 1, 0, 16, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1212" %}
+# MOXA E1212 DIs (if NOT counter mode) : function 2 (Read Discrete Inputs), address 0, length 16, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DI", "$(IOLOGIK_ID)", 0, 2, 0, 16, "UINT16", 100, "ioLogik")
+
+# MOXA E1212 DOs (if NOT pulse mode) : function 5 (Write Single Coil), address 0, length 8, data_type = UINT16, # pollMsec = for write func (4,..) any non-zero val to read first
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO", "$(IOLOGIK_ID)", 0, 5, 0, 8, "UINT16",   1, "ioLogik")
+
+# MOXA E1212 DOs (if NOT pulse mode) : function 1 (Read Coils), address 0, length 8, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO_RBV", "$(IOLOGIK_ID)", 0, 1, 0, 8, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1213" %}
+# MOXA E1213 DIs: function 2 (Read Discrete Inputs), address 0, length 12, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DI", "$(IOLOGIK_ID)", 0, 2, 0, 12, "UINT16", 100, "ioLogik")
+
+# MOXA E1213 DOs: function 5 (Write Single Coil), address 0, length 8, data_type = UINT16, # pollMsec = for write func (4,..) any non-zero val to read first
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO", "$(IOLOGIK_ID)", 0, 5, 0, 8, "UINT16",   1, "ioLogik")
+
+# MOXA E1213 DOs: function 1 (Read Coils), address 0, length 8, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO_RBV", "$(IOLOGIK_ID)", 0, 1, 0, 8, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1214" %}
+# MOXA E1214 DIs (if NOT counter mode) : function 2 (Read Discrete Inputs), address 0, length 6, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DI", "$(IOLOGIK_ID)", 0, 2, 0, 6, "UINT16", 100, "ioLogik")
+
+# MOXA E1214 Relay DOs (if NOT pulse mode) : function 5 (Write Single Coil), address 0, length 6, data_type = UINT16, # pollMsec = for write func (4,..) any non-zero val to read first
+drvModbusAsynConfigure("$(IOLOGIK_ID)_REL", "$(IOLOGIK_ID)", 0, 5, 0, 6, "UINT16",   1, "ioLogik")
+
+# MOXA E1214 Relay DOs (if NOT pulse mode) : function 1 (Read Coils), address 0, length 6, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_REL_RBV", "$(IOLOGIK_ID)", 0, 1, 0, 6, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1240" %}
+# MOXA E1240 AIs : function 4 (Read Input Registers), address 0, length 8, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_AI", "$(IOLOGIK_ID)", 0, 4, 0, 8, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1241" %}
+
+# MOXA E1241 AOs: function 6 (Write Single Register), address 1024, length 4 , data_type = UINT16, # pollMsec = for write func (4,..) any non-zero val to read first
+drvModbusAsynConfigure("$(IOLOGIK_ID)_AO", "$(IOLOGIK_ID)", 0, 6, 1024, 4, "UINT16", 1, "ioLogik")
+
+# MOXA E1241 AOs: function 3 (Read Holding Registers), address 1024, length 4 , data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_AO_RBV", "$(IOLOGIK_ID)", 0, 3, 1024, 4, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1242" %}
+# MOXA E1242 AIs : function 4 (Read Input Registers), address 512, length 4, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_AI", "$(IOLOGIK_ID)", 0, 4, 512, 4, "UINT16", 100, "ioLogik")
+
+# MOXA E1242 DIs (if NOT counter mode): function 2 (Read Discrete Inputs), address 0, length 8, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DI", "$(IOLOGIK_ID)", 0, 2, 0, 8, "UINT16", 100, "ioLogik")
+
+# MOXA E1242 DOs: function 5 (Write Single Coil), address 0, length 4, data_type = UINT16, # pollMsec = for write func (4,..) any non-zero val to read first
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO", "$(IOLOGIK_ID)", 0, 5, 0, 4, "UINT16", 1, "ioLogik")
+
+# MOXA E1242 DOs: function 1 (Read Coils), address 0, length 4, data_type = UINT16, # pollMsec = for read func, waits XXX msecs
+drvModbusAsynConfigure("$(IOLOGIK_ID)_DO_RBV", "$(IOLOGIK_ID)", 0, 1, 0, 4, "UINT16", 100, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1260" %}
+# MOXA E1260 RTDs: function 4 (Read Input Registers), address 1536, length 6 , data_type = INT16 (its 2's complement)
+drvModbusAsynConfigure("$(IOLOGIK_ID)_RTD", "$(IOLOGIK_ID)", 0, 4, 1536, 6, "INT16", 500, "ioLogik")
+
+{% endif %}
+{% if ioLogik.model == "E1262" %}
+# MOXA E1262 TCs: function 4 (Read Input Registers), address 2048, length 16 , data_type = INT32_BE
+drvModbusAsynConfigure("$(IOLOGIK_ID)_TC", "$(IOLOGIK_ID)", 0, 4, 2048, 16, "INT32_BE", 500, "ioLogik")
+
+{% endif %}
+# dbLoadTemplate("$(TOP)/db/ioLogik_{{ loop.index }}_{{ ioLogik.model }}.substitutions")
+
+#######################################################################################
+
+{% endfor %}

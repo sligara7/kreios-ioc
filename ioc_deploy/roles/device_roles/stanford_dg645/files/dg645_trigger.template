@@ -1,0 +1,89 @@
+record(mbbi, "$(Sys)$(Dev)Trig-Sts"){
+	field(DTYP, "stream")
+	field(INP, "@dg645.proto readTrigger $(PORT)")
+	field(SCAN, "$(SCAN)")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(SXVL, "6")
+	field(ZRST, "Internal")
+	field(ONST, "External Rising")
+	field(TWST, "External Falling")
+	field(THST, "Single Rising")
+	field(FRST, "Single Falling")
+	field(FVST, "Single Shot")
+	field(SXST, "Line")
+}
+
+record(mbbo, "$(Sys)$(Dev)Trig-Sel"){
+	field(DTYP, "stream")
+	field(OUT, "@dg645.proto writeTrigger $(PORT)")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(SXVL, "6")
+	field(ZRST, "Internal")
+	field(ONST, "External Rising")
+	field(TWST, "External Falling")
+	field(THST, "Single Rising")
+	field(FRST, "Single Falling")
+	field(FVST, "Single Shot")
+	field(SXST, "Line")
+}
+
+record(ao, "$(Sys)$(Dev)Val:Rate-SP"){
+	field(DTYP, "stream")
+	field(OUT, "@dg645.proto writeTriggerRate $(PORT)")
+	field(EGU, "Hz")
+	field(PREC, "9")
+}
+
+record(ai, "$(Sys)$(Dev)Val:Rate-RB"){
+	field(DTYP, "stream")
+	field(INP, "@dg645.proto readTriggerRate $(PORT)")
+	field(EGU, "Hz")
+	field(PREC, "9")
+	field(SCAN, "$(SCAN)")
+}
+
+record(mbbi, "$(Sys)$(Dev)Val:Inh-Sts"){
+	field(DTYP, "stream")
+	field(INP, "@dg645.proto readTriggerInhibit $(PORT)")
+	field(SCAN, "$(SCAN)")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(ZRST, "Off")
+	field(ONST, "Triggers")
+	field(TWST, "AB")
+	field(THST, "AB + CD")
+	field(FRST, "AB + CD + EF")
+	field(FVST, "AB + CD + EF + GH")
+}
+
+record(mbbo, "$(Sys)$(Dev)Val:Inh-Sel"){
+	field(DTYP, "stream")
+	field(OUT, "@dg645.proto writeTriggerInhibit $(PORT)")
+	field(SCAN, "$(SCAN)")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(ZRST, "Off")
+	field(ONST, "Triggers")
+	field(TWST, "AB")
+	field(THST, "AB + CD")
+	field(FRST, "AB + CD + EF")
+	field(FVST, "AB + CD + EF + GH")
+}

@@ -1,0 +1,37 @@
+---
+dg645:
+  type: "stanford_dg645"
+  environment:
+    ENGINEER: "A. Haque"
+    DEVICE_IP: "192.168.150.10"
+    DEVICE_PORT: 5025
+    P: "XF:31ID1-ES"
+    R: "{Dly:1}"
+  substitutions:
+    # Substitutions for StanfordDG645
+    dg645:
+      - filepath: "$(TOP)/db/dg645_outputs.template"
+        pattern: ["Sys", "Dev", "CHAN", "PORT", "SCAN"]
+        instances:
+          - ["XF:31ID1-ES", "{Dly:1-Chan:T0}", "0", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:AB}", "1", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:CD}", "2", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:EF}", "3", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:GH}", "4", "IP1", "1 second"]
+      - filepath: "$(TOP)/db/dg645_delay.template"
+        pattern: ["Sys", "Dev", "CHAN", "PORT", "SCAN"]
+        instances:
+          - ["XF:31ID1-ES", "{Dly:1-Chan:T0}", "0", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:T1}", "1", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:A}", "2", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:B}", "3", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:C}", "4", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:D}", "5", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:E}", "6", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:F}", "7", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:G}", "8", "IP1", "1 second"]
+          - ["XF:31ID1-ES", "{Dly:1-Chan:H}", "9", "IP1", "1 second"]
+      - filepath: "$(TOP)/db/dg645_trigger.template"
+        pattern: ["Sys", "Dev", "PORT", "SCAN"]
+        instances:
+          - ["XF:31ID1-ES", "{Dly:1}", "IP1", "1 second"]

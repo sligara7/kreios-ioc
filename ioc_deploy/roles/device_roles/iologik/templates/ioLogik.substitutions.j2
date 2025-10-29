@@ -1,0 +1,291 @@
+{% if iologik_connections[iologik_device.model]["DIO"] > 0 and iologik_device.dio_config is defined %}
+{% set has_di_dios = "DI" in iologik_device.dio_config %}
+{% set has_do_dios = "DO" in iologik_device.dio_config %}
+{% else %}
+{% set has_di_dios = False %}
+{% set has_do_dios = False %}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["DIO"] > 0 %}
+# Digital Input/Output Mode Records
+file "$(TOP)/db/dioConfig.template"
+{
+pattern
+{ P        , R                , N          , DIO_MODE       }
+{% for i in range(iologik_connections[iologik_device.model]["DIO"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:", "{{ i + 1 }}",  "{{ 1 if iologik_device.dio_config[i] == "DO" else 0 }}" }
+{% endfor %}
+}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["DI"] > 0 or has_di_dios%}
+# Digital Input Records
+file "$(MODBUS)/db/bi_bit.template"
+{
+pattern
+{ P        , R                , PORT          , OFFSET, ZNAM  , ONAM  , ZSV      , OSV      , SCAN       }
+{% for i in range(iologik_connections[iologik_device.model]["DI"] + iologik_connections[iologik_device.model]["DIO"]) %}
+{% set curr_dio_num = i - iologik_connections[iologik_device.model]["DI"] %}
+{% if i < iologik_connections[iologik_device.model]["DI"] or (iologik_device|length >=2 and iologik_device.dio_config[curr_dio_num] == "DI" ) %}
+{ "{{ ioc.environment.SYS }}" , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:DI{{ i + 1 }}-Sts" , IOL{{ iologik_index + 1 }}_DI, {{ i }}     , Low   , High  , NO_ALARM , NO_ALARM , "I/O Intr" }
+{% endif %}
+{% endfor %}
+}
+file "$(MODBUS)/db/statistics.template"
+{
+pattern
+{ P            , R             , PORT          , SCAN          }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:DI:"   , IOL{{ iologik_index + 1 }}_DI, "10 second"   }
+}
+
+file "$(MODBUS)/db/poll_delay.template"
+{
+pattern
+{ P            , R                     , PORT                  }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:DI:PollDelay"  , IOL{{ iologik_index + 1 }}_DI        }
+}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["DO"] > 0 or has_do_dios%}
+# Digital Output Records
+file "$(MODBUS)/db/bo_bit.template"
+{
+pattern
+{ P        , R                , PORT          , OFFSET, ZNAM  , ONAM  }
+{% for i in range(iologik_connections[iologik_device.model]["DO"] + iologik_connections[iologik_device.model]["DIO"]) %}
+{% set curr_dio_num = i - iologik_connections[iologik_device.model]["DO"] %}
+{% if i < iologik_connections[iologik_device.model]["DO"] or (iologik_device|length >=2 and iologik_device.dio_config[curr_dio_num] == "DO" ) %}
+{ "{{ ioc.environment.SYS }}"   , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:DO{{ i + 1 }}-Cmd" , IOL{{ iologik_index + 1 }}_DO, {{ i }}    , Low, High}
+{% endif %}
+{% endfor %}
+}
+file "$(MODBUS)/db/bi_bit.template"
+{
+pattern
+{ P        , R                , PORT          , OFFSET, ZNAM  , ONAM  , ZSV      , OSV      , SCAN       }
+{% for i in range(iologik_connections[iologik_device.model]["DO"] + iologik_connections[iologik_device.model]["DIO"]) %}
+{% set curr_dio_num = i - iologik_connections[iologik_device.model]["DO"] %}
+{% if i < iologik_connections[iologik_device.model]["DO"] or (iologik_device|length >=2 and iologik_device.dio_config[curr_dio_num] == "DO" ) %}
+{ "{{ ioc.environment.SYS }}" , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:DO{{ i + 1 }}-Sts" , IOL{{ iologik_index + 1 }}_DO_RBV, {{ i }}  , Low   , High  , NO_ALARM , NO_ALARM , "I/O Intr" }
+{% endif %}
+{% endfor %}
+}
+file "$(MODBUS)/db/statistics.template"
+{
+pattern
+{ P            , R             , PORT          , SCAN          }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:DO:"   , IOL{{ iologik_index + 1 }}_DO, "10 second"   }
+}
+
+file "$(MODBUS)/db/statistics.template"
+{
+pattern
+{ P            , R        , PORT        , SCAN          }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RB:DO:", IOL{{ iologik_index + 1 }}_DO_RBV, "10 second"   }
+}
+
+file "$(MODBUS)/db/poll_delay.template"
+{
+pattern
+{ P            , R                      , PORT                  }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RB:DO:PollDelay", IOL{{ iologik_index + 1 }}_DO_RBV        }
+}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["AI"] > 0 %}
+# Analog Input Records
+file "$(MODBUS)/db/longin.template" {
+pattern
+{P,           R,        PORT,           OFFSET,   SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["AI"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Raw-I:AI{{ i + 1 }}",    IOL{{ iologik_index + 1 }}_AI,     {{ i }},       "I/O Intr"}
+{% endfor %}
+}
+# 0-10 Volts mode (0-1)
+# 0 - 20 mA mode (2)
+# 4 - 20 mA BO mode (3)
+file "$(MODBUS)/db/ai.template" {
+pattern
+{P,           R,        PORT,       OFFSET, BITS, EGUL,  EGUF, PREC, SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["AI"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:I:AI{{ i + 1 }}",  IOL{{ iologik_index + 1 }}_AI, {{ i }},      16,   0.,    10.,  3,    "I/O Intr"}
+{% endfor %}
+}
+file "$(MODBUS)/db/ai_average.template" {
+pattern
+{P,           R,        PORT,       OFFSET, BITS, EGUL,  EGUF, PREC, SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["AI"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Avg-I:AI{{ i + 1 }}", IOL{{ iologik_index + 1 }}_AI, {{ i }},      16,   0.,    10.,  3,    "1 second"}
+{% endfor %}
+}
+file "$(MODBUS)/db/statistics.template" {
+pattern
+{P,           R,          PORT,              SCAN}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:AI:",     IOL{{ iologik_index + 1 }}_AI,  "10 second"}
+}
+file "$(MODBUS)/db/poll_delay.template" {
+pattern
+{P,           R,               PORT}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:AI:PollDelay", IOL{{ iologik_index + 1 }}_AI}
+}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["AO"] > 0 %}
+# Analog Output Records
+file "$(MODBUS)/db/longout.template" {
+pattern
+{P,           R,          PORT,          OFFSET}
+{% for i in range(iologik_connections[iologik_device.model]["AO"]) %}
+{ "{{ ioc.environment.SYS }}",    "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Raw-SP:AO{{ i + 1 }}",     IOL{{ iologik_index + 1 }}_AO,     {{ i }}}
+{% endfor %}
+}
+## EGUL and EGUF : 0 - 10V, 0 - 20 mA, 4 - 20 mA
+file "$(MODBUS)/db/ao.template" {
+pattern
+{P,           R,        PORT,       OFFSET, BITS, EGUL,  EGUF, PREC}
+{% for i in range(iologik_connections[iologik_device.model]["AO"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:SP:AO{{ i + 1 }}",  IOL{{ iologik_index + 1 }}_AO, {{ i }},      12,   0.,    10.,  3}
+{% endfor %}
+}
+file "$(MODBUS)/db/longin.template" {
+pattern
+{P,           R,        PORT,           OFFSET,   SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["AO"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Raw-RB:AO{{ i + 1 }}",    IOL{{ iologik_index + 1 }}_AO_RBV,     {{ i }},       "I/O Intr"}
+{% endfor %}
+}
+file "$(MODBUS)/db/ai.template" {
+pattern
+{P,           R,            PORT,           OFFSET, BITS, EGUL,  EGUF, PREC, SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["AO"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RB:AO{{ i + 1 }}",  IOL{{ iologik_index + 1 }}_AO_RBV, {{ i }},      12,   0.,    10.,  3,    "I/O Intr"}
+{% endfor %}
+}
+file "$(MODBUS)/db/statistics.template" {
+pattern
+{P,           R,          PORT,              SCAN}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:AO:",   IOL{{ iologik_index + 1 }}_AO,  "10 second"}
+}
+
+file "$(MODBUS)/db/statistics.template" {
+pattern
+{P,           R,          PORT,              SCAN}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RB:AO:",     IOL{{ iologik_index + 1 }}_AO_RBV,  "10 second"}
+}
+
+file "$(MODBUS)/db/poll_delay.template" {
+pattern
+{P,           R,               PORT}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RB:AO:PollDelay", IOL{{ iologik_index + 1 }}_AO_RBV}
+}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["RTD"] > 0 %}
+# RTD Records
+file "$(MODBUS)/db/longin.template" {
+pattern
+{P,           R,        PORT,           OFFSET,   SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["RTD"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Raw-I:RTD{{ i + 1 }}",    IOL{{ iologik_index + 1 }}_RTD,     {{ i }},       "I/O Intr"}
+{% endfor %}
+}
+file "$(MODBUS)/db/ai.template" {
+pattern
+{P,           R,        PORT,       OFFSET, BITS, EGUL,  EGUF, PREC, SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["RTD"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:I:RTD{{ i + 1 }}",  IOL{{ iologik_index + 1 }}_RTD, {{ i }},      16,   0.,    6553.5,  1,    "I/O Intr"}
+{% endfor %}
+}
+file "$(MODBUS)/db/ai_average.template" {
+pattern
+{P,           R,        PORT,       OFFSET, BITS, EGUL,  EGUF, PREC, SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["RTD"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Avg-I:RTD{{ i + 1 }}", IOL{{ iologik_index + 1 }}_RTD, {{ i }},      16,   0.,    6553.5,  1,    "1 second"}
+{% endfor %}
+}
+file "$(MODBUS)/db/statistics.template" {
+pattern
+{P,           R,          PORT,              SCAN}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RTD:",     IOL{{ iologik_index + 1 }}_RTD,  "10 second"}
+}
+file "$(MODBUS)/db/poll_delay.template" {
+pattern
+{P,           R,               PORT}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RTD:PollDelay", IOL{{ iologik_index + 1 }}_RTD}
+}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["Relay"] > 0 %}
+# Relay Records
+file "$(MODBUS)/db/bo_bit.template"
+{
+pattern
+{ P        , R                , PORT          , OFFSET, ZNAM  , ONAM  }
+{% for i in range(iologik_connections[iologik_device.model]["Relay"]) %}
+{ "{{ ioc.environment.SYS }}"  , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Relay{{ i + 1 }}-Cmd" , IOL{{ iologik_index + 1 }}_REL, {{ i }}    , Low, High}
+{% endfor %}
+}
+file "$(MODBUS)/db/bi_bit.template"
+{
+pattern
+{ P        , R                , PORT          , OFFSET, ZNAM  , ONAM  ,  ZSV,        OSV,        SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["Relay"]) %}
+{ "{{ ioc.environment.SYS }}" , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Relay{{ i + 1 }}-Sts" , IOL{{ iologik_index + 1 }}_REL_RBV, {{ i }}  , Low   , High  , NO_ALARM , NO_ALARM , "I/O Intr" }
+{% endfor %}
+}
+file "$(MODBUS)/db/statistics.template"
+{
+pattern
+{ P            , R             , PORT          , SCAN          }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Relay:"   , IOL{{ iologik_index + 1 }}_REL, "10 second"   }
+}
+
+file "$(MODBUS)/db/statistics.template"
+{
+pattern
+{ P            , R        , PORT        , SCAN          }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RB:Relay:", IOL{{ iologik_index + 1 }}_REL_RBV, "10 second"   }
+}
+
+file "$(MODBUS)/db/poll_delay.template"
+{
+pattern
+{ P            , R                     , PORT                  }
+{ "{{ ioc.environment.SYS }}"     , "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:RB:Relay:PollDelay", IOL{{ iologik_index + 1 }}_REL_RBV        }
+}
+{% endif %}
+
+{% if iologik_connections[iologik_device.model]["TC"] > 0 %}
+# Thermocouple Records
+file "$(MODBUS)/db/longinInt32.template" {
+pattern
+{P,           R,        PORT,           OFFSET, DATA_TYPE,   SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["TC"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Raw-I:TC{{ i + 1 }}",    IOL{{ iologik_index + 1 }}_TC,     {{ i * 2 }},    INT32_BE,   "I/O Intr"}
+{% endfor %}
+}
+file "$(MODBUS)/db/ai.template" {
+pattern
+{P,           R,        PORT,       OFFSET, BITS, EGUL,  EGUF, PREC, SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["TC"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:I:TC{{ i + 1 }}",  IOL{{ iologik_index + 1 }}_TC, {{ i * 2 }},      16,   0.,    6553.5,  1,    "I/O Intr"}
+{% endfor %}
+}
+file "$(MODBUS)/db/ai_average.template" {
+pattern
+{P,           R,        PORT,       OFFSET, BITS, EGUL,  EGUF, PREC, SCAN}
+{% for i in range(iologik_connections[iologik_device.model]["TC"]) %}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:Avg-I:TC{{ i + 1 }}", IOL{{ iologik_index + 1 }}_TC, {{ i * 2 }},      16,   0.,    6553.5,  1,    "1 second"}
+{% endfor %}
+}
+file "$(MODBUS)/db/statistics.template" {
+pattern
+{P,           R,          PORT,              SCAN}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:TC:",     IOL{{ iologik_index + 1 }}_TC,  "10 second"}
+}
+file "$(MODBUS)/db/poll_delay.template" {
+pattern
+{P,           R,               PORT}
+{ "{{ ioc.environment.SYS }}", "{{"{"}}{{ iologik_device_prefix }}{{ iologik_index + 1 }}:{{ iologik_device.model }}{{"}"}}:TC:PollDelay", IOL{{ iologik_index + 1 }}_TC}
+}
+{% endif %}

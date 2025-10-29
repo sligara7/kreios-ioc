@@ -1,0 +1,16 @@
+line-length = 88
+lint.select = [
+    "B",       # flake8-bugbear - https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+    "C4",      # flake8-comprehensions - https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "E",       # pycodestyle errors - https://docs.astral.sh/ruff/rules/#error-e
+    "F",       # pyflakes rules - https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "W",       # pycodestyle warnings - https://docs.astral.sh/ruff/rules/#warning-w
+    "I",       # isort - https://docs.astral.sh/ruff/rules/#isort-i
+    "UP",      # pyupgrade - https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "SLF",     # self - https://docs.astral.sh/ruff/settings/#lintflake8-self
+    "LOG015",  # root logger call - https://docs.astral.sh/ruff/rules/root-logger-call/
+    "S101",    # assert - https://docs.astral.sh/ruff/rules/assert/
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["SLF001", "S101", "D"]

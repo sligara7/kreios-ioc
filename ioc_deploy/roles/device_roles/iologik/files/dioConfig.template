@@ -1,0 +1,6 @@
+record(bi, "$(P)$(R)DIO$(N)-Mode"){
+    field(VAL, "$(DIO_MODE)")
+    field(ZNAM, "False")
+    field(ONAM, "True")
+    field(PINI, "YES")
+}

@@ -1,0 +1,74 @@
+record(mbbo, "$(Sys)$(Dev)DO:Rel-Sel"){
+	field(ZRST, "T0")
+	field(ONST, "T1")
+	field(TWST, "A")
+	field(THST, "B")
+	field(FRST, "C")
+	field(FVST, "D")
+	field(SXST, "E")
+	field(SVST, "F")
+	field(EIST, "G")
+	field(NIST, "H")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(SXVL, "6")
+	field(SVVL, "7")
+	field(EIVL, "8")
+	field(NIVL, "9")
+	field(FLNK, "$(Sys)$(Dev)Calc1_")
+	info(autosaveFields, "VAL")
+}
+
+record(ao, "$(Sys)$(Dev)DO:Dly-SP"){
+	field(FLNK, "$(Sys)$(Dev)Calc1_")
+	field(PREC, "9")
+	field(EGU, "S")
+	info(autosaveFields, "VAL")
+}
+
+record (calcout, "$(Sys)$(Dev)Calc1_"){
+	field(DTYP, "stream")
+    field(INPA, "$(Sys)$(Dev)DO:Rel-Sel NPP MS")
+    field(INPB, "$(Sys)$(Dev)DO:Dly-SP NPP MS")
+    field(CALC, "0")
+    field(OUT, "@dg645.proto writeDelay($(CHAN)) $(PORT)")
+}
+
+record(ai, "$(Sys)$(Dev)DO:Dly-RB"){
+    field(DTYP, "stream")
+	field(INP, "@dg645.proto readDelayVal($(CHAN)) $(PORT)")
+	field(SCAN, "$(SCAN)")
+	field(EGU, "S")
+	field(PREC, "9")
+}
+
+record(mbbi, "$(Sys)$(Dev)DO:Rel-Sts"){
+	field(DTYP, "stream")
+	field(ZRST, "T0")
+	field(ONST, "T1")
+	field(TWST, "A")
+	field(THST, "B")
+	field(FRST, "C")
+	field(FVST, "D")
+	field(SXST, "E")
+	field(SVST, "F")
+	field(EIST, "G")
+	field(NIST, "H")
+	field(ZRVL, "0")
+	field(ONVL, "1")
+	field(TWVL, "2")
+	field(THVL, "3")
+	field(FRVL, "4")
+	field(FVVL, "5")
+	field(SXVL, "6")
+	field(SVVL, "7")
+	field(EIVL, "8")
+	field(NIVL, "9")
+    field(DTYP, "stream")
+	field(INP, "@dg645.proto readDelayRel($(CHAN)) $(PORT)")
+	field(SCAN, "$(SCAN)")
+}

@@ -1,0 +1,7 @@
+---
+
+type: enum("rbd9103")
+environment:
+  PREFIX: str()
+  SERIAL_NUMBER: str()
+  ENGINEER: str(required=False)

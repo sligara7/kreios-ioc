@@ -1,0 +1,11 @@
+pyyaml
+pre-commit
+ruff
+import-linter
+yamale
+questionary
+tabulate
+ansible-core==2.14.1
+ansible-lint
+pytest
+requests

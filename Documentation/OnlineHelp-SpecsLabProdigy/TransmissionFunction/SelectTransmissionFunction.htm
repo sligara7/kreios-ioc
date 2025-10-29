@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" lang="en-us" xml:lang="en-us" data-mc-search-type="Stem" data-mc-help-system-file-name="Default.xml" data-mc-path-to-help-system="../" data-mc-target-type="WebHelp2" data-mc-runtime-file-type="Topic" data-mc-preload-images="false" data-mc-in-preview-mode="false" data-mc-medium="non-print" data-mc-toc-path="Transmission Function">
+    <!-- saved from url=(0016)http://localhost -->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="../Skins/Default/Stylesheets/Slideshow.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/TextEffects.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Topic.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Components/Styles.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Components/Tablet.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Components/Mobile.css" rel="stylesheet" type="text/css" data-mc-generated="True" /><title>Selecting a Transmission Function</title>
+        <link href="../Resources/Stylesheets/Styles.css" rel="stylesheet" type="text/css" />
+        <script src="../Resources/Scripts/custom.modernizr.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/jquery.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/require.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/require.config.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/foundation.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/plugins.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <h2><a name="kanchor199"></a>Selecting a Transmission Function</h2>
+        <p>You can select a transmission function as part of defining a spectrum group:</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Select an item from the <span class="GUIItem">Transmission</span> drop-down list in the spectrum group definition. In addition to the transmission functions for specific setups, there is also a default transmission function as well as a constant value, which is equivalent to not applying a transmission function.</p>
+        <p>&#160;</p>
+        <p><a name="kanchor200"></a>Each spectrum in a spectrum group can use a different lens mode. Since the transmission function is dependent on the lens mode, <span class="MyVariablesSoftware">SpecsLab Prodigy</span> automatically applies the correct transmission function for the lens mode. The picture below shows the file structure of the transmission functions. As you can see, the folders determine the analyzer, detector and slit settings. Each lens mode has its own transmission function file. </p>
+        <p>&#160;</p>
+        <p class="Note" data-mc-autonum="&lt;b&gt;NOTE: &lt;/b&gt;"><span class="autonumber"><span><b>NOTE: </b></span></span>
+            <br />The <span class="MyVariablesSoftware">SpecsLab Prodigy</span> is normally under C:\Program Files (x86)\ .</p>
+        <p>&#160;</p>
+        <p>If a suitable transmission function is not available, a warning will be shown when you validate the experiment. <span class="MyVariablesSoftware">SpecsLab Prodigy</span> deals with missing transmission functions as follows:</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>The default transmission function is used.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>If the default is also not available, a constant value is used.</p>
+        <p>&#160;</p>
+        <p>
+            <img src="../Resources/Images/TF_Structure.png" />
+        </p>
+    </body>
+</html>

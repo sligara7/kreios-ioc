@@ -1,0 +1,1368 @@
+/*<meta />*/
+
+body
+{
+	font-family: Arial;
+}
+
+h1
+{
+	font-weight: bold;
+	font-size: 24.0pt;
+}
+
+h2
+{
+	font-weight: bold;
+	font-size: 18.0pt;
+}
+
+h3
+{
+	font-weight: bold;
+	font-size: 14.0pt;
+}
+
+h4
+{
+	font-weight: bold;
+	font-size: 12.0pt;
+}
+
+h5
+{
+	font-weight: bold;
+	font-size: 10.0pt;
+}
+
+h6
+{
+	font-weight: bold;
+	font-size: 8.0pt;
+}
+
+p
+{
+	font-size: 12.0pt;
+	margin-top: 0pt;
+	margin-bottom: 0pt;
+}
+
+ol,
+ul
+{
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+img
+{
+	border: none;
+}
+
+a.Popup
+{
+	
+}
+
+MadCap|expandingHead
+{
+	cursor: hand;
+	text-decoration: none;
+	font-weight: normal;
+	font-style: normal;
+}
+
+MadCap|expandingBody
+{
+	font-weight: normal;
+	font-style: normal;
+	font-size: 10pt;
+	color: #000000;
+}
+
+MadCap|dropDownHotspot
+{
+	cursor: hand;
+	text-decoration: none;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 10pt;
+	color: #878787;
+}
+
+MadCap|variable.HeaderFooter
+{
+	
+}
+
+@media print
+{
+	MadCap|variable.HeaderFooter
+	{
+		font-size: 9pt;
+		font-family: FrutigerCon;
+	}
+
+	h1
+	{
+		margin-top: 0;
+		font-weight: bold;
+		font-style: normal;
+		mc-auto-number-position: inside-head;
+		border-top-style: solid;
+		border-top-width: 3px;
+		border-top-color: #002f5f;
+		padding-top: 4mm;
+		font-size: 15pt;
+		font-family: 'Droid Serif Pro';
+		color: #002f5f;
+		line-height: 29px;
+		letter-spacing: 1px;
+		border-top-length: 75mm;
+		margin-bottom: 28px;
+		mc-auto-number-format: 'Chapter {chapnum} – ';
+	}
+
+	h2
+	{
+		font-weight: bold;
+		font-style: normal;
+		font-size: 11.5pt;
+		font-family: 'Droid Sans Pro';
+		color: #002f5f;
+		mc-auto-number-position: inside-head;
+		margin-bottom: 1pt;
+		margin-top: 14px;
+		mc-italic-correction: 0;
+		letter-spacing: 1px;
+		mc-auto-number-format: 'CH:{chapnum}.{n+}     ';
+	}
+
+	h3
+	{
+		margin-right: 0;
+		margin-bottom: -0.17pt;
+		mc-auto-number-position: inside-head;
+		font-size: 11.5pt;
+		font-weight: normal;
+		font-style: normal;
+		line-height: 25px;
+		font-family: 'Droid Sans Pro';
+		color: #005293;
+		mc-auto-number-offset: 0;
+		mc-auto-number-format: 'CH:{chapnum}.{n}.{n+}   ';
+		margin-top: 14px;
+	}
+
+	table
+	{
+		text-align: left;
+		vertical-align: top;
+		padding-left: 0pt;
+		padding-right: 0pt;
+		padding-top: 0pt;
+		padding-bottom: 0pt;
+		font-size: 9.5pt;
+	}
+
+	thead
+	{
+		font-size: 9.5pt;
+		color: #ffffff;
+		background-color: #002f5f;
+		font-weight: bold;
+		font-style: normal;
+	}
+
+	tbody
+	{
+		
+	}
+
+	td
+	{
+		vertical-align: top;
+	}
+
+	th
+	{
+		font-weight: normal;
+		font-style: normal;
+		text-align: left;
+		vertical-align: middle;
+	}
+
+	td.open
+	{
+		
+	}
+
+	th.open
+	{
+		background-color: #ffffff;
+		color: #191919;
+	}
+
+	p.TableCaption
+	{
+		margin-bottom: 0;
+		mc-auto-number-format: 'GT:Table {n+}';
+		font-size: 7pt;
+		color: #009fda;
+	}
+
+	h4
+	{
+		margin-bottom: 0;
+		margin-top: 14pt;
+		line-height: 12pt;
+		mc-heading-level: 0;
+		font-size: 9.5pt;
+		font-weight: bold;
+		font-style: normal;
+		font-family: 'Droid Sans Pro';
+		color: #191919;
+		letter-spacing: 1px;
+	}
+
+	p.FigureCaption
+	{
+		margin-bottom: 0;
+		mc-auto-number-format: 'GF:Figure {n+}';
+		font-size: 7pt;
+		color: #009fda;
+	}
+
+	p.TOC1
+	{
+		margin-top: 14px;
+		font-weight: normal;
+		font-style: normal;
+		font-size: 11.5pt;
+		color: #005293;
+		mc-leader-format: ' ';
+		mc-pagenum-display: none;
+		mc-auto-number-position: none;
+		margin-left: 0;
+	}
+
+	p.TOC2
+	{
+		mc-leader-format: 'dot';
+		color: #191919;
+		text-indent: 0;
+		margin-left: 0;
+		mc-leader-offset: 10pt;
+		padding-left: 0px;
+		padding-right: 0px;
+		mc-italic-correction: 5px;
+		word-spacing: 1px;
+	}
+
+	p.TOC3
+	{
+		mc-auto-number-format: ;
+		mc-italic-correction: 0;
+		color: #191919;
+		mc-leader-format: 'dot';
+		margin-top: 0;
+		margin-left: 0;
+		text-indent: 0;
+		mc-leader-offset: 10pt;
+		padding-right: 0px;
+	}
+
+	MadCap|tocProxy
+	{
+		border-top-color: #ffffff;
+		border-top-width: 0px;
+		padding-left: 0px;
+	}
+
+	p.FrontMatterLists
+	{
+		margin-left: 0;
+		font-weight: normal;
+		font-style: normal;
+		mc-leader-format: 'dot';
+	}
+
+	h1.TOC
+	{
+		mc-heading-level: 0;
+		mc-auto-number-format: 'A:';
+		margin-bottom: 18pt;
+		margin-top: 0;
+	}
+
+	h1.NoNumber
+	{
+		mc-auto-number-format: 'A:';
+		margin-bottom: 18pt;
+		margin-top: 0;
+	}
+
+	MadCap|listOfProxy
+	{
+		mc-leader-format: '_';
+		border-top-color: #ffffff;
+		border-top-width: 0px;
+		padding-left: 0px;
+		font-family: FrutigerCon;
+	}
+
+	em
+	{
+		mc-italic-correction: 2pt;
+		font-size: 10pt;
+		text-decoration: underline;
+		font-weight: normal;
+		font-style: normal;
+	}
+
+	MadCap|indexProxy
+	{
+		border-top-color: #ffffff;
+		border-top-width: 0px;
+		font-family: FrutigerCon;
+		font-size: 9pt;
+	}
+
+	abbr
+	{
+		font-size: 9pt;
+		font-family: FrutigerCon;
+		text-transform: lowercase;
+	}
+
+	p.Index1
+	{
+		mc-leader-offset: 15px;
+		font-size: 9pt;
+		color: #191919;
+		mc-leader-format: 'dot';
+	}
+
+	p.IndexHeading
+	{
+		background-color: #ffffff;
+		margin-top: 18pt;
+		font-weight: bold;
+		font-style: normal;
+		color: #002f5f;
+	}
+
+	MadCap|footnote
+	{
+		font-size: 7pt;
+		color: #005293;
+	}
+
+	MadCap|footnotesBlock
+	{
+		border-top-length: 33%;
+		color: #005293;
+		font-size: 7pt;
+	}
+
+	strong
+	{
+		font-size: 10pt;
+		font-weight: bold;
+		font-style: normal;
+		font-family: FrutigerCon;
+	}
+
+	em.Alt
+	{
+		font-weight: normal;
+		font-style: italic;
+		text-decoration: none;
+		font-size: 10pt;
+		mc-italic-correction: 1px;
+	}
+
+	p.Title2
+	{
+		font-weight: normal;
+		font-style: normal;
+		color: #002f5f;
+		font-size: 11.5pt;
+		text-align: left;
+		margin-top: 0;
+		padding-top: 8pt;
+	}
+
+	p.Index2
+	{
+		margin-left: 20px;
+		mc-leader-offset: 15px;
+		font-size: 9pt;
+		color: #191919;
+		mc-leader-format: 'dot';
+	}
+
+	p.Index3
+	{
+		margin-left: 40px;
+		mc-leader-offset: 15px;
+		font-size: 9pt;
+		color: #191919;
+		mc-leader-format: 'dot';
+	}
+
+	p.Note
+	{
+		color: #005293;
+		mc-auto-number-format: '{family FrutigerCon}{b}{color #005293}Note{/color}{/b}{/family}';
+	}
+
+	MadCap|xref
+	{
+		mc-format: '{quote}{paratext}{quote} on page {page}';
+		text-decoration: underline;
+		color: #005293;
+	}
+
+	span.GUIItem
+	{
+		text-decoration: none;
+		mc-italic-correction: 1px;
+		font-weight: bold;
+		font-style: normal;
+	}
+
+	p
+	{
+		widows: 2;
+		orphans: 2;
+		mc-short-line-tighten-maximum: 2;
+		mc-short-line-loosen-maximum: 2;
+		mc-short-line-step: 0, 1;
+		font-size: 9.5pt;
+		font-family: 'Droid Sans Pro';
+		color: #191919;
+		line-height: 14pt;
+	}
+
+	td.Subscript
+	{
+		padding-bottom: 3px;
+	}
+
+	a
+	{
+		text-decoration: none;
+		color: #85acce;
+	}
+
+	a:focus
+	{
+		color: #000000;
+	}
+
+	a:hover
+	{
+		color: #000000;
+	}
+
+	a:link
+	{
+		text-decoration: none;
+		color: #000000;
+	}
+
+	a:visited
+	{
+		text-decoration: none;
+	}
+
+	p.code
+	{
+		font-family: 'Droid Sans Mono Pro';
+		color: #8b8d8e;
+	}
+
+	span.File
+	{
+		font-weight: normal;
+		font-style: italic;
+	}
+
+	p.Bullet
+	{
+		margin-left: 23px;
+		mc-auto-number-format: 'B:{family wingdings}{/family}     ';
+		text-indent: -25px;
+	}
+
+	p.Bullet2
+	{
+		left: 0px;
+		mc-auto-number-format: 'B:{family wingdings}{/family}     ';
+		margin-left: 48px;
+		text-indent: -25px;
+	}
+
+	p.BulletNumber
+	{
+		mc-auto-number-format: 'B:{family wingdings}{/family}     ';
+		text-indent: -25px;
+		margin-left: 48px;
+	}
+
+	p.BulletTable
+	{
+		mc-auto-number-format: 'B:{family wingdings}{/family}   ';
+	}
+
+	sub
+	{
+		vertical-align: sub;
+	}
+
+	span.Subscript
+	{
+		font-size: 70%;
+	}
+
+	MadCap|xref.Equation
+	{
+		mc-format: 'Equation {paranum}';
+	}
+
+	p.Footer
+	{
+		font-size: 9.5pt;
+		color: #005293;
+	}
+
+	p.List
+	{
+		mc-auto-number-format: '{n+}. ';
+		mc-auto-number-position: outside-head;
+		margin-left: 23px;
+		mc-auto-number-offset: 23px;
+	}
+
+	p.ListStart
+	{
+		padding: 0px;
+		mc-auto-number-position: outside-head;
+		mc-auto-number-format: '{n=1}. ';
+		mc-auto-number-offset: 23px;
+		margin-left: 23px;
+	}
+
+	span
+	{
+		font-size: 9.5pt;
+		font-family: 'Droid Sans Pro';
+		color: #191919;
+	}
+
+	p.ListOf
+	{
+		
+	}
+
+	p.Warning
+	{
+		color: #005293;
+	}
+
+	p.Equation
+	{
+		display: block;
+		mc-auto-number-format: 'GE: {color 005293}({n+}){/color}';
+		mc-auto-number-position: float-right;
+		font-size: 11pt;
+	}
+
+	h6
+	{
+		margin-top: 0;
+		font-weight: bold;
+		font-style: normal;
+		mc-auto-number-position: inside-head;
+		border-top-style: solid;
+		border-top-width: 3px;
+		border-top-color: #002f5f;
+		padding-top: 4mm;
+		font-size: 15pt;
+		font-family: 'Droid Serif Pro';
+		color: #002f5f;
+		line-height: 29px;
+		letter-spacing: 1px;
+		border-top-length: 75mm;
+		margin-bottom: 28px;
+	}
+
+	p.TOC6
+	{
+		margin-top: 14px;
+		margin-left: 0;
+		font-size: 9.5pt;
+	}
+
+	MadCap|xref.Page
+	{
+		mc-format: '{page}';
+	}
+
+	span.Code
+	{
+		font-family: 'Droid Sans Mono Pro';
+		color: #8b8d8e;
+	}
+
+	MadCap|dropDownHead
+	{
+		font-weight: bold;
+		font-style: normal;
+		font-size: 9.5pt;
+		color: #191919;
+	}
+
+	MadCap|dropDownHotspot
+	{
+		font-size: 9.5pt;
+		font-weight: bold;
+		font-style: normal;
+		font-family: 'Droid Sans Pro';
+		color: #111111;
+	}
+
+	MadCap|dropDownHotspot:focus
+	{
+		color: #111111;
+	}
+
+	MadCap|dropDownHotspot:hover
+	{
+		color: #111111;
+	}
+
+	MadCap|xref.Caption
+	{
+		mc-format: '{paranum}';
+	}
+
+	MadCap|xref.CaptionOnPage
+	{
+		mc-format: '{paranum} on page {page}';
+	}
+
+	p.Title1
+	{
+		vertical-align: text-top;
+		color: #002f5f;
+		text-align: left;
+		margin-top: 0;
+		margin-bottom: 0;
+		padding-top: 0px;
+		line-height: 40px;
+		font-weight: normal;
+		font-style: normal;
+	}
+
+	span.TitleBold
+	{
+		font-size: 32pt;
+		font-weight: bold;
+		font-style: normal;
+		color: #002f5f;
+	}
+
+	span.TitleRegular
+	{
+		font-size: 32pt;
+		color: #002f5f;
+	}
+}
+
+table.Filled
+{
+	width: 100%;
+	caption-side: top;
+}
+
+@media non-print
+{
+	p.FigureCaption
+	{
+		mc-hidden: hidden;
+	}
+
+	p.TableCaption
+	{
+		mc-hidden: hidden;
+	}
+
+	a:link
+	{
+		color: #009fda;
+		text-decoration: none;
+	}
+
+	body
+	{
+		
+	}
+
+	ul
+	{
+		color: #002f5f;
+	}
+
+	a:active
+	{
+		color: #009fda;
+	}
+
+	p.Table
+	{
+		color: #37424a;
+	}
+
+	p.MiniTOC1
+	{
+		color: #8b8d8e;
+		font-weight: normal;
+	}
+
+	p.MiniTOC_Caption
+	{
+		color: #37424a;
+	}
+
+	p.MiniTOC2
+	{
+		color: #8b8d8e;
+	}
+
+	p.MiniTOC3
+	{
+		color: #8b8d8e;
+	}
+
+	h1
+	{
+		font-size: 14pt;
+		color: #005ca9;
+		margin-bottom: 0;
+		margin-top: 0;
+		font-family: Tahoma;
+	}
+
+	h2
+	{
+		margin-bottom: 0;
+		font-size: 14pt;
+		color: #005ca9;
+		margin-top: 0;
+		font-family: Tahoma;
+	}
+
+	h3
+	{
+		margin-bottom: 0;
+		font-size: 14pt;
+		color: #005ca9;
+		margin-top: 0;
+		font-family: Tahoma;
+	}
+
+	h4
+	{
+		font-size: 9pt;
+		color: #999999;
+		margin-bottom: 0;
+		margin-top: 18.12px;
+		font-family: Tahoma;
+	}
+
+	p
+	{
+		font-size: 9pt;
+		margin-top: 6px;
+		font-family: Tahoma;
+	}
+
+	p.Bullet
+	{
+		mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}    ';
+		margin-left: 25px;
+		text-indent: -19px;
+	}
+
+	p.Bullet2
+	{
+		mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}    ';
+		text-indent: -19px;
+		margin-left: 50px;
+	}
+
+	p.BulletNumber
+	{
+		mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}    ';
+		text-indent: -19px;
+		margin-left: 50px;
+	}
+
+	p.BulletTable
+	{
+		mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}   ';
+	}
+
+	p.code
+	{
+		font-family: monospace;
+	}
+
+	p.Edit
+	{
+		background-color: #ffff00;
+	}
+
+	p.Note
+	{
+		mc-auto-number-format: '{b}NOTE: {/b}';
+		color: #005ca9;
+		background-color: #c8daee;
+	}
+
+	ol
+	{
+		font-family: Arial;
+		font-size: 9pt;
+	}
+
+	a
+	{
+		text-decoration: none;
+		color: #85acce;
+	}
+
+	a:focus
+	{
+		text-decoration: underline;
+		color: #000000;
+	}
+
+	a:hover
+	{
+		text-decoration: underline;
+		color: #000000;
+	}
+
+	a:visited
+	{
+		color: #005ca9;
+		text-decoration: none;
+	}
+
+	MadCap|expandingHead
+	{
+		font-weight: bold;
+		font-style: normal;
+		font-size: 10pt;
+		color: #878787;
+	}
+
+	MadCap|expandingBody
+	{
+		color: #000000;
+		font-weight: normal;
+		font-style: normal;
+	}
+
+	MadCap|dropDownHotspot
+	{
+		font-weight: bold;
+		font-style: normal;
+		font-size: 10pt;
+		font-family: Arial;
+		color: #878787;
+	}
+
+	table
+	{
+		text-align: left;
+		padding-left: 1pt;
+		padding-right: 1pt;
+		padding-top: 1pt;
+		padding-bottom: 1pt;
+		font-size: 10pt;
+		border: none 1px #ffffff;
+		font-family: Tahoma;
+	}
+
+	table.Filled
+	{
+		font-family: ;
+		padding-left: 1pt;
+		padding-right: 1pt;
+		padding-top: 1pt;
+		padding-bottom: 1pt;
+		border-left-color: #ffffff;
+		border-left-width: 1px;
+		border-bottom-color: #ffffff;
+		border-bottom-width: 1px;
+		border: solid 1px #ffffff;
+	}
+
+	thead
+	{
+		background-color: #c8daee;
+		color: #005ca9;
+		font-size: 9pt;
+		text-align: left;
+		display: table-header-group;
+		font-style: normal;
+		font-family: Tahoma;
+	}
+
+	tbody
+	{
+		font-size: 10pt;
+		font-family: ;
+	}
+
+	td
+	{
+		vertical-align: top;
+		border-left: none 1px #ffffff;
+		border-bottom: none 1px #ffffff;
+		background-color: #cccccc;
+	}
+
+	td.Filled
+	{
+		background-color: #cccccc;
+		font-family: FrutigerCon;
+		font-size: 10pt;
+		border-left-width: 1px;
+		border-left-color: #ffffff;
+		border-bottom-width: 1px;
+		border-bottom-color: #ffffff;
+	}
+
+	td.open
+	{
+		background-color: #ffffff;
+		border: none;
+	}
+
+	th
+	{
+		text-align: left;
+		font-weight: inherit;
+	}
+
+	em.Alt
+	{
+		font-style: normal;
+		text-decoration: underline;
+	}
+
+	abbr
+	{
+		font-variant: normal;
+		text-transform: uppercase;
+	}
+
+	MadCap|xref
+	{
+		text-decoration: none;
+		color: #85acce;
+		mc-format: "{paratext}";
+	}
+
+	MadCap|xref:focus
+	{
+		text-decoration: underline;
+		color: #000000;
+	}
+
+	MadCap|xref:hover
+	{
+		color: #000000;
+		text-decoration: underline;
+	}
+
+	MadCap|xref.Caption
+	{
+		mc-format: 'The figure below';
+	}
+
+	span.File
+	{
+		font-style: italic;
+		font-family: Arial;
+		font-size: 10pt;
+	}
+
+	span.GUIItem
+	{
+		font-weight: bold;
+		font-style: normal;
+	}
+
+	li
+	{
+		margin-top: 6px;
+	}
+
+	MadCap|dropDownHead
+	{
+		font-weight: bold;
+		font-style: normal;
+		font-size: 9pt;
+		font-family: Arial;
+		color: #878787;
+	}
+}
+
+p.Footer
+{
+	font-size: 12.0pt;
+	margin-top: 0pt;
+	margin-bottom: 0pt;
+}
+
+p.FigureCaption
+{
+	mc-hidden: hidden;
+}
+
+p.TableCaption
+{
+	mc-hidden: hidden;
+}
+
+a:link
+{
+	color: #009fda;
+	text-decoration: none;
+}
+
+a:visited
+{
+	color: #005ca9;
+	text-decoration: none;
+}
+
+a:focus
+{
+	text-decoration: underline;
+	color: #000000;
+}
+
+a:hover
+{
+	text-decoration: underline;
+	color: #000000;
+}
+
+a:active
+{
+	color: #009fda;
+}
+
+body
+{
+	
+}
+
+ul
+{
+	color: #002f5f;
+}
+
+p.Table
+{
+	color: #37424a;
+}
+
+p.MiniTOC1
+{
+	color: #8b8d8e;
+	font-weight: normal;
+}
+
+p.MiniTOC_Caption
+{
+	color: #37424a;
+}
+
+p.MiniTOC2
+{
+	color: #8b8d8e;
+}
+
+p.MiniTOC3
+{
+	color: #8b8d8e;
+}
+
+h1
+{
+	font-size: 14pt;
+	color: #005ca9;
+	margin-bottom: 0;
+	margin-top: 0;
+	font-family: Tahoma;
+}
+
+h2
+{
+	margin-bottom: 0;
+	font-size: 14pt;
+	color: #005ca9;
+	margin-top: 0;
+	font-family: Tahoma;
+}
+
+h3
+{
+	margin-bottom: 0;
+	font-size: 14pt;
+	color: #005ca9;
+	margin-top: 0;
+	font-family: Tahoma;
+}
+
+h4
+{
+	font-size: 9pt;
+	color: #999999;
+	margin-bottom: 0;
+	margin-top: 18.12px;
+	font-family: Tahoma;
+}
+
+p
+{
+	font-size: 9pt;
+	margin-top: 6px;
+	font-family: Tahoma;
+}
+
+p.Bullet
+{
+	mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}    ';
+	margin-left: 25px;
+	text-indent: -19px;
+}
+
+p.Bullet2
+{
+	mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}    ';
+	text-indent: -19px;
+	margin-left: 50px;
+}
+
+p.BulletNumber
+{
+	mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}    ';
+	text-indent: -19px;
+	margin-left: 50px;
+}
+
+p.BulletTable
+{
+	mc-auto-number-format: 'B:{family arial}{color #005ca9}■{/color}{/family}   ';
+}
+
+p.code
+{
+	font-family: monospace;
+}
+
+p.Edit
+{
+	background-color: #ffff00;
+}
+
+p.Note
+{
+	mc-auto-number-format: '{b}NOTE: {/b}';
+	color: #005ca9;
+	background-color: #c8daee;
+}
+
+ol
+{
+	font-family: Arial;
+	font-size: 9pt;
+}
+
+a
+{
+	text-decoration: none;
+	color: #85acce;
+}
+
+MadCap|expandingHead
+{
+	font-weight: bold;
+	font-style: normal;
+	font-size: 10pt;
+	color: #878787;
+}
+
+MadCap|expandingBody
+{
+	color: #000000;
+	font-weight: normal;
+	font-style: normal;
+}
+
+MadCap|dropDownHotspot
+{
+	font-weight: bold;
+	font-style: normal;
+	font-size: 10pt;
+	font-family: Arial;
+	color: #878787;
+}
+
+table
+{
+	text-align: left;
+	padding-left: 1pt;
+	padding-right: 1pt;
+	padding-top: 1pt;
+	padding-bottom: 1pt;
+	font-size: 10pt;
+	border: none 1px #ffffff;
+	font-family: Tahoma;
+}
+
+table.Filled
+{
+	font-family: ;
+	padding-left: 1pt;
+	padding-right: 1pt;
+	padding-top: 1pt;
+	padding-bottom: 1pt;
+	border-left-color: #ffffff;
+	border-left-width: 1px;
+	border-bottom-color: #ffffff;
+	border-bottom-width: 1px;
+	border: solid 1px #ffffff;
+}
+
+thead
+{
+	background-color: #c8daee;
+	color: #005ca9;
+	font-size: 9pt;
+	text-align: left;
+	display: table-header-group;
+	font-style: normal;
+	font-family: Tahoma;
+}
+
+tbody
+{
+	font-size: 10pt;
+	font-family: ;
+}
+
+td
+{
+	vertical-align: top;
+	border-left: none 1px #ffffff;
+	border-bottom: none 1px #ffffff;
+	background-color: #cccccc;
+}
+
+td.Filled
+{
+	background-color: #cccccc;
+	font-family: FrutigerCon;
+	font-size: 10pt;
+	border-left-width: 1px;
+	border-left-color: #ffffff;
+	border-bottom-width: 1px;
+	border-bottom-color: #ffffff;
+}
+
+td.open
+{
+	background-color: #ffffff;
+	border: none;
+}
+
+th
+{
+	text-align: left;
+	font-weight: inherit;
+}
+
+em.Alt
+{
+	font-style: normal;
+	text-decoration: underline;
+}
+
+abbr
+{
+	font-variant: normal;
+	text-transform: uppercase;
+}
+
+MadCap|xref
+{
+	text-decoration: none;
+	color: #85acce;
+	mc-format: "{paratext}";
+}
+
+MadCap|xref:focus
+{
+	text-decoration: underline;
+	color: #000000;
+}
+
+MadCap|xref:hover
+{
+	color: #000000;
+	text-decoration: underline;
+}
+
+MadCap|xref.Caption
+{
+	mc-format: 'The figure below';
+}
+
+span.File
+{
+	font-style: italic;
+	font-family: Arial;
+	font-size: 10pt;
+}
+
+span.GUIItem
+{
+	font-weight: bold;
+	font-style: normal;
+}
+
+li
+{
+	margin-top: 6px;
+}
+
+MadCap|dropDownHead
+{
+	font-weight: bold;
+	font-style: normal;
+	font-size: 9pt;
+	font-family: Arial;
+	color: #878787;
+}
+

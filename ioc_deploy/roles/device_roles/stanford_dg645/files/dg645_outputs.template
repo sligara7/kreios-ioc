@@ -1,0 +1,44 @@
+record(ao, "$(Sys)$(Dev)E:Amp-SP"){
+	field(DTYP, "stream")
+	field(OUT, "@dg645.proto writeAmp($(CHAN)) $(PORT)")
+	field(EGU, "V")
+	field(PREC, "3")
+}
+
+record(ai, "$(Sys)$(Dev)E:Amp-RB"){
+	field(DTYP, "stream")
+	field(EGU, "V")
+	field(INP, "@dg645.proto readAmp($(CHAN)) $(PORT)")
+	field(SCAN, "$(SCAN)")
+	field(PREC, "3")
+}
+
+record(ao, "$(Sys)$(Dev)E:Off-SP"){
+	field(DTYP, "stream")
+	field(OUT, "@dg645.proto writeOff($(CHAN)) $(PORT)")
+	field(EGU, "V")
+	field(PREC, "3")
+}
+
+record(ai, "$(Sys)$(Dev)E:Off-RB"){
+	field(DTYP, "stream")
+	field(EGU, "V")
+	field(INP, "@dg645.proto readOff($(CHAN)) $(PORT)")
+	field(SCAN, "$(SCAN)")
+	field(PREC, "3")
+}
+
+record(bo, "$(Sys)$(Dev)E:Pol-SP"){
+	field(DTYP, "stream")
+	field(OUT, "@dg645.proto writePol($(CHAN)) $(PORT)")
+	field(ZNAM, "NEGATIVE")
+	field(ONAM, "POSITIVE")
+}
+
+record(bi, "$(Sys)$(Dev)E:Pol-RB"){
+	field(DTYP, "stream")
+	field(INP, "@dg645.proto readPol($(CHAN)) $(PORT)")
+	field(ZNAM, "NEGATIVE")
+	field(ONAM, "POSITIVE")
+	field(SCAN, "$(SCAN)")
+}

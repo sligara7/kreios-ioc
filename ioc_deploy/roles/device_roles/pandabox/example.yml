@@ -1,0 +1,7 @@
+---
+panda1:
+  type: pandabox
+  environment:
+    PREFIX: "XF:31ID1-ES{PANDA:1}"
+    PANDA_IP: "xf31id1-lab3-panda1.nsls2.bnl.local"
+    ENGINEER: "Jakub Wlodek"

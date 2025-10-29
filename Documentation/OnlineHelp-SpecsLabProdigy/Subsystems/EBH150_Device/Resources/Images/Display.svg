@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="420"
+   height="170"
+   id="svg11939"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="Display.svg">
+  <defs
+     id="defs11941">
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mend"
+       style="overflow:visible">
+      <path
+         id="path3993"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective11947" />
+    <inkscape:perspective
+       id="perspective11849"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mend-0"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3993-9"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Mend-8"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3993-8"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.4,0,0,-0.4,-4,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="188.19265"
+     inkscape:cy="87.79955"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1177"
+     inkscape:window-height="712"
+     inkscape:window-x="129"
+     inkscape:window-y="160"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata11944">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-882.36218)">
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans Pro;-inkscape-font-specification:Droid Sans Pro"
+       x="345.4657"
+       y="894.30786"
+       id="text3155"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3157"
+         x="345.4657"
+         y="894.30786">Infobar 1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans Pro;-inkscape-font-specification:Droid Sans Pro"
+       x="345.4657"
+       y="906.57623"
+       id="text3159"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3161"
+         x="345.4657"
+         y="906.57623">Infobar 2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans Pro;-inkscape-font-specification:Droid Sans Pro"
+       x="346.72791"
+       y="977.55115"
+       id="text3163"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3165"
+         x="346.72791"
+         y="977.55115">Main area</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans Pro;-inkscape-font-specification:Droid Sans Pro"
+       x="362.54578"
+       y="1046.8047"
+       id="text3167"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3169"
+         x="362.54578"
+         y="1046.8047">Soft key settings</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="m 320.35714,20.714285 -18.92857,0"
+       id="path3193"
+       inkscape:connector-curvature="0"
+       transform="translate(0,882.36218)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="m 320.35714,891.29075 -18.92857,0"
+       id="path3193-4"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="m 320.35714,1044.1479 -18.92857,0"
+       id="path3193-2"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 300.01531,26.558339 11.61675,0 0,126.269071 -11.61675,0"
+       id="path3872"
+       inkscape:connector-curvature="0"
+       transform="translate(0,882.36218)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 311.81887,973.62958 8.53827,0"
+       id="path3874"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="font-size:32px;fill:#000000;fill-rule:evenodd;stroke:none;display:inline"
+       id="rect2816-6-7-2-1-5-17-3-7"
+       width="295.01083"
+       height="167.17281"
+       x="1.7939551"
+       y="884.05121"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="font-size:32px;fill:#666666;stroke:#ffffff;stroke-width:1;stroke-opacity:1;display:inline"
+       id="rect3630-2-48-1-1-0-40-71-4"
+       width="55.314533"
+       height="11.430676"
+       x="4.867022"
+       y="1038.5643"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="font-size:32px;fill:#666666;stroke:#ffffff;stroke-width:1;stroke-opacity:1;display:inline"
+       id="rect3630-2-48-7-1-3-9-9-0-0"
+       width="55.314533"
+       height="11.430676"
+       x="63.254414"
+       y="1038.5643"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="font-size:32px;fill:#666666;stroke:#ffffff;stroke-width:1;stroke-opacity:1;display:inline"
+       id="rect3630-2-48-7-3-9-8-4-4-08-9"
+       width="55.314533"
+       height="11.430676"
+       x="121.64198"
+       y="1038.5643"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="font-size:32px;fill:#666666;stroke:#ffffff;stroke-width:1;stroke-opacity:1;display:inline"
+       id="rect3630-2-48-7-3-7-7-7-7-8-3-4"
+       width="55.314533"
+       height="11.430676"
+       x="180.41606"
+       y="1038.5643"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="font-size:32px;fill:#666666;stroke:#ffffff;stroke-width:1;stroke-opacity:1;display:inline"
+       id="rect3630-2-48-7-3-7-2-6-4-8-82-45-8"
+       width="55.314533"
+       height="11.430676"
+       x="238.4171"
+       y="1038.5643"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       inkscape:connector-curvature="0"
+       style="font-size:32px;fill:#ffffff;stroke:#ffffff;stroke-width:1.0458262px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+       d="m 2.0993286,897.25132 294.3681114,0"
+       id="path3681-2-9-2-9-6-4-0-8"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       inkscape:connector-curvature="0"
+       style="font-size:32px;fill:#ffffff;stroke:#ffffff;stroke-width:0.98680562px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+       d="m 2.0971786,909.56155 294.4043714,0"
+       id="path3681-2-7-0-9-8-4-5-1-2"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:9.83369446px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="78.590759"
+       y="1047.6215"
+       id="text3683-6-1-2-6-9-1-0-7"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-71-29-0-8-5-3-1"
+         x="78.590759"
+         y="1047.6215"
+         style="font-size:9.83369446px;fill:#ffffff">Menu</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.83369446px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="262.63391"
+       y="894.06232"
+       id="text3683-6-8-5-2-1-4-6-0-4-7-6-0-5-9-3"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-3-1-0-6-0-1-6-9-6-0-7-76-1-2"
+         x="262.63391"
+         y="894.06232"
+         style="font-size:9.83369446px;fill:#ffffff">Local</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.83369446px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="133.53798"
+       y="1047.7415"
+       id="text3683-6-1-9-6-6-3-1-6-2"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-71-2-5-6-4-89-27-1"
+         x="133.53798"
+         y="1047.7415"
+         style="font-size:9.83369446px;fill:#ffffff">Control</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;display:inline"
+       id="rect6254-2-4-8-5-8-2-2-5-4"
+       width="261.15488"
+       height="27.04266"
+       x="6.2852883"
+       y="913.55231"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="6.6978021"
+       y="936.16125"
+       id="text3683-6-8-5-2-8-6-0-4-5-7-3-3"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-3-1-0-9-1-39-0-5-79-2-1"
+         x="6.6978021"
+         y="936.16125"
+         style="font-size:24px;fill:#000000">Filament</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="8.7018681"
+       y="965.55176"
+       id="text3683-6-8-5-2-8-6-3-8-6-3-9-4-3"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-3-1-0-9-1-5-6-3-3-8-4-3"
+         x="8.7018681"
+         y="965.55176"
+         style="font-size:24px;fill:#ffffff">Voltage</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+       d="m 252.67861,897.03915 0,-13.0388"
+       id="path7973-0-5-2-1-8-8-2"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       inkscape:connector-curvature="0"
+       style="font-size:32px;fill:#ffffff;stroke:#ffffff;stroke-width:0.98680562px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+       d="m 2.0972386,974.07457 294.4043714,0"
+       id="path3681-2-7-0-9-1-5-8-0-3-9"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="6.773417"
+       y="1000.7021"
+       id="text3683-6-8-5-2-8-6-0-0-0-0-0-4-1"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-3-1-0-9-1-39-9-0-7-0-1-9"
+         x="6.773417"
+         y="1000.7021"
+         style="font-size:24px;fill:#ffffff">Emission</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="8.2103062"
+       y="1028.9642"
+       id="text3683-6-8-5-2-8-6-3-8-5-0-8-1-5-6"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-3-1-0-9-1-5-6-1-7-6-3-9-5"
+         x="8.2103062"
+         y="1028.9642"
+         style="font-size:24px;fill:#ffffff">Temp1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="196.65025"
+       y="936.19281"
+       id="text6462-22-1-1-8-5-0"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6464-1-7-2-9-1-2"
+         x="196.65025"
+         y="936.19281">0.00</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.29211807px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:arial;-inkscape-font-specification:arial"
+       x="256.85712"
+       y="936.36389"
+       id="text6462-1-6-7-4-3-0-8"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         style="font-size:12.29211807px"
+         sodipodi:role="line"
+         id="tspan6464-9-8-77-2-4-6-6"
+         x="256.85712"
+         y="936.36389">A</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="196.65025"
+       y="965.43201"
+       id="text6462-8-5-3-5-4-4-0"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6464-97-7-3-8-6-5-2"
+         x="196.65025"
+         y="965.43201">0.00</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="196.65025"
+       y="1000.7274"
+       id="text6462-8-8-6-5-6-06-3-4"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6464-97-2-1-9-2-61-0-8"
+         x="196.65025"
+         y="1000.7274">0.00</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="169.744"
+       y="1028.9957"
+       id="text6462-8-8-8-8-9-6-8-8-6"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6464-97-2-6-9-8-5-4-9-5"
+         x="169.744"
+         y="1028.9957">294.75</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.29211807px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:arial;-inkscape-font-specification:arial"
+       x="256.97119"
+       y="964.77991"
+       id="text6462-1-6-2-1-3-9-1-0"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6464-9-8-7-8-9-6-3-9"
+         x="256.97119"
+         y="964.77991">V</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.29211807px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:arial;-inkscape-font-specification:arial"
+       x="246.6057"
+       y="1000.7198"
+       id="text6462-1-6-9-2-2-37-4-0"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6464-9-8-5-6-4-8-7-0"
+         x="246.6057"
+         y="1000.7198">mA</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12.29211807px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:arial;-inkscape-font-specification:arial"
+       x="256.89914"
+       y="1028.9918"
+       id="text6462-1-6-9-4-6-6-8-4-6"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6464-9-8-5-3-0-1-2-6-1"
+         x="256.89914"
+         y="1028.9918">K</tspan></text>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+       d="m 63.149649,897.19711 0,-13.0388"
+       id="path7973-0-7-8-4-7-4"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:0.94117647;stroke:#ffffff;stroke-width:1.62705886;stroke-opacity:1"
+       id="path6650-6-5-3-6-7-4"
+       sodipodi:cx="1484.9603"
+       sodipodi:cy="91.93074"
+       sodipodi:rx="15.797451"
+       sodipodi:ry="11.513396"
+       d="m 1500.7578,91.93074 c 0,6.358674 -7.0728,11.5134 -15.7975,11.5134 -8.7247,0 -15.7974,-5.154726 -15.7974,-11.5134 0,-6.358673 7.0727,-11.513396 15.7974,-11.513396 8.7247,0 15.7975,5.154723 15.7975,11.513396 z"
+       transform="matrix(0.56268024,0,0,0.77497449,-552.51279,857.84274)" />
+    <text
+       xml:space="preserve"
+       style="font-size:7.38872814px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+       x="278.36893"
+       y="933.70453"
+       id="text3683-6-8-5-2-1-4-6-0-7-1-4-8-50-9-1"
+       transform="scale(0.99811117,1.0018924)"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-3-1-0-6-0-1-6-4-6-2-0-2-2-1"
+         x="278.36893"
+         y="933.70453"
+         style="font-size:17.7329464px;fill:#000000;fill-opacity:1">1</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1.62705886;stroke-opacity:1"
+       id="path6650-5-4-0-8-8-7-3"
+       sodipodi:cx="1484.9603"
+       sodipodi:cy="91.93074"
+       sodipodi:rx="15.797451"
+       sodipodi:ry="11.513396"
+       d="m 1500.7578,91.93074 c 0,6.358674 -7.0728,11.5134 -15.7975,11.5134 -8.7247,0 -15.7974,-5.154726 -15.7974,-11.5134 0,-6.358673 7.0727,-11.513396 15.7974,-11.513396 8.7247,0 15.7975,5.154723 15.7975,11.513396 z"
+       transform="matrix(0.56271831,0,0,0.77210188,-552.56934,886.37871)" />
+    <text
+       xml:space="preserve"
+       style="font-size:17.70065117px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+       x="278.3302"
+       y="963.71979"
+       id="text3683-6-8-5-2-1-4-6-0-7-3-4-9-8-6-31-8"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-3-1-0-6-0-1-6-4-9-0-7-0-0-5-7"
+         x="278.3302"
+         y="963.71979"
+         style="font-size:17.70065117px;fill:#000000;fill-opacity:1">2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.83369446px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="16.054781"
+       y="1047.6215"
+       id="text3683-6-1-2-6-9-1-0-7-1"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-71-29-0-8-5-3-1-7"
+         x="16.054781"
+         y="1047.6215"
+         style="font-size:9.83369446px;fill:#ffffff">Display</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.83369446px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="6.7045565"
+       y="906.57227"
+       id="text3683-6-1-2-6-9-8-9-9-0-0-35-3-3"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3685-0-71-29-0-8-1-2-3-5-34-9-6-8"
+         x="6.7045565"
+         y="906.57227"
+         style="font-size:9.83369446px;fill:#ffffff">EBH-150</tspan></text>
+    <g
+       id="g155"
+       transform="translate(-22.06834,0.1988358)">
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+         y="885.2619"
+         x="47.013313"
+         height="9.8336945"
+         width="14.997145"
+         id="rect5664-3-3-2-9-8-1-6-2"
+         style="fill:#008000;stroke:none;display:inline" />
+      <text
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+         id="text5666-7-4-5-0-0-4-6-7"
+         y="893.6983"
+         x="47.507881"
+         style="font-size:12.29211807px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+         xml:space="preserve"><tspan
+           style="font-size:9.83369446px"
+           y="893.6983"
+           x="47.507881"
+           id="tspan5668-1-9-5-0-8-23-76-6"
+           sodipodi:role="line">IL2</tspan></text>
+    </g>
+    <rect
+       style="fill:#008000;stroke:none;display:inline"
+       id="rect5664-3-3-2-9-8-1-6-2-1"
+       width="15.628489"
+       height="9.8336945"
+       x="5.8251009"
+       y="885.46057"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:12.3196764px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       x="6.8699083"
+       y="895.84338"
+       id="text5666-6-6-3-7-5-1"
+       inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       transform="scale(1.0022419,0.99776311)"><tspan
+         style="font-size:9.85574055px"
+         sodipodi:role="line"
+         id="tspan5668-9-5-9-6-6-5"
+         x="6.8699083"
+         y="895.84338">IL1</tspan></text>
+    <g
+       id="g155-1"
+       transform="translate(-3.2641305,0.1988358)">
+      <rect
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+         y="885.2619"
+         x="47.013313"
+         height="9.8336945"
+         width="14.997145"
+         id="rect5664-3-3-2-9-8-1-6-2-7"
+         style="fill:#008000;stroke:none;display:inline" />
+      <text
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="L:\komponen.ten\Intelligente Frontplatte\Entwicklung\Projekte\1-Intelligente Frontplatte (93000246)\Designvorschläge\Frontplatte\text9201-3-4.png"
+         id="text5666-7-4-5-0-0-4-6-7-4"
+         y="893.6983"
+         x="47.507881"
+         style="font-size:12.29211807px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+         xml:space="preserve"><tspan
+           style="font-size:9.83369446px"
+           y="893.6983"
+           x="47.507881"
+           id="tspan5668-1-9-5-0-8-23-76-6-0"
+           sodipodi:role="line">IL3</tspan></text>
+    </g>
+  </g>
+</svg>

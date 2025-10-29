@@ -1,0 +1,53 @@
+---
+
+type: enum("zebra")
+environment:
+  SYS: str()
+  DEV: str()
+  HOSTNAME: any(ip(), hostname())
+  PORT: int()
+  ENGINEER: str()
+  PREFIX: str()
+  # If CONFIG_FILE is specified,
+  # the IOC will load parameters from this file (optional)
+  # Very questionable, but used in some deployments.
+  CONFIG_FILE: str(required=False)
+
+
+  # Parameters for the substitutions file
+  M1: str()
+  M1DIR: enum("+", "-")
+  M2: str()
+  M2DIR: enum("+", "-")
+  M3: str()
+  M3DIR: enum("+", "-")
+  M4: str()
+  M4DIR: enum("+", "-")
+  NELM: int()
+  PREC: int()
+
+# Encoder resolutions (4 encoders)
+encoder_resolution: list(num(), min=4, max=4)
+
+substitutions:
+  zebra:
+    template_macros: enum("SYS=$(SYS),DEV=$(DEV)")
+    templates:
+      - filepath: enum("$(ZEBRA)/db/zebra.template")
+        pattern: list(any(enum("P"), enum("Q"), enum("PORT"), enum("NELM"), enum("EMPTY"), enum("PREC"), enum("M1"), enum("M1DIR"), enum("M2"), enum("M2DIR"), enum("M3"), enum("M3DIR"), enum("M4"), enum("M4DIR"))) # yamllint disable-line rule:line-length
+        instances: list(list(str(), min=14, max=14))
+
+# Macros:
+#  P      Device prefix
+#  Q      Device suffix
+#  PORT   Asyn port and object name
+#  EMPTY  Empty macro to satisfy VDCT
+#  PREC   Precision to show position compare gate and pulse fields
+#  M1     Motor 1 PV
+#  M1DIR  Set to - if motor inverted in pmac (decode control = 3 instead of 7)
+#  M2     Motor 2 PV
+#  M2DIR  Set to - if motor inverted in pmac (decode control = 3 instead of 7)
+#  M3     Motor 3 PV
+#  M3DIR  Set to - if motor inverted in pmac (decode control = 3 instead of 7)
+#  M4     Motor 4 PV
+#  M4DIR  Set to - if motor inverted in pmac (decode control = 3 instead of 7)

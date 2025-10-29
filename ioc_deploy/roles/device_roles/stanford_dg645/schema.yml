@@ -1,0 +1,7 @@
+---
+type: enum("stanford_dg645")
+environment:
+  DEVICE_IP: any(ip(), hostname())
+  DEVICE_PORT: int(min=4000)
+  P: str()
+  R: str()

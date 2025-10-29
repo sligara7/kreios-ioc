@@ -1,0 +1,16 @@
+---
+sr570-01:
+  type: sr570
+  environment:
+    DEVICE_IP: "192.168.1.1"
+    DEVICE_PORT: 5000
+    SYS: "XF:31ID1-ES"
+    DEV: "{SR570:1}"
+    ENGINEER: "J. Wlodek"
+    PORT: "SR570"
+  substitutions:
+    sr570:
+      - filepath: "$(TOP)/db/SR570.template"
+        pattern: ["P", "A", "PORT"]
+        instances:
+          - ["XF:31ID1-ES", "{SR570:1}", "SR570"]

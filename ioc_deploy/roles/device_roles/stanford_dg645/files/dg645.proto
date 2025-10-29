@@ -1,0 +1,91 @@
+Terminator = CR LF;
+
+writeDelay {
+  out "DLAY\$1,%(A)d,%(B)e";
+}
+
+readDelayVal {
+  out "DLAY?\$1";
+  in "%*d,%e";
+}
+
+readDelayRel {
+  out "DLAY?\$1";
+  in "%d,%*e";
+}
+
+readLink {
+	out "LINK?\$1";
+	in "%d";
+}
+
+writeLink {
+	out "LINK\$1,%d";
+}
+
+writeAmp {
+	out "LAMP\$1,%f";
+}
+
+readAmp {
+	out "LAMP?\$1";
+	in "%f";
+}
+
+writeOff {
+	out "LOFF\$1,%f";
+}
+
+readOff {
+	out "LOFF?\$1";
+	in "%f";
+}
+
+
+readPol {
+	out "LPOL?\$1";
+	in "%d";
+}
+
+writePol {
+	out "LPOL\$1,%d";
+	@init {
+		readPol
+	}
+}
+
+readTrigger {
+	out "TSRC?";
+	in "%d";
+}
+
+writeTrigger {
+	out "TSRC %d";
+	@init {
+		readTrigger
+	}
+}
+
+readTriggerRate {
+	out "TRAT?";
+	in "%f";
+}
+
+writeTriggerRate {
+	out "TRAT %f";
+	@init {
+		readTriggerRate
+	}
+}
+
+readTriggerInhibit {
+	out "INHB?";
+	in "%d";
+}
+
+writeTriggerInhibit {
+	out "INHB %d";
+	@init {
+		readTriggerInhibit
+	}
+}

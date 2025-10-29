@@ -1,0 +1,9 @@
+---
+type: enum("adpilatus")
+ramdisk_path: str(required=False)
+environment:
+  ENGINEER: str(required=False)
+  PREFIX: str()
+  PILATUS_DCU_IP: any(ip(), hostname())
+  XSIZE: int(min=1)
+  YSIZE: int(min=1)

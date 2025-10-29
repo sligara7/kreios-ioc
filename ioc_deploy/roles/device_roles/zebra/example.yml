@@ -1,0 +1,43 @@
+---
+
+zebra:
+  type: "zebra"
+
+  environment:
+    SYS: "XF:05IDD-ES:1"
+    DEV: "{Dev:Zebra2}"
+    HOSTNAME: "xf31id1-lab3-tsrv1.nsls2.bnl.local"
+    PORT: 4004
+
+    # PREFIX is used for common IOC PVs
+    PREFIX: XF:05IDD-CT{IOC:Zebra2}
+    ENGINEER: "C. Engineer"
+
+    # If CONFIG_FILE is specified
+    # the IOC will load parameters from this file (optional)
+    # Very questionable, but used in some deployments.
+    CONFIG_FILE: "/nsls2/data/srx/shared/config/equipment/zebra2/zebra2_latest"
+
+    # Parameters for the substitutions file
+    M1: "XF:05IDD-ES:1{nKB:Smpl-Ax:ssx}Mtr"
+    M1DIR: "+"
+    M2: "XF:05IDD-ES:1{nKB:Smpl-Ax:ssy}Mtr"
+    M2DIR: "+"
+    M3: "XF:05IDD-ES:1{nKB:Smpl-Ax:ssz}Mtr"
+    M3DIR: "+"
+    M4: "XF:05IDD-ES:1{nKB:Smpl-Ax:ssx}Mtr"
+    M4DIR: "+"
+    NELM: 100000
+    PREC: 4
+
+  # Encoder resolutions (4 encoders)
+  encoder_resolution: [-9.5368e-05, 9.5368e-05, 9.5368e-05, 0]
+
+  substitutions:
+    zebra:
+      template_macros: "SYS=$(SYS),DEV=$(DEV)"
+      templates:
+        - filepath: "$(ZEBRA)/db/zebra.template"
+          pattern: ["P", "Q", "PORT", "NELM", "EMPTY", "PREC", "M1", "M1DIR", "M2", "M2DIR", "M3", "M3DIR", "M4", "M4DIR"] # yamllint disable-line rule:line-length
+          instances:
+            - ["$(SYS)", "$(DEV)", "ZEBRA", "$(NELM)", "", "$(PREC)", "$(M1)", "$(M1DIR)", "$(M2)", "$(M2DIR)", "$(M3)", "$(M3DIR)", "$(M4)", "$(M4DIR)"] # yamllint disable-line rule:line-length

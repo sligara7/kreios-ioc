@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" lang="en-us" xml:lang="en-us" data-mc-search-type="Stem" data-mc-help-system-file-name="Default.xml" data-mc-path-to-help-system="../../" data-mc-target-type="WebHelp2" data-mc-runtime-file-type="Topic" data-mc-preload-images="false" data-mc-in-preview-mode="false" data-mc-medium="non-print" data-mc-toc-path="Experiment Editor|Experiment Editor Items|Auto Sample Height Adjustment">
+    <!-- saved from url=(0016)http://localhost -->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="../../Skins/Default/Stylesheets/Slideshow.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/TextEffects.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Topic.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Components/Styles.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Components/Tablet.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Components/Mobile.css" rel="stylesheet" type="text/css" data-mc-generated="True" /><title>Configuring the Auto Sample Height Adjustment</title>
+        <link href="../../Resources/Stylesheets/Styles.css" rel="stylesheet" type="text/css" />
+        <script src="../../Resources/Scripts/custom.modernizr.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/jquery.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/require.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/require.config.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/foundation.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/plugins.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <h3>Configuring the Auto Sample Height Adjustment</h3>
+        <p>To add auto sample height adjustment to the experiment:</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Click <img src="../../Resources/Images/Plus.png" /> at the desired point in the schedule and select <span class="GUIItem">Auto Sample Height Adjustment</span>.</p>
+        <p>&#160;</p>
+        <p>You need to include and configure the following items in the Electron Spectroscopy experiment:</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Analyzer.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Source.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Manipulator:&#160;Position. You should set this to a position loaded from a template that you know is near to the measurement position.</p>
+        <p>&#160;</p>
+        <p class="Note" data-mc-autonum="&lt;b&gt;NOTE: &lt;/b&gt;"><span class="autonumber"><span><b>NOTE: </b></span></span><a name="kanchor44"></a> <br />After producing a suitable configuration, you can save it as a template. You can then load this for future experiments without needing to follow the whole procedure described here.</p>
+        <p>&#160;</p>
+        <p>Please note the following points when configuring the auto sample height adjustment routine:</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>The sample moves along the lens axis of the analyzer—this involves moving the X and/ or Y axes of the manipulator. The movement of the axes is configured by SPECS. For this reason, <span class="MyVariablesSoftware">SpecsLab Prodigy</span> may indicate different adjustments of X and Y&#160;manipulator settings for each step.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>After recording data at each step, <span class="MyVariablesSoftware">SpecsLab Prodigy</span> runs an arithmetic mean data operation. This calculates the mean value of the intensity of all points. As such, it is not important whether a peak or a secondary electron signal is measured—only an intensity is used.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span><span class="GUIItem">Scan Mode</span>: Use <span class="GUIItem">Snapshot</span>  mode to quickly measure the signal without needing to scan. </p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>The other settings for setting up the analyzer (slit settings, configuration file, etc) need to be the same as those for the spectrum group.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>The "spectrum" is set up in the same way as a normal experiment. You can set the energy to look at a peak energy or for secondary electrons.</p>
+        <p>&#160;</p>
+        <p>The screenshot below shows a typical configuration after validation.</p>
+        <p>&#160;</p>
+        <p><a class="MCPopupThumbnailLink MCPopupThumbnailHover" href="../../Resources/Images/AutoHeightConfigure.png"><img class="MCPopupThumbnail img imgThumbPrint" data-mc-width="560" data-mc-height="284" src="../../Resources/Images/AutoHeightConfigure_thumb_0_48.png" tabindex="" /></a>
+        </p>
+        <p>&#160;</p>
+        <p>Following configuration of the auto sample height adjustment, you can add actions that take place at the optimized position by clicking the <img src="../../Resources/Images/Plus.png" /> icon and selecting an item, e.g. a spectrum group. Please note the following points:</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>Only actions within the <span class="GUIItem">At Optimized Position</span> group will be performed at the sample position obtained <br />by the auto sample height adjustment. After completing actions in the <span class="GUIItem">At Optimized Position</span> group, the manipulator will move back to the position defined by the <span class="GUIItem">Manipulator:&#160;Position</span> device at the start of the Electron Spectroscopy experiment.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>If you run the experiment again, having already found the optimum sample position, <span class="MyVariablesSoftware">SpecsLab Prodigy</span> assumes that the optimum position has not changed and uses the value already obtained without running the routine again. However, if you close the Experiment Editor and reopen the routine, the optimum position is measured again.</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>If you want the auto sample height adjustment to run again, you need to click the <img src="../../Resources/Images/TemplateIcon.png" /> icon and select <span class="GUIItem">Unlock and Clear All Data</span>.</p>
+        <p>&#160;</p>
+        <p>The screenshot below shows a spectrum group correctly nested in the schedule so that the spectrum is scanned at the optimum sample position.</p>
+        <p>&#160;</p>
+        <p><a class="MCPopupThumbnailLink MCPopupThumbnailHover" href="../../Resources/Images/AutoHeightOptimizedPosition.png"><img class="MCPopupThumbnail img imgThumbPrint" data-mc-width="580" data-mc-height="265" src="../../Resources/Images/AutoHeightOptimizedPosition_thumb_0_48.png" tabindex="" /></a>
+        </p>
+    </body>
+</html>

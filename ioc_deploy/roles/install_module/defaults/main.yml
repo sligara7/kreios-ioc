@@ -1,0 +1,60 @@
+---
+
+install_module_install_dir: /epics/modules
+install_module_default_compilation_command: "make -sj"
+install_module_force_reinstall: false
+install_module_default_pkg_deps:
+  - epics-bundle
+install_module_default_epics_deps:
+  ASYN: /usr/lib/epics
+  AUTOSAVE: /usr/lib/epics
+  BUSY: /usr/lib/epics
+  CALC: /usr/lib/epics
+  DEVIOCSTATS: /usr/lib/epics
+  SSCAN: /usr/lib/epics
+  STREAM: /usr/lib/epics
+  SNCSEQ: /usr/lib/epics
+  RECCASTER: /usr/lib/epics
+  MOTOR: /usr/lib/epics
+  EPICS_BASE: /usr/lib/epics # By default, use EPICS bundle location
+install_module_default_config_dict:
+  # Don't allow EPICS to check release files.
+  # It doesn't work well with our overrides of RELEASE.local
+  CHECK_RELEASE: 'NO'
+  # Build example IOCs by default
+  BUILD_IOCS: 'YES'
+install_module_ad_config_dict:
+  WITH_BOOST: 'NO'
+  BOOST_EXTERNAL: 'YES'
+  WITH_PVA: 'YES'
+  WITH_QSRV: 'YES'
+  WITH_BLOSC: 'YES'
+  BLOSC_EXTERNAL: 'NO'
+  WITH_BITSHUFFLE: 'YES'
+  BITSHUFFLE_EXTERNAL: 'NO'
+  WITH_GRAPHICSMAGICK: 'YES'
+  GRAPHICSMAGICK_EXTERNAL: 'NO'
+  GRAPHICSMAGICK_PREFIX_SYMBOLS: 'YES'
+  WITH_HDF5: 'YES'
+  HDF5_EXTERNAL: 'NO'
+  WITH_JSON: 'YES'
+  WITH_JPEG: 'YES'
+  JPEG_EXTERNAL: 'NO'
+  WITH_NETCDF: 'YES'
+  NETCDF_EXTERNAL: 'NO'
+  WITH_NEXUS: 'YES'
+  NEXUS_EXTERNAL: 'NO'
+  WITH_OPENCV: 'NO'
+  OPENCV_EXTERNAL: 'YES'
+  WITH_OPENCV_VIDEO: 'YES'
+  WITH_SZIP: 'YES'
+  SZIP_EXTERNAL: 'NO'
+  WITH_TIFF: 'YES'
+  TIFF_EXTERNAL: 'NO'
+  XML2_EXTERNAL: 'NO'
+  WITH_ZLIB: 'YES'
+  ZLIB_EXTERNAL: 'NO'
+  ARAVIS_LIB: /usr/lib64
+  ARAVIS_INCLUDE: /usr/include/aravis-0.8
+  GLIB_INCLUDE: /usr/include/glib-2.0 /usr/lib64/glib-2.0/include
+  glib-2.0_DIR: /usr/lib64

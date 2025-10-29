@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" lang="en-us" xml:lang="en-us" data-mc-search-type="Stem" data-mc-help-system-file-name="Default.xml" data-mc-path-to-help-system="../../" data-mc-target-type="WebHelp2" data-mc-runtime-file-type="Topic" data-mc-preload-images="false" data-mc-in-preview-mode="false" data-mc-medium="non-print" data-mc-toc-path="Experiment Editor|Scan Modes">
+    <!-- saved from url=(0016)http://localhost -->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="../../Skins/Default/Stylesheets/Slideshow.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/TextEffects.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Topic.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Components/Styles.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Components/Tablet.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Skins/Default/Stylesheets/Components/Mobile.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../../Resources/TableStyles/Normal.css" rel="stylesheet" data-mc-stylesheet-type="table" /><title>Detector Voltage Scan</title>
+        <link href="../../Resources/Stylesheets/Styles.css" rel="stylesheet" type="text/css" />
+        <script src="../../Resources/Scripts/custom.modernizr.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/jquery.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/require.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/require.config.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/foundation.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/plugins.min.js" type="text/javascript">
+        </script>
+        <script src="../../Resources/Scripts/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <h3><a name="kanchor33"></a>Detector Voltage Scan</h3>
+        <p><a name="kanchor34"></a>The detector voltage scan (DVS) changes the detector voltage while holding the detected energy constant. Since channel electron multipliers degrade with use, you can use this mode to find the correct operating voltage for the detector.</p>
+        <p>&#160;</p>
+        <p>When examining the results of a DVS, it is best to view the individual channels by selecting <span class="GUIItem">Separated</span> in the <a href="../../PlotViewI/DataBrowser/DisplaySpectrumComponents.htm">data browser</a>. This allows you to check the performance of the individual channel electron multipliers.</p>
+        <p>&#160;</p>
+        <p>Please also refer to the detector manual for more information.</p>
+        <p>&#160;</p>
+        <table style="caption-side: top;width: 100%;">
+            <col style="width: 67px;" />
+            <col />
+            <tbody>
+                <tr>
+                    <td class="open">
+                        <img src="../../Resources/Images/TemplatePics/Caution_Warning.png" style="max-width: 75px;max-height: auto;" />
+                    </td>
+                    <td class="open">
+                        <p class="Warning"><b>Caution!</b>
+                        </p>
+                        <p class="Warning">You can destroy your detector if you set <span class="GUIItem">Udet End</span> too high. Refer to the test report for your detector to find suitable operating voltages.</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Settings</h4>
+        <p>&#160;</p>
+        <table style="width: 100%;mc-table-style: url('../../Resources/TableStyles/Normal.css');" class="TableStyle-Normal" cellspacing="0">
+            <col style="width: 74px;" class="TableStyle-Normal-Column-Column1" />
+            <col style="width: 244px;" class="TableStyle-Normal-Column-Column1" />
+            <col class="TableStyle-Normal-Column-Column1" />
+            <thead>
+                <tr class="TableStyle-Normal-Head-Header1">
+                    <th class="TableStyle-Normal-HeadE-Column1-Header1">Setting</th>
+                    <th class="TableStyle-Normal-HeadE-Column1-Header1">Dependencies</th>
+                    <th class="TableStyle-Normal-HeadD-Column1-Header1">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Name</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Free text</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Name of the scan.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">Scans</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">-</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body2">Number of scans performed.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Start</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Start &lt; End</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Start voltage (V).</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">End</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">End &gt; Start</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body2">Final voltage (V).</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Step</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">0 &lt; Step &lt; ceil(End − Start) / Step</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Voltage step between measurement points.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">Values</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">Values = ceil(End − Start) / Step</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body2">Total number of values measured.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Dwell</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">-</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Measurement time for each point.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">LensMode</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">-</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body2">Use a mode such as large area to allow high transmission of electrons.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Ekin</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">-</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Measured kinetic energy. This should be a background level with some signal—not a peak energy!</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">Epass </td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">-</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body2">Analyzer pass energy.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Duration</td>
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">Duration = Dwell*Scans*(End − Start) / Step</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Total time taken for measurement (info only).</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyB-Column1-Body2">Comment</td>
+                    <td class="TableStyle-Normal-BodyB-Column1-Body2">Free text</td>
+                    <td class="TableStyle-Normal-BodyA-Column1-Body2">Additional comment about the scan.</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>&#160;</p>
+        <p>
+            <img src="../../Resources/Images/DVS.png" />
+        </p>
+        <p>&#160;</p>
+        <p>The results of a detector voltage scan are displayed in the Plot view. You need to <a href="../../PlotViewI/ChangeAxisLabels.htm">select</a> <span class="GUIItem">Detector Voltage</span> in the X axis in order to display the data. You can find the operating voltage with the cursor. The detector voltage is set in the device control for the analyzer.</p>
+        <p>&#160;</p>
+        <p>
+            <img src="../../Resources/Images/DVS_Results.png" />
+        </p>
+    </body>
+</html>

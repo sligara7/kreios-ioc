@@ -1,0 +1,9 @@
+---
+ffmpeg_server_07c570f:
+  name: ffmpegServer
+  version: 07c570f
+  url: https://github.com/jwlodek/ffmpegServer
+  compilation_command: "bash install.sh" # ffmpegServer builds custom script
+  include_base_ad_config: true
+  module_deps:
+    - adcore_60080dc

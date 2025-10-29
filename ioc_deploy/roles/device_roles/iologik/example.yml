@@ -1,0 +1,36 @@
+---
+
+iologik:
+  type: "iologik"
+  devices:
+    - model: "E1210"
+      ip: "192.168.127.254"
+    - model: "E1211"
+      ip: "192.168.127.254"
+    - model: "E1212"
+      ip: "192.168.127.254"
+      dio_config: ["DO", "DO", "DO", "DO", "DO", "DO", "DO", "DO"]
+    - model: "E1213"
+      ip: "192.168.127.254"
+      dio_config: ["DO", "DO", "DO", "DO"]
+    - model: "E1214"
+      ip: "192.168.127.254"
+    - model: "E1240"
+      ip: "192.168.127.254"
+    - model: "E1241"
+      ip: "192.168.127.254"
+    - model: "E1242"
+      ip: "192.168.127.254"
+      dio_config: ["DO", "DO", "DO", "DO"]
+    - model: "E1260"
+      ip: "192.168.127.254"
+    - model: "E1262"
+      ip: "192.168.127.254"
+  environment:
+    SYS: "XF:31ID1-ES"         # Base PV prefix
+    # Optional device prefix in {} portion of PV prefix.
+    # If not set, `IOLOGIK` will be used. If set, {{ DEV }}-IOL will be used.
+    # For example, if unset you can get XF:31ID1-ES{IOLOGIK1:E1240}
+    # If set, you would get XF:31ID1-ES{MFC1-IOL1:E1240}
+    DEV: "MFC1"
+    ENGINEER: "C. Engineer"   # Your name/contact info

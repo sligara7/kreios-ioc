@@ -1,0 +1,22 @@
+---
+
+type: enum("iologik")
+devices: list(include("iologik_default_model"), include("iologik_4_dio_model"), include("iologik_8_dio_model")) # yamllint disable-line rule:line-length
+environment:
+  SYS: str()  # Base PV prefix
+  DEV: str(required=False)  # Optional device prefix in {} portion of PV prefix
+
+---
+iologik_default_model:
+  model: enum("E1210", "E1211", "E1214", "E1240", "E1241", "E1260", "E1262")
+  ip: any(ip(), hostname())
+
+iologik_4_dio_model:
+  model: enum("E1213", "E1242")
+  ip: any(ip(), hostname())
+  dio_config: list(enum("DI", "DO"), min_items=4, max_items=4)
+
+iologik_8_dio_model:
+  model: enum("E1212")
+  ip: any(ip(), hostname())
+  dio_config: list(enum("DI", "DO"), min_items=8, max_items=8)

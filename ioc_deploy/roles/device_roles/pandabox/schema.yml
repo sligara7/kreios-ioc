@@ -1,0 +1,6 @@
+---
+
+type: regex("pandabox")
+environment:
+  PREFIX: str()
+  PANDA_IP: any(ip(), hostname())

@@ -1,0 +1,1 @@
+define({'Standby':{l:[{u:'/DeviceControl/SampleHeating.htm#kanchor1',t:'Heating the Sample'}]}});

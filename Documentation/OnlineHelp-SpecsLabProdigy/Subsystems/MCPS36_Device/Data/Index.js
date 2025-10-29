@@ -1,0 +1,1 @@
+define({numchunks:1,prefix:'Index_Chunk',terms:[{t:'Busy',c:0,$:1},{t:'Connect',c:0,$:1},{t:'Idle',c:0,$:1},{t:'List',c:0,$:1},{t:'Manipulator Control',c:0,$:1},{t:'Position',c:0,$:1},{t:'Software',c:0,$:1},{t:'Status',c:0,$:1},{t:'System Settings',c:0,$:1}]});

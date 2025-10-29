@@ -1,0 +1,9 @@
+---
+cam-usb1:
+  type: aduvc
+  environment:
+    PREFIX: "XF:31ID1-ES{USB-Cam:1}"
+    SERIAL_NUM_OR_PRODUCT_ID: "1234567890"
+    ENGINEER: "J. Wlodek"
+    XSIZE: 1920
+    YSIZE: 1080

@@ -1,0 +1,9 @@
+---
+
+adcore_60080dc:
+  name: ADCore
+  url: https://github.com/areaDetector/ADCore
+  include_base_ad_config: true
+  version: 60080dc
+  module_deps:
+    - adsupport_6acf83f

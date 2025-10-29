@@ -1,0 +1,7 @@
+#
+# {{ ansible_managed }}
+#
+NAME={{ deploy_ioc_ioc_name }}
+USER={{ host_config.softioc_user }}
+PORT={{ deploy_ioc_nextport }}
+HOST={{ inventory_hostname.split('.')[0] }}

@@ -1,0 +1,2 @@
+7-Zip is licensed under the GNU LGPL license.
+The full license can be found under www.7-zip.org

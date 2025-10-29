@@ -1,0 +1,6 @@
+
+dbLoadDatabase("{{ deploy_ioc_template_root_path }}/dbd/{{ deploy_ioc_executable }}.dbd")
+{{ deploy_ioc_executable }}_registerRecordDeviceDriver(pdbbase)
+
+vxi11Configure("$(PORT)", "$(DEVICE_IP)", 0, "0.0", "inst0", 0, 0)
+asynOctetSetInputEos("$(PORT)", 0, "\n")

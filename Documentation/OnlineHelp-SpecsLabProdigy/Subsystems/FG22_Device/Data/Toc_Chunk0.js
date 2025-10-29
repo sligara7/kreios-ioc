@@ -1,0 +1,1 @@
+define({'/Software/DeviceControl/FGFeatures.htm':{i:[2],t:['Overview of all Features'],b:['']},'/Software/DeviceControl/FGOn.htm':{i:[1],t:['Switching the Flood Gun On'],b:['']},'/Software/DeviceControl/FloodGunIntro.htm':{i:[0],t:['FG22'],b:['']}});

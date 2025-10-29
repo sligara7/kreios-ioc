@@ -1,0 +1,13 @@
+---
+
+cam-av1:
+  type: "advimba"
+
+  environment:
+    PREFIX: "XF:31ID1-ES{GigE-Cam:1}"
+    ENGINEER: "J. Wlodek"
+    CAMERA_ID: "DEV_000F315DFEB9"
+    XSIZE: 1024
+    YSIZE: 1024
+    FFMSTREAM_PORT: 8080
+    # GENICAM_DB_FILE: "$(ADGENICAM)/db/AVT_Mako_G030B.template"

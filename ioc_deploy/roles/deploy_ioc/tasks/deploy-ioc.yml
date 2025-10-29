@@ -1,0 +1,145 @@
+---
+
+- name: Set deployment facts
+  ansible.builtin.include_tasks: set-facts.yml
+
+- name: Stop existing IOC instance if running
+  when: >
+    deploy_ioc_post_deploy_step == "Restart" or
+    "Start" in deploy_ioc_post_deploy_step
+  block:
+    - name: Check if IOC service exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/softioc-{{ deploy_ioc_ioc_name }}.service
+      register: deploy_ioc_service_file
+
+    - name: Ensure IOC service is stopped
+      ansible.builtin.include_role:
+        name: manage_iocs
+      vars:
+        manage_iocs_command: "stop"
+        manage_iocs_subcommand: "{{ deploy_ioc_ioc_name }}"
+      when: deploy_ioc_service_file.stat.exists
+
+- name: Create IOC directory
+  ansible.builtin.file:
+    path: "{{ deploy_ioc_ioc_directory }}"
+    owner: "{{ host_config.softioc_user }}"
+    group: "{{ host_config.softioc_group }}"
+    state: directory
+    mode: "0775"
+
+- name: Perform base setup when using standard startup script format
+  when: deploy_ioc_standard_st_cmd
+  block:
+    - name: Create standard IOC dirs
+      ansible.builtin.file:
+        path: "{{ deploy_ioc_ioc_directory }}/{{ item }}"
+        owner: "{{ host_config.softioc_user }}"
+        group: "{{ host_config.softioc_group }}"
+        state: directory
+        mode: "0775"
+      with_items:
+        - "db"
+        - "iocBoot"
+        - "{{ deploy_ioc_as_dir_name }}"
+        - "{{ deploy_ioc_as_dir_name }}/req"
+        - "{{ deploy_ioc_as_dir_name }}/save"
+
+    - name: Generate substitutions based on IOC configuration
+      ansible.builtin.include_tasks: generate-substitutions-file.yml
+      loop: "{{ ioc.substitutions | dict2items }}"
+      when: ioc.substitutions is defined and deploy_ioc_load_as_substitutions
+
+    - name: Generate common cmd file
+      ansible.builtin.template:
+        src: templates/common.cmd.j2
+        dest: "{{ deploy_ioc_ioc_directory }}/iocBoot/common.cmd"
+        owner: "{{ host_config.softioc_user }}"
+        group: "{{ host_config.softioc_group }}"
+        mode: "0664"
+      when: deploy_ioc_use_common
+
+    - name: Install remaining standard iocBoot templates
+      ansible.builtin.template:
+        src: "templates/{{ item }}.j2"
+        dest: "{{ deploy_ioc_ioc_directory }}/iocBoot/{{ item }}"
+        owner: "{{ host_config.softioc_user }}"
+        group: "{{ host_config.softioc_group }}"
+        mode: "0664"
+      with_items:
+        - epicsEnv.cmd
+        - postInit.cmd
+        - st.cmd
+
+    - name: Ensure nested startup script is executable
+      ansible.builtin.file:
+        path: "{{ deploy_ioc_ioc_directory }}/iocBoot/st.cmd"
+        mode: "0775"
+
+    - name: Install top level IOC startup script
+      ansible.builtin.template:
+        src: templates/st_top.cmd.j2
+        dest: "{{ deploy_ioc_ioc_directory }}/st.cmd"
+        owner: "{{ host_config.softioc_user }}"
+        group: "{{ host_config.softioc_group }}"
+        mode: "0775"
+
+- name: Deploy IOC template
+  ansible.builtin.include_role:
+    name: "nsls2.ioc_deploy.device_roles.{{ ioc.type }}"
+
+- name: Writeout IOC configuration used to yml
+  ansible.builtin.copy:
+    content: "{{ {deploy_ioc_ioc_name: ioc} | to_nice_yaml(sort_keys=False) }}"
+    dest: "{{ deploy_ioc_ioc_directory }}/{{ deploy_ioc_ioc_name }}.yml"
+    owner: "{{ host_config.softioc_user }}"
+    group: "{{ host_config.softioc_group }}"
+    mode: "0664"
+
+- name: Generate IOC README file
+  ansible.builtin.template:
+    src: templates/README.md.j2
+    dest: "{{ deploy_ioc_ioc_directory }}/README.md"
+    owner: "{{ host_config.softioc_user }}"
+    group: "{{ host_config.softioc_group }}"
+    mode: "0664"
+
+- name: Generate manage-iocs config file
+  ansible.builtin.include_tasks: update-config.yml
+
+- name: Perform post-deployment IOC setup tasks
+  when: deploy_ioc_post_deploy_step != "None"
+  block:
+    - name: Auto install IOC
+      ansible.builtin.include_role:
+        name: nsls2.ioc_deploy.manage_iocs
+      vars:
+        manage_iocs_command: "install"
+        manage_iocs_subcommand: "{{ deploy_ioc_ioc_name }}"
+      when:
+        - deploy_ioc_post_deploy_step == "Install" or
+          deploy_ioc_post_deploy_step == "Install and Enable" or
+          deploy_ioc_post_deploy_step == "Install and Start" or
+          deploy_ioc_post_deploy_step == "Install and Enable and Start"
+
+    - name: Auto enable IOC
+      ansible.builtin.include_role:
+        name: manage_iocs
+      vars:
+        manage_iocs_command: "enable"
+        manage_iocs_subcommand: "{{ deploy_ioc_ioc_name }}"
+      when:
+        - deploy_ioc_post_deploy_step == "Install and Enable" or
+          deploy_ioc_post_deploy_step == "Install and Enable and Start"
+
+    - name: Auto restart IOC
+      ansible.builtin.include_role:
+        name: manage_iocs
+      vars:
+        manage_iocs_command: "restart"
+        manage_iocs_subcommand: "{{ deploy_ioc_ioc_name }}"
+      when:
+        - deploy_ioc_post_deploy_step == "Restart" or
+          deploy_ioc_post_deploy_step == "Install and Start" or
+          deploy_ioc_post_deploy_step == "Install and Enable and Start"

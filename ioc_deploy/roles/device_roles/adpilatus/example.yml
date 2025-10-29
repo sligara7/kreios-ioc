@@ -1,0 +1,10 @@
+---
+det-pilatus01:
+  type: adpilatus
+  ramdisk_path: /ramdisk
+  environment:
+    ENGINEER: C. Engineer
+    PREFIX: XF:31ID1-ES{PILATUS:01}
+    PILATUS_DCU_IP: "xf31id1-pilatus1.nsls2.bnl.local"
+    XSIZE: 487
+    YSIZE: 195

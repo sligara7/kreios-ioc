@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WebHelpSystem DefaultUrl="Software/Software_Overview.htm" Toc="Data/Toc.js" Index="Data/Index.js" Concepts="Data/Concepts.js" BrowseSequence="Data/BrowseSequence.js" Glossary="Data/Glossary.js" SearchDatabase="Data/Search.js" Alias="Data/Alias.xml" Synonyms="Data/Synonyms.xml" SkinName="DefaultHTML5" Skins="DefaultHTML5" BuildTime="2015-03-25 10:09:24" BuildVersion="11.0.0.32808" TargetType="WebHelp2" SkinTemplateFolder="Skin/" InPreviewMode="false" MoveOutputContentToRoot="true" MakeFileLowerCase="false" UseCustomTopicFileExtension="false" PreventExternalUrls="false" EnableResponsiveOutput="false" ResultsPerPage="20">
+    <CatapultSkin Version="2" SkinType="WebHelp2" Comment="HTML5 skin" Anchors="Width,Height" Width="800" Height="600" Top="0" Left="0" Bottom="0" Right="0" Tabs="TOC,Index" DefaultTab="TOC" UseBrowserDefaultSize="True" UseDefaultBrowserSetup="True" AutoSyncTOC="true" Name="DefaultHTML5" />
+</WebHelpSystem>

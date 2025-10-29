@@ -1,0 +1,1 @@
+define({'/Software/AdditionalControls.htm':{i:[3],t:['Additional Controls'],b:['']},'/Software/Log.htm':{i:[4],t:['Logging Activity'],b:['']},'/Software/OperateSource.htm':{i:[1],t:['Operating the Source'],b:['']},'/Software/Software_Overview.htm':{i:[0],t:['UXC 1000/ μ-FOCUS'],b:['']},'/Software/StorePreset.htm':{i:[2],t:['Storing Presets'],b:['']}});

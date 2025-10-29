@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:MadCap="http://www.madcapsoftware.com/Schemas/MadCap.xsd" lang="en-us" xml:lang="en-us" data-mc-search-type="Stem" data-mc-help-system-file-name="Default.xml" data-mc-path-to-help-system="../" data-mc-target-type="WebHelp2" data-mc-runtime-file-type="Topic" data-mc-preload-images="false" data-mc-in-preview-mode="false" data-mc-medium="non-print" data-mc-toc-path="Plot View|Data Operations">
+    <!-- saved from url=(0016)http://localhost -->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="../Skins/Default/Stylesheets/Slideshow.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/TextEffects.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Topic.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Components/Styles.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Components/Tablet.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Skins/Default/Stylesheets/Components/Mobile.css" rel="stylesheet" type="text/css" data-mc-generated="True" />
+        <link href="../Resources/TableStyles/Normal.css" rel="stylesheet" data-mc-stylesheet-type="table" /><title>Syntax</title>
+        <link href="../Resources/Stylesheets/Styles.css" rel="stylesheet" type="text/css" />
+        <script src="../Resources/Scripts/custom.modernizr.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/jquery.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/require.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/require.config.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/foundation.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/plugins.min.js" type="text/javascript">
+        </script>
+        <script src="../Resources/Scripts/MadCapAll.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <h2><a name="kanchor112"></a>Annotation Syntax</h2>
+        <p>Some of the data operations display text on the chart. This is usually a summary of the calculation and some explanatory text. The information displayed is determined by a command string in the settings dialog for the operation. You can modify this string to change the information.</p>
+        <p>&#160;</p>
+        <p>The syntax used to write annotations is similar to the <code>printf</code> command of the C language.</p>
+        <p>&#160;</p>
+        <p class="Note" data-mc-autonum="&lt;b&gt;NOTE: &lt;/b&gt;"><span class="autonumber"><span><b>NOTE: </b></span></span> <br />Each  operation which has an annotation has a pre-defined setting. You can use this as an example and as a basis for further modification.</p>
+        <h4>Syntax</h4>
+        <p>The annotation syntax is summarized as follows:</p>
+        <p>&#160;</p>
+        <p class="code">&lt; x [ . m ] [ *f ]  : { { @ [ n ] } | { [n] . g } }&gt;</p>
+        <p>&#160;</p>
+        <p class="Note" data-mc-autonum="&lt;b&gt;NOTE: &lt;/b&gt;"><span class="autonumber"><span><b>NOTE: </b></span></span> <br />Square brackets indicate optional terms; the pipe symbol | indicates OR.</p>
+        <p>&#160;</p>
+        <table style="width: 100%;mc-table-style: url('../Resources/TableStyles/Normal.css');" class="TableStyle-Normal" cellspacing="0">
+            <col style="width: 47px;" class="TableStyle-Normal-Column-Column1" />
+            <col class="TableStyle-Normal-Column-Column1" />
+            <thead>
+                <tr class="TableStyle-Normal-Head-Header1">
+                    <th class="TableStyle-Normal-HeadE-Column1-Header1">Item</th>
+                    <th class="TableStyle-Normal-HeadD-Column1-Header1">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">x</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Parameter name. This is the name shown in the table of output parameters.</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">m</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body2">[ value | error].</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">*f</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Scale factor (useful if kcps instead of cps etc).</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body2">@</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body2">The @ sign indicates that the default number format is to be used when displaying results. </td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body1">
+                    <td class="TableStyle-Normal-BodyE-Column1-Body1">n</td>
+                    <td class="TableStyle-Normal-BodyD-Column1-Body1">Field width (number of digits, width = digits + sign + separator sign).</td>
+                </tr>
+                <tr class="TableStyle-Normal-Body-Body2">
+                    <td class="TableStyle-Normal-BodyB-Column1-Body2">g</td>
+                    <td class="TableStyle-Normal-BodyA-Column1-Body2">Fixed-point arithmetic.</td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Parameters</h4>
+        <p>All output parameters in the data operation can be used in the annotation.</p>
+        <h4>Default number format</h4>
+        <p>When using the default number format (with the @ symbol), the value is scaled to lie between 1 and 1000
+(exclusive) and the prefix used to form decimal multiples and submultiples of the unit is
+set accordingly. Additionally the standard deviation appears in parenthesis in a standard
+abbreviated form. This is the rounded two digit integer value of the standard deviation
+after normalization by the magnitude of the parameter value’s last digit.</p>
+        <p>&#160;</p>
+        <p>Some examples of how numbers are displayed in the standard format:</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>(3435.3518 ± 85.613096) cps is abbreviated to 3.435(86) kcps</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>(881.62159 ± 0.00087205) eV is abbreviated to 881.62159(87) eV</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>(11403390.1 ±5130.74971) cps is abbreviated to 11.4034(51) Mcps</p>
+        <p class="Bullet" data-mc-autonum="&lt;span style=&quot;font-family: 'arial';&quot; class=&quot;mcFormatFamily&quot;&gt;&lt;span style=&quot;color: #005293;&quot; class=&quot;mcFormatColor&quot;&gt;■&lt;/span&gt;&lt;/span&gt; &#160;&#160;&#160;"><span class="autonumber"><span><span style="font-family: 'arial';" class="mcFormatFamily"><span style="color: #005293;" class="mcFormatColor">■</span></span> &#160;&#160;&#160;</span></span>(2.668437 ± 0.00006868) eV is abbreviated to 2.668437(69) eV</p>
+        <h4>Example</h4>
+        <p>The following example shows how a typical definition and how it relates to displayed text.</p>
+        <p>&#160;</p>
+        <table style="width: 100%;">
+            <col style="width: 99px;" />
+            <col />
+            <tbody>
+                <tr>
+                    <td class="open">
+                        <p style="text-align: right;">Annotation</p>
+                        <p style="text-align: right;">definition</p>
+                    </td>
+                    <td rowspan="2" class="open" style="text-align: left;">
+                        <img src="../Resources/Images/SyntaxExample.png" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="open">
+                        <p style="text-align: right;">Displayed</p>
+                        <p style="text-align: right;">text</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>&#160;</p>
+        <p class="Note" data-mc-autonum="&lt;b&gt;NOTE: &lt;/b&gt;"><span class="autonumber"><span><b>NOTE: </b></span></span> <br />The default settings in the software for data operation provide further examples.</p>
+    </body>
+</html>

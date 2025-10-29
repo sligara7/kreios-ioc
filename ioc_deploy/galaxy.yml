@@ -1,0 +1,19 @@
+---
+
+namespace: nsls2
+name: ioc_deploy
+version: 1.2.0
+readme: README.md
+authors:
+  - Jakub Wlodek <jwlodek@bnl.gov>
+description: Collection of ansible roles to perform centralized IOC deployments
+license:
+  - BSD-3-Clause
+license_file: "LICENSE"
+tags: [infrastructure]
+dependencies: {}
+repository: http://github.com/nsls2/nsls2.ioc_deploy
+documentation: http://github.com/nsls2/nsls2.ioc_deploy
+homepage: http://www.bnl.gov/nsls2
+issues: https://github.com/NSLS2/nsls2.ioc_deploy/issues
+build_ignore: ["tests", "venv", ".pixi"]

@@ -1,0 +1,8 @@
+---
+type: enum("adsimdetector")
+
+environment:
+  PREFIX: str()  # Base PV prefix
+  XSIZE: int(min=1)
+  YSIZE: int(min=1)  # Camera image size in pixels
+  FFMSTREAM_PORT: int(min=8000, required=False)  # Port for the ffmpeg server
