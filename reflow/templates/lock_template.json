@@ -1,8 +1,0 @@
-{
-  "resource": "<resource_name>",
-  "owner": "<agent_id>",
-  "stage": "<workflow stage>",
-  "reason": "<short reason>",
-  "created_at": "<ISO8601>",
-  "ttl_minutes": 20
-}

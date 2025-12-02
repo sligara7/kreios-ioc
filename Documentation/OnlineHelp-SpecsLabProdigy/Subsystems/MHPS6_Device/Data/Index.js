@@ -1,1 +1,0 @@
-define({numchunks:1,prefix:'Index_Chunk',terms:[{t:'Check Pockets',c:0,$:1},{t:'Current Ramping',c:0,$:1},{t:'Heater Device',c:0,$:1},{t:'Hold Current',c:0,$:1},{t:'MHPS 6',c:0,$:1},{t:'Target Temperature',c:0,$:1},{t:'Temperature Ramping',c:0,$:1},{t:'Timer Threshold',c:0,$:1}]});

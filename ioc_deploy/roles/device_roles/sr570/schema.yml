@@ -1,9 +1,0 @@
----
-type: enum("sr570")
-environment:
-  DEVICE_IP: any(ip(), hostname())
-  DEVICE_PORT: int()
-  SYS: str()  # Base PV prefix
-  DEV: str()
-  ENGINEER: str(required=False)
-  PORT: str(required=False)  # Port name for the SR570 device, e.g., "SR570"

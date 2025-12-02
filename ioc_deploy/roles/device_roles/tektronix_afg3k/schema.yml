@@ -1,7 +1,0 @@
----
-
-type: regex("tektronix_afg3k")
-environment:
-  P: str()
-  R: str()
-  DEVICE_IP: any(ip(), hostname())

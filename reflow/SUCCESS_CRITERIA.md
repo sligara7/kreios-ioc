@@ -1,1 +1,0 @@
-docs/SUCCESS_CRITERIA.md

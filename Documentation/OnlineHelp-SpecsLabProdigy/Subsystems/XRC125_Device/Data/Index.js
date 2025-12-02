@@ -1,1 +1,0 @@
-define({numchunks:1,prefix:'Index_Chunk',terms:[{t:'Activate Preset',c:0,$:1},{t:'Anode',c:0,$:0},{t:'Calibration',c:0,$:1},{t:'Faraday Cup',c:0,$:1},{t:'Log',c:0,$:1},{t:'Molybdenum Edge',c:0,$:1},{t:'Power',c:0,$:1},{t:'Preset',c:0,$:0},{t:'Silver Edge',c:0,$:1}]});

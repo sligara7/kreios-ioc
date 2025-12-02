@@ -1,1 +1,0 @@
-define({r:0.5,st:'Stem',n:1,t:[0,72,146],s:['+','displai','new','succe'],p:[['+',17],['along',43],['axis',104],['click',41],['dependency',18],['enter',109],['function',156],['indicated',76],['manager',60],['of',87],['perform',150],['respectively',13],['settings',104],['supplement',119],['the',133],['unchecking',109],['with',39]]});

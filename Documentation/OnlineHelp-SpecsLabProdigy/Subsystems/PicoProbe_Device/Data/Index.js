@@ -1,1 +1,0 @@
-define({numchunks:1,prefix:'Index_Chunk',terms:[{t:'Bias',c:0,$:1},{t:'Channels',c:0,$:0},{t:'Error',c:0,$:1},{t:'Pico Probe Device Control',c:0,$:1},{t:'Probe',c:0,$:1},{t:'Range',c:0,$:1},{t:'Read',c:0,$:1},{t:'Status',c:0,$:0},{t:'Store',c:0,$:1},{t:'Warning',c:0,$:1}]});

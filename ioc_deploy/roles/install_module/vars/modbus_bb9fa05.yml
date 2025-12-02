@@ -1,6 +1,0 @@
----
-modbus_bb9fa05:
-  name: modbus
-  url: "https://github.com/NSLS2/modbus"
-  version: "bb9fa05"
-  executable: modbusApp

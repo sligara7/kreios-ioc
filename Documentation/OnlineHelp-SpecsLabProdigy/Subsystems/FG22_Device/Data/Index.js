@@ -1,1 +1,0 @@
-define({numchunks:1,prefix:'Index_Chunk',terms:[{t:'Device Control',c:0,$:1},{t:'Emission',c:0,$:1},{t:'Energy',c:0,$:1}]});
