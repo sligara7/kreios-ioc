@@ -142,7 +142,7 @@ while True:
         # Update live display PV
         update_pv("LIVE_DATA", data_buffer)
     
-    if status['ControllerStatus'] == 'completed':
+    if status['ControllerState'] == 'finished':
         break
     
     time.sleep(0.5)  # Poll every 500ms

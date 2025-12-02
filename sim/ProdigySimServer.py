@@ -28,12 +28,14 @@ from enum import Enum
 
 
 class AcquisitionState(Enum):
-    """Acquisition state machine states"""
+    """Acquisition state machine states per protocol spec"""
     IDLE = "idle"
+    VALIDATED = "validated"
     RUNNING = "running"
     PAUSED = "paused"
-    COMPLETED = "completed"
+    FINISHED = "finished"
     ABORTED = "aborted"
+    ERROR = "error"
 
 
 class ProdigySimHandler(socketserver.StreamRequestHandler):
@@ -238,10 +240,26 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         # Spectrum definition commands
         elif command == "DefineSpectrumFAT":
             return self.cmd_define_spectrum_fat(req_id, params)
-        elif command == "DefineSpectrumFFR":
-            return self.cmd_define_spectrum_ffr(req_id, params)
+        elif command == "DefineSpectrumSFAT":
+            return self.cmd_define_spectrum_sfat(req_id, params)
+        elif command == "DefineSpectrumFRR":
+            return self.cmd_define_spectrum_frr(req_id, params)
         elif command == "DefineSpectrumFE":
             return self.cmd_define_spectrum_fe(req_id, params)
+        elif command == "DefineSpectrumLVS":
+            return self.cmd_define_spectrum_lvs(req_id, params)
+        
+        # Spectrum validation/check commands
+        elif command == "CheckSpectrumFAT":
+            return self.cmd_check_spectrum_fat(req_id, params)
+        elif command == "CheckSpectrumSFAT":
+            return self.cmd_check_spectrum_sfat(req_id, params)
+        elif command == "CheckSpectrumFRR":
+            return self.cmd_check_spectrum_frr(req_id, params)
+        elif command == "CheckSpectrumFE":
+            return self.cmd_check_spectrum_fe(req_id, params)
+        elif command == "CheckSpectrumLVS":
+            return self.cmd_check_spectrum_lvs(req_id, params)
         elif command == "ValidateSpectrum":
             return self.cmd_validate_spectrum(req_id)
         elif command == "ClearSpectrum":
@@ -266,6 +284,8 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
             return self.cmd_get_all_parameter_names(req_id)
         elif command == "GetAnalyzerParameterInfo":
             return self.cmd_get_parameter_info(req_id, params)
+        elif command == "GetAnalyzerVisibleName":
+            return self.cmd_get_analyzer_visible_name(req_id)
         elif command == "GetAnalyzerParameterValue":
             return self.cmd_get_parameter_value(req_id, params)
         elif command == "SetAnalyzerParameterValue":
@@ -348,12 +368,66 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         except (ValueError, KeyError) as e:
             return f"!{req_id} Error: 201 Invalid spectrum parameters: {e}"
     
-    def cmd_define_spectrum_ffr(self, req_id, params):
-        """Define spectrum in Fixed Retard Ratio (FRR) mode - stub"""
-        # For simulation, just acknowledge
-        self.spectrum_defined = True
-        self.spectrum_validated = False
-        return f"!{req_id} OK"
+    def cmd_define_spectrum_sfat(self, req_id, params):
+        """Define spectrum in Snapshot FAT (SFAT) mode"""
+        try:
+            self.start_energy = float(params.get('StartEnergy', 0))
+            self.end_energy = float(params.get('EndEnergy', 0))
+            self.total_samples = int(params.get('Samples', 1))
+            self.dwell_time = float(params.get('DwellTime', 0.1))
+            self.lens_mode = params.get('LensMode', 'HighMagnification')
+            self.scan_range = params.get('ScanRange', 'MediumArea')
+            
+            # Auto-compute step width and pass energy
+            self.step_width = (self.end_energy - self.start_energy) / max(1, self.total_samples - 1)
+            self.pass_energy = (self.end_energy - self.start_energy) / 2  # Simplified
+            
+            self.spectrum_defined = True
+            self.spectrum_validated = False
+            return f"!{req_id} OK"
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 201 Invalid spectrum parameters: {e}"
+    
+    def cmd_define_spectrum_frr(self, req_id, params):
+        """Define spectrum in Fixed Retard Ratio (FRR) mode"""
+        try:
+            self.start_energy = float(params.get('StartEnergy', 0))
+            self.end_energy = float(params.get('EndEnergy', 0))
+            self.step_width = float(params.get('StepWidth', 1))
+            self.dwell_time = float(params.get('DwellTime', 0.1))
+            retarding_ratio = float(params.get('RetardingRatio', 10.0))
+            self.lens_mode = params.get('LensMode', 'HighMagnification')
+            self.scan_range = params.get('ScanRange', 'MediumArea')
+            
+            # Auto-compute pass energy from retarding ratio
+            self.pass_energy = self.start_energy / retarding_ratio
+            self.total_samples = int((self.end_energy - self.start_energy) / self.step_width + 1)
+            
+            self.spectrum_defined = True
+            self.spectrum_validated = False
+            return f"!{req_id} OK"
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 201 Invalid spectrum parameters: {e}"
+    
+    def cmd_define_spectrum_lvs(self, req_id, params):
+        """Define spectrum in Logical Voltage Scan (LVS) mode"""
+        try:
+            start = float(params.get('Start', -1))
+            end = float(params.get('End', 1))
+            self.step_width = float(params.get('StepWidth', 0.1))
+            kin_energy = float(params.get('KinEnergy', 280))
+            self.dwell_time = float(params.get('DwellTime', 0.1))
+            self.pass_energy = float(params.get('PassEnergy', 10))
+            self.lens_mode = params.get('LensMode', 'HighMagnification')
+            self.scan_range = params.get('ScanRange', 'MediumArea')
+            scan_variable = params.get('ScanVariable', 'Focus Displacement 1 [nu]')
+            
+            self.total_samples = int((end - start) / self.step_width + 1)
+            self.spectrum_defined = True
+            self.spectrum_validated = False
+            return f"!{req_id} OK"
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 201 Invalid spectrum parameters: {e}"
     
     def cmd_define_spectrum_fe(self, req_id, params):
         """
@@ -383,6 +457,145 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         except (ValueError, KeyError) as e:
             return f"!{req_id} Error: 201 Invalid spectrum parameters: {e}"
     
+    def cmd_check_spectrum_fat(self, req_id, params):
+        """Validate FAT spectrum without setting it"""
+        try:
+            start_energy = float(params.get('StartEnergy', 0))
+            end_energy = float(params.get('EndEnergy', 0))
+            step_width = float(params.get('StepWidth', 1))
+            dwell_time = float(params.get('DwellTime', 0.1))
+            pass_energy = float(params.get('PassEnergy', 20))
+            lens_mode = params.get('LensMode', 'HighMagnification')
+            scan_range = params.get('ScanRange', 'MediumArea')
+            
+            samples = int((end_energy - start_energy) / step_width + 1)
+            
+            response = (
+                f"!{req_id} OK: "
+                f"StartEnergy:{start_energy} "
+                f"EndEnergy:{end_energy} "
+                f"StepWidth:{step_width} "
+                f"Samples:{samples} "
+                f"DwellTime:{dwell_time} "
+                f"PassEnergy:{pass_energy} "
+                f'LensMode:"{lens_mode}" '
+                f'ScanRange:"{scan_range}"'
+            )
+            return response
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 202 Validation failed: {e}"
+    
+    def cmd_check_spectrum_sfat(self, req_id, params):
+        """Validate SFAT spectrum without setting it"""
+        try:
+            start_energy = float(params.get('StartEnergy', 0))
+            end_energy = float(params.get('EndEnergy', 0))
+            samples = int(params.get('Samples', 1))
+            dwell_time = float(params.get('DwellTime', 0.1))
+            lens_mode = params.get('LensMode', 'HighMagnification')
+            scan_range = params.get('ScanRange', 'MediumArea')
+            
+            step_width = (end_energy - start_energy) / max(1, samples - 1)
+            pass_energy = (end_energy - start_energy) / 2
+            
+            response = (
+                f"!{req_id} OK: "
+                f"StartEnergy:{start_energy} "
+                f"EndEnergy:{end_energy} "
+                f"StepWidth:{step_width:.6f} "
+                f"Samples:{samples} "
+                f"DwellTime:{dwell_time} "
+                f"PassEnergy:{pass_energy:.6f} "
+                f'LensMode:"{lens_mode}" '
+                f'ScanRange:"{scan_range}"'
+            )
+            return response
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 202 Validation failed: {e}"
+    
+    def cmd_check_spectrum_frr(self, req_id, params):
+        """Validate FRR spectrum without setting it"""
+        try:
+            start_energy = float(params.get('StartEnergy', 0))
+            end_energy = float(params.get('EndEnergy', 0))
+            step_width = float(params.get('StepWidth', 1))
+            dwell_time = float(params.get('DwellTime', 0.1))
+            retarding_ratio = float(params.get('RetardingRatio', 10.0))
+            lens_mode = params.get('LensMode', 'HighMagnification')
+            scan_range = params.get('ScanRange', 'MediumArea')
+            
+            samples = int((end_energy - start_energy) / step_width + 1)
+            pass_energy = start_energy / retarding_ratio
+            
+            response = (
+                f"!{req_id} OK: "
+                f"StartEnergy:{start_energy} "
+                f"EndEnergy:{end_energy} "
+                f"StepWidth:{step_width} "
+                f"Samples:{samples} "
+                f"DwellTime:{dwell_time} "
+                f"PassEnergy:{pass_energy:.6f} "
+                f'LensMode:"{lens_mode}" '
+                f'ScanRange:"{scan_range}"'
+            )
+            return response
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 202 Validation failed: {e}"
+    
+    def cmd_check_spectrum_fe(self, req_id, params):
+        """Validate FE spectrum without setting it"""
+        try:
+            kin_energy = float(params.get('KinEnergy', 300))
+            samples = int(params.get('Samples', 5))
+            dwell_time = float(params.get('DwellTime', 0.1))
+            pass_energy = float(params.get('PassEnergy', 10))
+            lens_mode = params.get('LensMode', 'HighMagnification')
+            scan_range = params.get('ScanRange', 'MediumArea')
+            
+            response = (
+                f"!{req_id} OK: "
+                f"StartEnergy:0 "
+                f"EndEnergy:{samples - 1} "
+                f"StepWidth:1 "
+                f"Samples:{samples} "
+                f"DwellTime:{dwell_time} "
+                f"PassEnergy:{pass_energy} "
+                f'LensMode:"{lens_mode}" '
+                f'ScanRange:"{scan_range}"'
+            )
+            return response
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 202 Validation failed: {e}"
+    
+    def cmd_check_spectrum_lvs(self, req_id, params):
+        """Validate LVS spectrum without setting it"""
+        try:
+            start = float(params.get('Start', -1))
+            end = float(params.get('End', 1))
+            step_width = float(params.get('StepWidth', 0.1))
+            kin_energy = float(params.get('KinEnergy', 280))
+            dwell_time = float(params.get('DwellTime', 0.1))
+            pass_energy = float(params.get('PassEnergy', 10))
+            lens_mode = params.get('LensMode', 'HighMagnification')
+            scan_range = params.get('ScanRange', 'MediumArea')
+            scan_variable = params.get('ScanVariable', 'Focus Displacement 1 [nu]')
+            
+            response = (
+                f"!{req_id} OK: "
+                f"Start:{start} "
+                f"End:{end} "
+                f"StepWidth:{step_width} "
+                f"KinEnergy:{kin_energy} "
+                f"DwellTime:{dwell_time} "
+                f"PassEnergy:{pass_energy} "
+                f'LensMode:"{lens_mode}" '
+                f'ScanRange:"{scan_range}" '
+                f'ScanVariable:"{scan_variable}"'
+            )
+            return response
+        except (ValueError, KeyError) as e:
+            return f"!{req_id} Error: 202 Validation failed: {e}"
+    
     def cmd_validate_spectrum(self, req_id):
         """Validate the defined spectrum"""
         if not self.spectrum_defined:
@@ -402,13 +615,18 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         )
         
         self.spectrum_validated = True
+        self.acquisition_state = AcquisitionState.VALIDATED
         return response
     
     def cmd_clear_spectrum(self, req_id):
         """Clear the defined spectrum"""
+        if self.acquisition_state in [AcquisitionState.RUNNING, AcquisitionState.PAUSED]:
+            return f"!{req_id} Error: 209 Currently acquiring spectrum."
+        
         self.spectrum_defined = False
         self.spectrum_validated = False
         self.acquired_data = []
+        self.acquisition_state = AcquisitionState.IDLE
         return f"!{req_id} OK"
     
     # ========== Acquisition Control Commands ==========
@@ -462,19 +680,14 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         return f"!{req_id} OK"
     
     def cmd_get_acquisition_status(self, req_id):
-        """Get current acquisition status"""
-        elapsed_time = 0
-        if self.acquisition_start_time:
-            elapsed_time = time.time() - self.acquisition_start_time
+        """Get current acquisition status per protocol spec"""
+        # Protocol returns: ControllerState:<state> NumberOfAcquiredPoints:<num>
+        # States: idle, validated, running, paused, finished, aborted, error
+        response = f"!{req_id} OK: ControllerState:{self.acquisition_state.value}"
         
-        # Build status response
-        response = (
-            f"!{req_id} OK: "
-            f'ControllerStatus:"{self.acquisition_state.value}" '
-            f"NumberOfAcquiredPoints:{self.acquisition_progress} "
-            f"ElapsedTime:{elapsed_time:.2f} "
-            f"CurrentIteration:1"
-        )
+        # Only include NumberOfAcquiredPoints if not in idle/validated state
+        if self.acquisition_state not in [AcquisitionState.IDLE, AcquisitionState.VALIDATED]:
+            response += f" NumberOfAcquiredPoints:{self.acquisition_progress}"
         
         return response
     
@@ -500,14 +713,8 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         # Format data array as [value1,value2,...]
         data_str = '[' + ','.join(f'{v:.6f}' for v in data_slice) + ']'
         
-        response = (
-            f"!{req_id} OK: "
-            f"FromIndex:{from_index} "
-            f"ToIndex:{to_index} "
-            f"Data:{data_str}"
-        )
-        
-        return response
+        # Protocol spec: only return Data:[...]
+        return f"!{req_id} OK: Data:{data_str}"
     
     # ========== Device Parameter Commands ==========
     
@@ -516,24 +723,31 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         names = ','.join(f'"{name}"' for name in self.device_parameters.keys())
         return f"!{req_id} OK: ParameterNames:[{names}]"
     
+    def cmd_get_analyzer_visible_name(self, req_id):
+        """Get analyzer visible name per protocol spec"""
+        return f'!{req_id} OK: AnalyzerVisibleName:"KREIOS-150 Simulator"'
+    
     def cmd_get_parameter_info(self, req_id, params):
-        """Get information about a specific parameter"""
+        """Get information about a specific parameter per protocol spec"""
         param_name = params.get('ParameterName', '')
         
         if param_name not in self.device_parameters:
-            return f'!{req_id} Error: 301 Parameter "{param_name}" not found.'
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
         
         param_info = self.device_parameters[param_name]
-        value_type = param_info['type']
+        value_type = param_info.get('type', 'double')
         
-        return f"!{req_id} OK: ValueType:{value_type}"
+        # Protocol requires: Type, ValueType, Unit, [Min, Max, Values]
+        response = f'!{req_id} OK: Type:LogicalVoltage ValueType:{value_type} Unit:"V"'
+        
+        return response
     
     def cmd_get_parameter_value(self, req_id, params):
         """Get current value of a parameter"""
         param_name = params.get('ParameterName', '')
         
         if param_name not in self.device_parameters:
-            return f'!{req_id} Error: 301 Parameter "{param_name}" not found.'
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
         
         param_info = self.device_parameters[param_name]
         value = param_info['value']
@@ -546,7 +760,7 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         new_value = params.get('Value', '')
         
         if param_name not in self.device_parameters:
-            return f'!{req_id} Error: 301 Parameter "{param_name}" not found.'
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
         
         # Update the parameter
         self.device_parameters[param_name]['value'] = new_value
@@ -614,9 +828,9 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
                 # Simulate dwell time (per energy step, not per pixel)
                 time.sleep(self.dwell_time / 10)  # Speed up for simulation (10x faster)
         
-        # Mark as completed
+        # Mark as finished
         if self.acquisition_state == AcquisitionState.RUNNING:
-            self.acquisition_state = AcquisitionState.COMPLETED
+            self.acquisition_state = AcquisitionState.FINISHED
             shape_info = f"{self.total_samples}"
             if self.values_per_sample > 1:
                 shape_info += f"×{self.values_per_sample}"

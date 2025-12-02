@@ -173,9 +173,8 @@ class ProdigyRealtimeClient:
         resp = self.send_command("GetAcquisitionStatus")
         params = self.parse_response(resp)
         return {
-            'status': params.get('ControllerStatus', '').strip('"'),
-            'points': int(params.get('NumberOfAcquiredPoints', 0)),
-            'elapsed': float(params.get('ElapsedTime', 0))
+            'status': params.get('ControllerState', '').strip('"'),
+            'points': int(params.get('NumberOfAcquiredPoints', 0))
         }
     
     def read_new_data(self):
@@ -311,11 +310,11 @@ def demo_1d_realtime():
         new_data = client.read_new_data()
         if new_data:
             status = client.get_status()
-            print(f"  [{status['elapsed']:.1f}s] Got {len(new_data)} new points, "
+            print(f"  Got {len(new_data)} new points, "
                   f"total: {len(client.data_buffer)}, status: {status['status']}")
         
         status = client.get_status()
-        if status['status'] == 'completed':
+        if status['status'] == 'finished':
             print("\n✓ Acquisition completed!")
             break
         
@@ -361,11 +360,11 @@ def demo_2d_realtime():
         new_data = client.read_new_data()
         if new_data:
             status = client.get_status()
-            print(f"  [{status['elapsed']:.1f}s] Got {len(new_data)} new values, "
+            print(f"  Got {len(new_data)} new values, "
                   f"total: {len(client.data_buffer)}, status: {status['status']}")
         
         status = client.get_status()
-        if status['status'] == 'completed':
+        if status['status'] == 'finished':
             print("\n✓ Acquisition completed!")
             break
         
@@ -412,11 +411,11 @@ def demo_3d_realtime():
         new_data = client.read_new_data()
         if new_data:
             status = client.get_status()
-            print(f"  [{status['elapsed']:.1f}s] Got {len(new_data)} new values, "
+            print(f"  Got {len(new_data)} new values, "
                   f"total: {len(client.data_buffer)}, status: {status['status']}")
         
         status = client.get_status()
-        if status['status'] == 'completed':
+        if status['status'] == 'finished':
             print("\n✓ Acquisition completed!")
             break
         

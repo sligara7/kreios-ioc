@@ -35,8 +35,15 @@ This updated simulator (ProdigySimServer.py) includes:
 
 #### Spectrum Definition
 - `DefineSpectrumFAT` - Fixed Analyzer Transmission mode
-- `DefineSpectrumFFR` - Fixed Retard Ratio mode (stub)
+- `DefineSpectrumSFAT` - Snapshot FAT mode
+- `DefineSpectrumFRR` - Fixed Retarding Ratio mode
 - `DefineSpectrumFE` - Fixed Energies mode
+- `DefineSpectrumLVS` - Logical Voltage Scan mode
+- `CheckSpectrumFAT` - Validate FAT without setting it
+- `CheckSpectrumSFAT` - Validate SFAT without setting it
+- `CheckSpectrumFRR` - Validate FRR without setting it
+- `CheckSpectrumFE` - Validate FE without setting it
+- `CheckSpectrumLVS` - Validate LVS without setting it
 - `ValidateSpectrum` - Validate defined spectrum parameters
 - `ClearSpectrum` - Clear spectrum definition
 
@@ -51,6 +58,7 @@ This updated simulator (ProdigySimServer.py) includes:
 #### Device Parameters
 - `GetAllAnalyzerParameterNames` - List all available parameters
 - `GetAnalyzerParameterInfo` - Get parameter type information
+- `GetAnalyzerVisibleName` - Get analyzer device name
 - `GetAnalyzerParameterValue` - Read parameter value
 - `SetAnalyzerParameterValue` - Write parameter value
 
@@ -258,32 +266,38 @@ You can modify `parameters.dat` to add more parameters or change default values.
 ## Acquisition State Machine
 
 ```
-IDLE ─────────> RUNNING ─────────> COMPLETED
-                   │  ▲
-                   │  │
-                   ▼  │
-                 PAUSED
-                   │
-                   ▼
-                ABORTED
+IDLE ─────────> VALIDATED ─────────> RUNNING ─────────> FINISHED
+                                        │  ▲
+                                        │  │
+                                        ▼  │
+                                      PAUSED
+                                        │
+                                        ▼
+                                     ABORTED
 ```
 
-- **IDLE**: No acquisition defined or ready to start
+- **IDLE**: No spectrum defined or spectrum not validated
+- **VALIDATED**: Spectrum has successfully been validated
 - **RUNNING**: Actively acquiring data
 - **PAUSED**: Temporarily suspended (can Resume)
-- **COMPLETED**: All data points acquired
+- **FINISHED**: All data points acquired (or aborted)
 - **ABORTED**: User-requested stop
+- **ERROR**: An error occurred during acquisition
 
 ## Common Error Codes
 
 | Code | Description |
 |------|-------------|
-| 2 | Already connected to a TCP client |
-| 3 | You are not connected |
-| 4 | Unknown message format |
-| 101 | Unknown command |
-| 201-208 | Spectrum/acquisition errors |
-| 301 | Parameter not found |
+| 1-4 | Connection errors (malformed message, already connected, etc.) |
+| 101-107 | Protocol errors (unknown command, invalid arguments, etc.) |
+| 201-220 | Logical and execution errors (validation failed, parameter errors, etc.) |
+
+Key error codes:
+- **2**: Another client is already connected
+- **101**: Unknown command
+- **202**: Validation error
+- **206**: Unknown parameter
+- **209**: Currently acquiring spectrum
 
 See the protocol specification for complete error code list.
 
@@ -310,7 +324,8 @@ last_index = -1
 while True:
     status = send_command("GetAcquisitionStatus")
     
-    # Parse number of acquired points
+    # Parse status: ControllerState and NumberOfAcquiredPoints
+    state = parse_string(status, "ControllerState")
     num_points = parse_int(status, "NumberOfAcquiredPoints")
     total_values = num_points * values_per_sample
     
@@ -327,7 +342,7 @@ while True:
         update_pv("DATA_BUFFER", values)
         last_index = total_values - 1
     
-    if "completed" in status:
+    if state == "finished":
         break
     
     time.sleep(0.5)  # Poll every 500ms
@@ -362,7 +377,7 @@ save_to_hdf5(data_nd)
 - **Single connection**: Only one client can connect at a time (like real Prodigy)
 - **Asynchronous acquisition**: `Start` returns immediately, poll `GetAcquisitionStatus`
 - **Data chunking**: Use `FromIndex/ToIndex` for large datasets
-- **State tracking**: Monitor `ControllerStatus` to know when acquisition completes
+- **State tracking**: Monitor `ControllerState` to know when acquisition completes
 - **Parameter mapping**: Map Prodigy parameter names to PV names
 - **Buffer management**: Accumulate data in IOC memory, then reshape and save
 - **Dimension tracking**: Store `ValuesPerSample` and `NumberOfSlices` to reshape correctly
@@ -387,7 +402,8 @@ send_command("Start")
 # Poll in background thread
 while True:
     status = send_command("GetAcquisitionStatus")
-    if "completed" in status:
+    state = parse_string(status, "ControllerState")
+    if state == "finished":
         break
     time.sleep(0.5)
 
@@ -483,4 +499,5 @@ For issues or questions:
 
 **Version**: 1.0  
 **Date**: December 2025  
-**Protocol**: SpecsLab Prodigy Remote In v1.2
+**Protocol**: SpecsLab Prodigy Remote In v1.22 (September 2024)  
+**Compliance**: Core acquisition commands fully implemented per protocol specification

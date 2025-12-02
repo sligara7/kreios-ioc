@@ -119,7 +119,7 @@ class ProdigyTestClient:
         for i in range(5):
             time.sleep(0.5)
             resp = self.send_command("GetAcquisitionStatus")
-            assert "ControllerStatus:" in resp
+            assert "ControllerState:" in resp
             print(f"  Poll {i+1}: {resp}")
         print("✓ Status polling works\n")
         
