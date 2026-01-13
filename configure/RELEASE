@@ -1,0 +1,31 @@
+# RELEASE - Location of external products
+#
+# Run "gnumake clean uninstall install" in the application
+# top directory each time this file is changed.
+#
+# KREIOS-150 Momentum Microscope areaDetector Driver
+#
+# Edit this file to point to your EPICS installation paths
+
+# EPICS_BASE - Path to your EPICS base installation
+# Example: /opt/epics/base or /usr/local/epics/base-7.0.8
+EPICS_BASE = /path/to/epics/base
+
+# SUPPORT - Path to synApps support directory (optional)
+# Contains asyn, calc, etc.
+SUPPORT = /path/to/epics/support
+
+# ASYN - Path to asyn driver
+ASYN = $(SUPPORT)/asyn
+
+# AREA_DETECTOR - Path to areaDetector
+AREA_DETECTOR = /path/to/areaDetector
+
+# ADCORE - Path to ADCore (part of areaDetector)
+ADCORE = $(AREA_DETECTOR)/ADCore
+
+# ADSUPPORT - Path to ADSupport (part of areaDetector)
+ADSUPPORT = $(AREA_DETECTOR)/ADSupport
+
+# Include local release definitions if present
+-include $(TOP)/configure/RELEASE.local

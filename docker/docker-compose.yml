@@ -1,0 +1,100 @@
+# Docker Compose for KREIOS-150 IOC Testing
+#
+# Services:
+#   simulator - Prodigy protocol simulator (port 7010)
+#   ioc       - KREIOS EPICS IOC (ports 5064, 5065)
+#   test      - Run pytest against simulator and IOC
+#
+# Usage:
+#   # Start simulator only (for protocol testing)
+#   docker compose up simulator
+#
+#   # Start simulator + IOC (for full testing)
+#   docker compose up simulator ioc
+#
+#   # Run tests against simulator
+#   docker compose run test pytest tests/test_protocol.py -v
+#
+#   # Run all tests including EPICS IOC tests
+#   docker compose --profile full up -d
+#   docker compose run test pytest tests/ -v
+#
+#   # Stop all services
+#   docker compose down
+
+version: "3.8"
+
+services:
+  # ============================================================================
+  # Prodigy Simulator
+  # ============================================================================
+  simulator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.simulator
+    ports:
+      - "7010:7010"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; s=socket.socket(); s.connect(('localhost', 7010)); s.close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - kreios-net
+
+  # ============================================================================
+  # KREIOS EPICS IOC
+  # ============================================================================
+  ioc:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    depends_on:
+      simulator:
+        condition: service_healthy
+    ports:
+      - "5064:5064/tcp"
+      - "5064:5064/udp"
+      - "5065:5065/tcp"
+      - "5065:5065/udp"
+    environment:
+      - EPICS_CA_ADDR_LIST=localhost
+      - EPICS_CA_AUTO_ADDR_LIST=NO
+      - EPICS_CA_MAX_ARRAY_BYTES=10000000
+      - PRODIGY_HOST=simulator
+      - PRODIGY_PORT=7010
+    networks:
+      - kreios-net
+    profiles:
+      - full
+
+  # ============================================================================
+  # Test Runner
+  # ============================================================================
+  test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.test
+    depends_on:
+      simulator:
+        condition: service_healthy
+    environment:
+      - SIMULATOR_HOST=simulator
+      - SIMULATOR_PORT=7010
+      - EPICS_CA_ADDR_LIST=ioc
+      - EPICS_CA_AUTO_ADDR_LIST=NO
+      - EPICS_CA_MAX_ARRAY_BYTES=10000000
+    volumes:
+      - ../tests:/app/tests:ro
+      - test-results:/app/results
+    networks:
+      - kreios-net
+    profiles:
+      - test
+
+networks:
+  kreios-net:
+    driver: bridge
+
+volumes:
+  test-results:

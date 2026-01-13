@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+O.*
+bin/
+lib/
+dbd/
+db/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.coverage
+htmlcov/
+*.egg-info/
+.eggs/
+
+# Docker
+docker-compose.override.yml
+
+# Documentation (not needed in image)
+Documentation/
+
+# Test results
+results/
+*.log

@@ -1,0 +1,13 @@
+# CONFIG - KREIOS-150 Driver Build Configuration
+#
+# This file is read by the EPICS build system
+
+# Include common definitions from EPICS base
+include $(TOP)/configure/RELEASE
+include $(EPICS_BASE)/configure/CONFIG
+
+# Include site-specific configuration
+include $(TOP)/configure/CONFIG_SITE
+
+# Include any local configuration overrides
+-include $(TOP)/configure/CONFIG.local

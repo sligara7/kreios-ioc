@@ -1,0 +1,28 @@
+# Prodigy Simulator Docker Image
+#
+# Lightweight image for running the protocol simulator
+#
+# Usage:
+#   docker build -t kreios-simulator -f docker/Dockerfile.simulator .
+#   docker run -it --rm -p 7010:7010 kreios-simulator
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy simulator files
+COPY sim/ /app/sim/
+COPY scripts/ /app/scripts/
+
+# Set working directory to sim folder
+WORKDIR /app/sim
+
+# Expose simulator port
+EXPOSE 7010
+
+# Health check
+HEALTHCHECK --interval=5s --timeout=3s --retries=3 \
+    CMD python3 -c "import socket; s=socket.socket(); s.connect(('localhost', 7010)); s.close()" || exit 1
+
+# Run the simulator
+CMD ["python3", "ProdigySimServer.py"]

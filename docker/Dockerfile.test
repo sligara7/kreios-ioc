@@ -1,0 +1,34 @@
+# Test Runner Docker Image
+#
+# Runs pytest tests against the simulator and optionally the EPICS IOC
+#
+# Usage:
+#   docker build -t kreios-test -f docker/Dockerfile.test .
+#   docker run -it --rm kreios-test pytest tests/ -v
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install test dependencies
+RUN pip install --no-cache-dir \
+    pytest \
+    pytest-asyncio \
+    pytest-timeout \
+    pytest-cov \
+    pyepics
+
+# Copy test files
+COPY tests/ /app/tests/
+COPY sim/ /app/sim/
+
+# Create results directory
+RUN mkdir -p /app/results
+
+# Environment variables for test configuration
+ENV SIMULATOR_HOST=localhost
+ENV SIMULATOR_PORT=7010
+ENV PYTHONUNBUFFERED=1
+
+# Default command: run all tests
+CMD ["pytest", "tests/", "-v", "--tb=short"]

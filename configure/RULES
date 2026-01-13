@@ -1,0 +1,6 @@
+# RULES - Build rules for KREIOS-150 Driver
+
+include $(EPICS_BASE)/configure/RULES
+
+# Include any local rule overrides
+-include $(TOP)/configure/RULES.local
