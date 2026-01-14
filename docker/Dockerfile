@@ -18,7 +18,7 @@ FROM debian:bookworm-slim AS builder
 # Build arguments for version control
 ARG EPICS_BASE_VERSION=R7.0.8
 ARG ASYN_VERSION=R4-44-2
-ARG ADCORE_VERSION=R3-12-1
+ARG ADCORE_VERSION=R3-14
 ARG ADSUPPORT_VERSION=R1-10
 
 # Install build dependencies
@@ -69,33 +69,58 @@ RUN git clone --branch ${ASYN_VERSION} --depth 1 \
 # ============================================================================
 # Build areaDetector ADSupport
 # ============================================================================
-RUN git clone --branch ${ADSUPPORT_VERSION} --depth 1 \
-    https://github.com/areaDetector/ADSupport.git \
+# Note: ADSupport uses R1-x versioning, but we need the commit used by ADCore R3-14
+# From areaDetector R3-14: git ls-tree R3-14 ADSupport
+RUN git clone https://github.com/areaDetector/ADSupport.git \
     && cd ADSupport \
+    && git checkout 62b91c1154a74a1fb532d831a6ec029bb311b8f7 \
     && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
     && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "" >> configure/CONFIG_SITE \
+    && echo "# Include local site configuration" >> configure/CONFIG_SITE \
+    && echo "-include \$(TOP)/configure/CONFIG_SITE.local" >> configure/CONFIG_SITE \
     && echo "WITH_BOOST=NO" > configure/CONFIG_SITE.local \
     && echo "WITH_BLOSC=NO" >> configure/CONFIG_SITE.local \
     && echo "WITH_BITSHUFFLE=NO" >> configure/CONFIG_SITE.local \
-    && echo "WITH_XML2=NO" >> configure/CONFIG_SITE.local \
-    && echo "ZLIB_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
-    && echo "JPEG_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
-    && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "WITH_XML2=YES" >> configure/CONFIG_SITE.local \
+    && echo "XML2_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "XML2_INCLUDE=/usr/include/libxml2" >> configure/CONFIG_SITE.local \
+    && echo "XML2_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "HDF5_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
-    && echo "SZIP_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "HDF5_INCLUDE=/usr/include/hdf5/serial" >> configure/CONFIG_SITE.local \
+    && echo "HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial" >> configure/CONFIG_SITE.local \
     && echo "NETCDF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "NETCDF_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "NETCDF_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    && echo "SZIP_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "SZIP_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "SZIP_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    && echo "ZLIB_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "ZLIB_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "ZLIB_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    && echo "JPEG_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "JPEG_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "JPEG_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "TIFF_INCLUDE=/usr/include /usr/include/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    && echo "TIFF_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && make -j$(nproc)
 
 # ============================================================================
 # Build areaDetector ADCore
 # ============================================================================
-RUN git clone --branch ${ADCORE_VERSION} --depth 1 \
-    https://github.com/areaDetector/ADCore.git \
+# Note: ADCore R3-14 tag and areaDetector R3-14 submodule point to different commits
+# We use the commit specified by areaDetector R3-14: git ls-tree R3-14 ADCore
+RUN git clone https://github.com/areaDetector/ADCore.git \
     && cd ADCore \
+    && git checkout d27d71fb73bd915bdd714c8c4c78c05e3f31b1ce \
     && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
     && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
     && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
     && echo "ADSUPPORT=${EPICS_ROOT}/support/ADSupport" >> configure/RELEASE.local \
+    && echo "" >> configure/CONFIG_SITE \
+    && echo "# Include local site configuration" >> configure/CONFIG_SITE \
+    && echo "-include \$(TOP)/configure/CONFIG_SITE.local" >> configure/CONFIG_SITE \
     && echo "WITH_BOOST=NO" > configure/CONFIG_SITE.local \
     && echo "WITH_GRAPHICSMAGICK=NO" >> configure/CONFIG_SITE.local \
     && echo "WITH_HDF5=YES" >> configure/CONFIG_SITE.local \
@@ -105,13 +130,28 @@ RUN git clone --branch ${ADCORE_VERSION} --depth 1 \
     && echo "WITH_JPEG=YES" >> configure/CONFIG_SITE.local \
     && echo "WITH_SZIP=YES" >> configure/CONFIG_SITE.local \
     && echo "WITH_ZLIB=YES" >> configure/CONFIG_SITE.local \
-    && echo "WITH_XML2=NO" >> configure/CONFIG_SITE.local \
+    && echo "WITH_XML2=YES" >> configure/CONFIG_SITE.local \
+    && echo "XML2_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "XML2_INCLUDE=/usr/include/libxml2" >> configure/CONFIG_SITE.local \
+    && echo "XML2_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "HDF5_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "HDF5_INCLUDE=/usr/include/hdf5/serial" >> configure/CONFIG_SITE.local \
+    && echo "HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial" >> configure/CONFIG_SITE.local \
     && echo "NETCDF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "NETCDF_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "NETCDF_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "SZIP_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "SZIP_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "SZIP_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "ZLIB_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "ZLIB_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "ZLIB_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "JPEG_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "JPEG_INCLUDE=/usr/include" >> configure/CONFIG_SITE.local \
+    && echo "JPEG_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "TIFF_INCLUDE=/usr/include /usr/include/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    && echo "TIFF_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && make -j$(nproc)
 
 # ============================================================================
