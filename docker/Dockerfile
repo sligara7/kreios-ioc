@@ -77,15 +77,13 @@ RUN git clone --branch ${ADSUPPORT_VERSION} --depth 1 \
     && echo "WITH_BOOST=NO" > configure/CONFIG_SITE.local \
     && echo "WITH_BLOSC=NO" >> configure/CONFIG_SITE.local \
     && echo "WITH_BITSHUFFLE=NO" >> configure/CONFIG_SITE.local \
-    && echo "XML2_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
-    && echo "USR_INCLUDES += -I/usr/include/libxml2" >> configure/CONFIG_SITE.local \
+    && echo "WITH_XML2=NO" >> configure/CONFIG_SITE.local \
     && echo "ZLIB_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "JPEG_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "HDF5_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "SZIP_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "NETCDF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
-    && sed -i '/nanohttp_stream/d' supportApp/xml2Src/Makefile \
     && make -j$(nproc)
 
 # ============================================================================
@@ -107,8 +105,7 @@ RUN git clone --branch ${ADCORE_VERSION} --depth 1 \
     && echo "WITH_JPEG=YES" >> configure/CONFIG_SITE.local \
     && echo "WITH_SZIP=YES" >> configure/CONFIG_SITE.local \
     && echo "WITH_ZLIB=YES" >> configure/CONFIG_SITE.local \
-    && echo "XML2_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
-    && echo "USR_INCLUDES += -I/usr/include/libxml2" >> configure/CONFIG_SITE.local \
+    && echo "WITH_XML2=NO" >> configure/CONFIG_SITE.local \
     && echo "HDF5_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "NETCDF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "SZIP_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
