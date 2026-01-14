@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libhdf5-dev \
     libnetcdf-dev \
     libsz2 \
+    libtirpc-dev \
     re2c \
     && rm -rf /var/lib/apt/lists/*
 
@@ -62,6 +63,7 @@ RUN git clone --branch ${ASYN_VERSION} --depth 1 \
     https://github.com/epics-modules/asyn.git \
     && cd asyn \
     && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && echo "TIRPC=YES" >> configure/CONFIG_SITE.local \
     && make -j$(nproc)
 
 # ============================================================================
@@ -70,23 +72,20 @@ RUN git clone --branch ${ASYN_VERSION} --depth 1 \
 RUN git clone --branch ${ADSUPPORT_VERSION} --depth 1 \
     https://github.com/areaDetector/ADSupport.git \
     && cd ADSupport \
-    && cat > configure/RELEASE.local << EOF
-EPICS_BASE=${EPICS_BASE}
-SUPPORT=${EPICS_ROOT}/support
-EOF
-    && cat > configure/CONFIG_SITE.local << EOF
-# Use system libraries where available
-WITH_BOOST=NO
-WITH_BLOSC=NO
-WITH_BITSHUFFLE=NO
-XML2_EXTERNAL=YES
-ZLIB_EXTERNAL=YES
-JPEG_EXTERNAL=YES
-TIFF_EXTERNAL=YES
-HDF5_EXTERNAL=YES
-SZIP_EXTERNAL=YES
-NETCDF_EXTERNAL=YES
-EOF
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "WITH_BOOST=NO" > configure/CONFIG_SITE.local \
+    && echo "WITH_BLOSC=NO" >> configure/CONFIG_SITE.local \
+    && echo "WITH_BITSHUFFLE=NO" >> configure/CONFIG_SITE.local \
+    && echo "XML2_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "USR_INCLUDES += -I/usr/include/libxml2" >> configure/CONFIG_SITE.local \
+    && echo "ZLIB_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "JPEG_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "HDF5_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "SZIP_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "NETCDF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && sed -i '/nanohttp_stream/d' supportApp/xml2Src/Makefile \
     && make -j$(nproc)
 
 # ============================================================================
@@ -95,31 +94,27 @@ EOF
 RUN git clone --branch ${ADCORE_VERSION} --depth 1 \
     https://github.com/areaDetector/ADCore.git \
     && cd ADCore \
-    && cat > configure/RELEASE.local << EOF
-EPICS_BASE=${EPICS_BASE}
-SUPPORT=${EPICS_ROOT}/support
-ASYN=${EPICS_ROOT}/support/asyn
-ADSUPPORT=${EPICS_ROOT}/support/ADSupport
-EOF
-    && cat > configure/CONFIG_SITE.local << EOF
-# Build options
-WITH_BOOST=NO
-WITH_GRAPHICSMAGICK=NO
-WITH_HDF5=YES
-WITH_NETCDF=YES
-WITH_NEXUS=NO
-WITH_TIFF=YES
-WITH_JPEG=YES
-WITH_SZIP=YES
-WITH_ZLIB=YES
-XML2_EXTERNAL=YES
-HDF5_EXTERNAL=YES
-NETCDF_EXTERNAL=YES
-SZIP_EXTERNAL=YES
-ZLIB_EXTERNAL=YES
-JPEG_EXTERNAL=YES
-TIFF_EXTERNAL=YES
-EOF
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
+    && echo "ADSUPPORT=${EPICS_ROOT}/support/ADSupport" >> configure/RELEASE.local \
+    && echo "WITH_BOOST=NO" > configure/CONFIG_SITE.local \
+    && echo "WITH_GRAPHICSMAGICK=NO" >> configure/CONFIG_SITE.local \
+    && echo "WITH_HDF5=YES" >> configure/CONFIG_SITE.local \
+    && echo "WITH_NETCDF=YES" >> configure/CONFIG_SITE.local \
+    && echo "WITH_NEXUS=NO" >> configure/CONFIG_SITE.local \
+    && echo "WITH_TIFF=YES" >> configure/CONFIG_SITE.local \
+    && echo "WITH_JPEG=YES" >> configure/CONFIG_SITE.local \
+    && echo "WITH_SZIP=YES" >> configure/CONFIG_SITE.local \
+    && echo "WITH_ZLIB=YES" >> configure/CONFIG_SITE.local \
+    && echo "XML2_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "USR_INCLUDES += -I/usr/include/libxml2" >> configure/CONFIG_SITE.local \
+    && echo "HDF5_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "NETCDF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "SZIP_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "ZLIB_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "JPEG_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
+    && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && make -j$(nproc)
 
 # ============================================================================
@@ -131,14 +126,12 @@ COPY . /build/kreios-ioc
 WORKDIR /build/kreios-ioc
 
 # Create RELEASE.local for Docker build
-RUN cat > configure/RELEASE.local << EOF
-EPICS_BASE=${EPICS_BASE}
-SUPPORT=${EPICS_ROOT}/support
-ASYN=${EPICS_ROOT}/support/asyn
-AREA_DETECTOR=${EPICS_ROOT}/support
-ADCORE=${EPICS_ROOT}/support/ADCore
-ADSUPPORT=${EPICS_ROOT}/support/ADSupport
-EOF
+RUN echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
+    && echo "AREA_DETECTOR=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "ADCORE=${EPICS_ROOT}/support/ADCore" >> configure/RELEASE.local \
+    && echo "ADSUPPORT=${EPICS_ROOT}/support/ADSupport" >> configure/RELEASE.local
 
 RUN make -j$(nproc)
 
