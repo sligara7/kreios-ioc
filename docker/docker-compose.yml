@@ -79,11 +79,16 @@ services:
       simulator:
         condition: service_healthy
     environment:
+      # Simulator configuration
       - SIMULATOR_HOST=simulator
       - SIMULATOR_PORT=7010
+      - USE_EXTERNAL_SIMULATOR=1
+      # EPICS configuration
       - EPICS_CA_ADDR_LIST=ioc
       - EPICS_CA_AUTO_ADDR_LIST=NO
       - EPICS_CA_MAX_ARRAY_BYTES=10000000
+      - EPICS_IOC_PREFIX=KREIOS:cam1:
+      - EPICS_IOC_AVAILABLE=1
     volumes:
       - ../tests:/app/tests:ro
       - test-results:/app/results

@@ -59,11 +59,12 @@ docker run -it --rm -p 7010:7010 kreios-simulator
 Full EPICS IOC with:
 - EPICS Base 7.0.8
 - asyn R4-44-2
-- areaDetector ADCore R3-12-1
+- areaDetector ADCore R3-14 (commit d27d71fb)
+- areaDetector ADSupport (commit 62b91c11)
 - KREIOS driver
 
 - **Base:** debian:bookworm-slim (multi-stage build)
-- **Size:** ~500 MB
+- **Size:** ~1.07 GB
 - **Ports:** 5064, 5065 (TCP/UDP for EPICS CA), 7010 (simulator)
 
 ```bash
@@ -140,14 +141,17 @@ To speed up repeated builds, Docker caches intermediate layers.
 |----------|---------|-------------|
 | `EPICS_BASE_VERSION` | R7.0.8 | EPICS base version tag |
 | `ASYN_VERSION` | R4-44-2 | asyn version tag |
-| `ADCORE_VERSION` | R3-12-1 | ADCore version tag |
-| `ADSUPPORT_VERSION` | R1-10 | ADSupport version tag |
+| `ADCORE_VERSION` | R3-14 | ADCore version (uses commit hash d27d71fb) |
+| `ADSUPPORT_VERSION` | R1-10 | ADSupport version (uses commit hash 62b91c11) |
+
+**Note:** ADCore and ADSupport use specific commit hashes from the areaDetector R3-14
+meta-repository rather than tags. See `docker/VERSION_NOTES.md` for details on version selection.
 
 Example with custom versions:
 ```bash
 docker build -t kreios-ioc \
   --build-arg EPICS_BASE_VERSION=R7.0.7 \
-  --build-arg ADCORE_VERSION=R3-11 \
+  --build-arg ADCORE_VERSION=R3-13 \
   -f docker/Dockerfile .
 ```
 

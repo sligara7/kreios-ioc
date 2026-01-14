@@ -24,10 +24,12 @@ epicsEnvSet("CBUFFS", "500")
 epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db:$(KREIOS)/db")
 
 #- Prodigy server connection parameters
+#- Reads from environment variables PRODIGY_HOST and PRODIGY_PORT
 #- Default: localhost:7010 (simulator)
-#- Production: <prodigy_server_ip>:7010
-epicsEnvSet("PRODIGY_HOST", "localhost")
-epicsEnvSet("PRODIGY_PORT", "7010")
+#- Production: Set PRODIGY_HOST=<prodigy_server_ip> in environment
+#- Docker: Set via docker-compose environment section
+epicsEnvSet("PRODIGY_HOST", "${PRODIGY_HOST=localhost}")
+epicsEnvSet("PRODIGY_PORT", "${PRODIGY_PORT=7010}")
 
 cd "${TOP}"
 
