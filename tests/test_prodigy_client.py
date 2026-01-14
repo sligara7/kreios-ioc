@@ -11,8 +11,13 @@ Note: These tests use the synchronous ProdigyTestClient from conftest.py
 to test protocol interactions with the simulator.
 """
 
+import os
+import sys
 import pytest
 import socket
+
+# Ensure conftest can be imported
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from conftest import ProdigyTestClient, parse_response
 
 

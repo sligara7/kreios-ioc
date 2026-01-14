@@ -868,8 +868,10 @@ class ProdigySimServer(socketserver.TCPServer):
 
 def main():
     """Main entry point"""
-    HOST = "localhost"
-    PORT = 7010
+    import os
+    # Use 0.0.0.0 by default to allow connections from Docker containers
+    HOST = os.environ.get("SIMULATOR_BIND_HOST", "0.0.0.0")
+    PORT = int(os.environ.get("SIMULATOR_PORT", "7010"))
     
     print("=" * 70)
     print("SpecsLab Prodigy Remote In Protocol Simulator")
