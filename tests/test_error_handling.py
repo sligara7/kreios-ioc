@@ -9,9 +9,13 @@ Tests verify proper handling of:
 - Timeout conditions
 """
 
+import os
 import pytest
 import socket
 import time
+
+# Check if using external simulator
+USE_EXTERNAL_SIMULATOR = os.environ.get("USE_EXTERNAL_SIMULATOR", "0") == "1"
 
 
 class TestConnectionErrors:
@@ -46,6 +50,7 @@ class TestConnectionErrors:
 
         client.disconnect()
 
+    @pytest.mark.skipif(USE_EXTERNAL_SIMULATOR, reason="Cannot control external simulator")
     def test_server_gone_during_command(self, simulator):
         """Test handling when server disconnects during operation."""
         client = ProdigyTestClientSync()
@@ -378,9 +383,10 @@ class TestRecoveryScenarios:
 class ProdigyTestClientSync:
     """Synchronous test client for error testing."""
 
-    def __init__(self, host="localhost", port=7010):
-        self.host = host
-        self.port = port
+    def __init__(self, host=None, port=None):
+        import os
+        self.host = host or os.environ.get("SIMULATOR_HOST", "localhost")
+        self.port = port or int(os.environ.get("SIMULATOR_PORT", "7010"))
         self.sock = None
         self.request_counter = 0
 

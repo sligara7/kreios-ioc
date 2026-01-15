@@ -9,15 +9,20 @@ Tests verify:
 - Spectrum mode implementations
 """
 
+import os
 import pytest
 import socket
 import time
 import threading
 
+# Check if using external simulator
+USE_EXTERNAL_SIMULATOR = os.environ.get("USE_EXTERNAL_SIMULATOR", "0") == "1"
+
 
 class TestSimulatorStartup:
     """Tests for simulator startup and basic operation."""
 
+    @pytest.mark.skipif(USE_EXTERNAL_SIMULATOR, reason="External simulator has no process")
     def test_simulator_starts(self, simulator):
         """Test that simulator starts successfully."""
         assert simulator.process is not None

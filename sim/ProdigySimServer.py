@@ -432,7 +432,7 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
     def cmd_define_spectrum_fe(self, req_id, params):
         """
         Define spectrum in Fixed Energies mode.
-        
+
         Params: Energies (array), TransmissionValues (array), DwellTime
         """
         try:
@@ -440,20 +440,30 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
             energies_str = params.get('Energies', '[]')
             if energies_str.startswith('[') and energies_str.endswith(']'):
                 self.fixed_energies = [float(x) for x in energies_str[1:-1].split(',') if x.strip()]
-            
+
             # Parse transmission array (optional)
             trans_str = params.get('TransmissionValues', '[]')
             if trans_str.startswith('[') and trans_str.endswith(']'):
                 self.fixed_transmission_values = [float(x) for x in trans_str[1:-1].split(',') if x.strip()]
-            
+
             self.dwell_time = float(params.get('DwellTime', 0.1))
             self.total_samples = len(self.fixed_energies)
-            
+
+            # Set energy range for data generation (use min/max of fixed energies)
+            if self.fixed_energies:
+                self.start_energy = min(self.fixed_energies)
+                self.end_energy = max(self.fixed_energies)
+                # Use average spacing as step width
+                if len(self.fixed_energies) > 1:
+                    self.step_width = (self.end_energy - self.start_energy) / (len(self.fixed_energies) - 1)
+                else:
+                    self.step_width = 1.0  # Single energy point
+
             self.spectrum_defined = True
             self.spectrum_validated = False
-            
+
             return f"!{req_id} OK"
-        
+
         except (ValueError, KeyError) as e:
             return f"!{req_id} Error: 201 Invalid spectrum parameters: {e}"
     
@@ -635,24 +645,33 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         """Start data acquisition"""
         if not self.spectrum_validated:
             return f"!{req_id} Error: 203 Spectrum not validated."
-        
+
         if self.acquisition_state == AcquisitionState.RUNNING:
             return f"!{req_id} Error: 204 Acquisition already running."
-        
+
+        # Wait for any previous acquisition thread to fully terminate
+        # This prevents race conditions when tests run in quick succession
+        if self.acquisition_thread is not None and self.acquisition_thread.is_alive():
+            print(f"[{datetime.now()}] Waiting for previous acquisition thread to terminate...")
+            self.acquisition_thread.join(timeout=5.0)
+            if self.acquisition_thread.is_alive():
+                print(f"[{datetime.now()}] ERROR: Previous thread still alive after 5s timeout")
+                return f"!{req_id} Error: 299 Previous acquisition still terminating, please retry."
+
         # Parse optional parameters
         set_safe_state = params.get('SetSafeStateAfter', 'false').lower() == 'true'
-        
+
         # Start acquisition in background thread
         self.acquisition_state = AcquisitionState.RUNNING
         self.acquisition_start_time = time.time()
         self.acquisition_progress = 0
         self.acquired_data = []
-        
+
         # Start simulation thread
         self.acquisition_thread = threading.Thread(target=self._simulate_acquisition)
         self.acquisition_thread.daemon = True
         self.acquisition_thread.start()
-        
+
         return f"!{req_id} OK"
     
     def cmd_pause(self, req_id):
@@ -773,70 +792,81 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         """
         Background thread that simulates data acquisition.
         Generates synthetic spectrum data based on defined parameters.
-        
+
         Data is stored as a flattened 1D array following Prodigy's format:
         - 1D: [intensity0, intensity1, ...]
         - 2D: [sample0_val0, sample0_val1, ..., sample1_val0, sample1_val1, ...]
         - 3D: [slice0_sample0_val0, slice0_sample0_val1, ..., slice1_sample0_val0, ...]
-        
+
         Client (IOC) must reshape based on ValuesPerSample and NumberOfSlices.
         """
-        print(f"[{datetime.now()}] Starting acquisition simulation...")
-        
-        total_points = self.total_samples * self.values_per_sample * self.num_slices
-        point_index = 0
-        
-        for slice_idx in range(self.num_slices):
-            for sample_idx in range(self.total_samples):
-                # Check if paused
-                while self.acquisition_state == AcquisitionState.PAUSED:
-                    time.sleep(0.1)
-                
-                # Check if aborted
-                if self.acquisition_state == AcquisitionState.ABORTED:
-                    print(f"[{datetime.now()}] Acquisition aborted at {point_index}/{total_points}")
-                    return
-                
-                # Calculate energy for this sample
-                energy = self.start_energy + sample_idx * self.step_width
-                center_energy = (self.start_energy + self.end_energy) / 2
-                sigma = (self.end_energy - self.start_energy) / 6
-                
-                # Generate multi-dimensional data for this energy step
-                for val_idx in range(self.values_per_sample):
-                    # For 2D/3D: add spatial/angular variation
-                    # Simulate detector pixel or slice variation
-                    spatial_offset = (val_idx - self.values_per_sample / 2) * 0.2
-                    slice_offset = (slice_idx - self.num_slices / 2) * 0.1
-                    
-                    # Gaussian peak with spatial/slice variations
-                    effective_energy = energy + spatial_offset + slice_offset
-                    intensity = 1000 * math.exp(-((effective_energy - center_energy) ** 2) / (2 * sigma ** 2))
-                    
-                    # Add realistic noise
-                    noise = intensity * 0.1 * (hash(str(time.time() + val_idx)) % 100 - 50) / 50
-                    intensity += noise
-                    intensity = max(0, intensity)  # No negative counts
-                    
-                    # Add to flattened data array
-                    self.acquired_data.append(intensity)
-                    point_index += 1
-                
-                # Update progress (in terms of energy samples, not individual values)
-                self.acquisition_progress = (slice_idx * self.total_samples) + sample_idx + 1
-                
-                # Simulate dwell time (per energy step, not per pixel)
-                time.sleep(self.dwell_time / 10)  # Speed up for simulation (10x faster)
-        
-        # Mark as finished
-        if self.acquisition_state == AcquisitionState.RUNNING:
-            self.acquisition_state = AcquisitionState.FINISHED
-            shape_info = f"{self.total_samples}"
-            if self.values_per_sample > 1:
-                shape_info += f"×{self.values_per_sample}"
-            if self.num_slices > 1:
-                shape_info += f"×{self.num_slices}"
-            print(f"[{datetime.now()}] Acquisition completed: {total_points} total points ({shape_info})")
+        try:
+            print(f"[{datetime.now()}] Starting acquisition simulation...")
+
+            total_points = self.total_samples * self.values_per_sample * self.num_slices
+            point_index = 0
+
+            for slice_idx in range(self.num_slices):
+                for sample_idx in range(self.total_samples):
+                    # Check if paused
+                    while self.acquisition_state == AcquisitionState.PAUSED:
+                        time.sleep(0.1)
+
+                    # Check if aborted
+                    if self.acquisition_state == AcquisitionState.ABORTED:
+                        print(f"[{datetime.now()}] Acquisition aborted at {point_index}/{total_points}")
+                        return
+
+                    # Calculate energy for this sample
+                    energy = self.start_energy + sample_idx * self.step_width
+                    center_energy = (self.start_energy + self.end_energy) / 2
+                    sigma = (self.end_energy - self.start_energy) / 6
+
+                    # Handle single-energy case (avoid division by zero)
+                    if sigma < 0.01:  # Effectively zero
+                        sigma = 1.0  # Use a default width
+
+                    # Generate multi-dimensional data for this energy step
+                    for val_idx in range(self.values_per_sample):
+                        # For 2D/3D: add spatial/angular variation
+                        # Simulate detector pixel or slice variation
+                        spatial_offset = (val_idx - self.values_per_sample / 2) * 0.2
+                        slice_offset = (slice_idx - self.num_slices / 2) * 0.1
+
+                        # Gaussian peak with spatial/slice variations
+                        effective_energy = energy + spatial_offset + slice_offset
+                        intensity = 1000 * math.exp(-((effective_energy - center_energy) ** 2) / (2 * sigma ** 2))
+
+                        # Add realistic noise
+                        noise = intensity * 0.1 * (hash(str(time.time() + val_idx)) % 100 - 50) / 50
+                        intensity += noise
+                        intensity = max(0, intensity)  # No negative counts
+
+                        # Add to flattened data array
+                        self.acquired_data.append(intensity)
+                        point_index += 1
+
+                    # Update progress (in terms of energy samples, not individual values)
+                    self.acquisition_progress = (slice_idx * self.total_samples) + sample_idx + 1
+
+                    # Simulate dwell time (per energy step, not per pixel)
+                    time.sleep(self.dwell_time / 10)  # Speed up for simulation (10x faster)
+
+            # Mark as finished
+            if self.acquisition_state == AcquisitionState.RUNNING:
+                self.acquisition_state = AcquisitionState.FINISHED
+                shape_info = f"{self.total_samples}"
+                if self.values_per_sample > 1:
+                    shape_info += f"×{self.values_per_sample}"
+                if self.num_slices > 1:
+                    shape_info += f"×{self.num_slices}"
+                print(f"[{datetime.now()}] Acquisition completed: {total_points} total points ({shape_info})")
+        except Exception as e:
+            print(f"[{datetime.now()}] ERROR in acquisition thread: {type(e).__name__}: {e}")
+            print(f"[{datetime.now()}] Acquisition failed at {point_index}/{total_points} points")
+            import traceback
+            traceback.print_exc()
+            self.acquisition_state = AcquisitionState.ABORTED
 
 
 class ProdigySimServer(socketserver.TCPServer):

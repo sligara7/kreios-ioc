@@ -230,6 +230,26 @@ def client(simulator):
     client = ProdigyTestClient()
     client.connect()
     yield client
+
+    # Cleanup: Ensure proper state reset between tests
+    try:
+        # Abort any running acquisition
+        client.send_command("Abort", timeout=1.0)
+    except Exception:
+        pass  # May fail if no acquisition running
+
+    try:
+        # Give acquisition thread time to fully terminate
+        time.sleep(0.2)
+    except Exception:
+        pass
+
+    try:
+        # Disconnect cleanly
+        client.send_command("Disconnect", timeout=1.0)
+    except Exception:
+        pass  # May fail if already disconnected
+
     client.disconnect()
 
 

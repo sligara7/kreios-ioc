@@ -409,7 +409,6 @@ class TestLargeDatasets:
         n_samples = 51  # 400-425 eV, step 0.5
         n_pixels = 50
 
-        client.connect()
         client.send_command("Connect")
         client.send_command("DefineSpectrumFAT", {
             "StartEnergy": 400.0,
