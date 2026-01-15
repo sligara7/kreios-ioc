@@ -1,8 +1,8 @@
-# KREIOS IOC: EPICS areaDetector for SPECS Phoibos 150
+# KREIOS IOC: EPICS areaDetector for SPECS KREIOS-150 MM
 
 ## The Big Picture
 
-This repository represents a complete end-to-end development of an EPICS Input/Output Controller (IOC) for the SPECS Phoibos 150 hemispherical analyzer used in X-ray photoelectron spectroscopy (XPS). Here's the development journey:
+This repository represents a complete end-to-end development of an EPICS Input/Output Controller (IOC) for the **SPECS KREIOS-150 MM** (Momentum Microscope) electron analyzer being deployed at the **ARI (Angle-Resolved Photoemission Spectroscopy and Resonant Inelastic X-ray Scattering Imaging) beamline** at NSLS-II beamline 29-ID-2, Brookhaven National Laboratory. The KREIOS-150 MM is a state-of-the-art ARPES detector with ∆k<0.1 Å⁻¹ and ∆E<5 meV resolution, capable of collecting full 180° emission with kinetic energies from 0-1500 eV. Here's the development journey:
 
 ### 1. Protocol Understanding (Documentation/)
 Started with the **SpecsLab Prodigy Remote In protocol documentation** (v1.22) to understand how to communicate with the Prodigy software that controls the KREIOS-150 detector. This TCP-based protocol defines commands for spectrum acquisition, parameter configuration, and data retrieval.
@@ -42,7 +42,7 @@ Developed a **pytest-based test suite** (96 tests, 100% pass rate) covering:
 
 ## Project Overview
 
-KREIOS-150 IOC (Input/Output Controller) for SPECS Phoibos 150 hemispherical analyzer. This EPICS-based system provides control and data acquisition for X-ray photoelectron spectroscopy (XPS) using the SpecsLab Prodigy Remote In protocol v1.22.
+KREIOS-150 IOC (Input/Output Controller) for the SPECS KREIOS-150 MM (Momentum Microscope) electron analyzer. This EPICS-based system provides control and data acquisition for Angle-Resolved Photoemission Spectroscopy (ARPES) at the ARI beamline (NSLS-II 29-ID-2, Brookhaven National Laboratory) using the SpecsLab Prodigy Remote In protocol v1.22. The IOC enables integration of this state-of-the-art detector into EPICS control systems for soft X-ray photoemission and scattering imaging experiments.
 
 ## Directory Structure
 
