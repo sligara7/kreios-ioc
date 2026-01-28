@@ -67,6 +67,19 @@ RUN git clone --branch ${ASYN_VERSION} --depth 1 \
     && make -j$(nproc)
 
 # ============================================================================
+# Build busy (synApps module - required by areaDetector)
+# ============================================================================
+RUN git clone --branch R1-7-4 --depth 1 \
+    https://github.com/epics-modules/busy.git \
+    && cd busy \
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "BUSY=${EPICS_ROOT}/support/busy" >> configure/RELEASE.local \
+    && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
+    && sed -i '/testBusyAsyn/d' busyApp/src/Makefile \
+    && make -j$(nproc)
+
+# ============================================================================
 # Build areaDetector ADSupport
 # ============================================================================
 # Note: ADSupport uses R1-x versioning, but we need the commit used by ADCore R3-14
@@ -117,6 +130,7 @@ RUN git clone https://github.com/areaDetector/ADCore.git \
     && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
     && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
     && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
+    && echo "BUSY=${EPICS_ROOT}/support/busy" >> configure/RELEASE.local \
     && echo "ADSUPPORT=${EPICS_ROOT}/support/ADSupport" >> configure/RELEASE.local \
     && echo "" >> configure/CONFIG_SITE \
     && echo "# Include local site configuration" >> configure/CONFIG_SITE \
@@ -152,6 +166,7 @@ RUN git clone https://github.com/areaDetector/ADCore.git \
     && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "TIFF_INCLUDE=/usr/include /usr/include/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "TIFF_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    && sed -i '/iocBoot/d' Makefile \
     && make -j$(nproc)
 
 # ============================================================================
@@ -166,6 +181,7 @@ WORKDIR /build/kreios-ioc
 RUN echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
     && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
     && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
+    && echo "BUSY=${EPICS_ROOT}/support/busy" >> configure/RELEASE.local \
     && echo "AREA_DETECTOR=${EPICS_ROOT}/support" >> configure/RELEASE.local \
     && echo "ADCORE=${EPICS_ROOT}/support/ADCore" >> configure/RELEASE.local \
     && echo "ADSUPPORT=${EPICS_ROOT}/support/ADSupport" >> configure/RELEASE.local
@@ -214,6 +230,10 @@ COPY --from=builder /build/kreios-ioc /opt/kreios-ioc
 COPY sim /opt/kreios-ioc/sim
 COPY scripts /opt/kreios-ioc/scripts
 
+# Fix paths in envPaths file (build paths -> runtime paths)
+RUN sed -i 's|/build/kreios-ioc|/opt/kreios-ioc|g' /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && echo 'epicsEnvSet("KREIOS","/opt/kreios-ioc")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths
+
 WORKDIR /opt/kreios-ioc
 
 # Expose EPICS CA ports
@@ -221,5 +241,5 @@ EXPOSE 5064/tcp 5064/udp 5065/tcp 5065/udp
 # Expose simulator port
 EXPOSE 7010/tcp
 
-# Default command: run the IOC
-CMD ["sh", "-c", "cd /opt/kreios-ioc/iocBoot/iocKreios && ../../bin/${EPICS_HOST_ARCH}/kreios st.cmd"]
+# Default command: run the IOC with stdin kept open to prevent exit
+CMD ["sh", "-c", "cd /opt/kreios-ioc/iocBoot/iocKreios && sleep infinity | ../../bin/${EPICS_HOST_ARCH}/kreios st.cmd"]

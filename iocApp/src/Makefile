@@ -17,6 +17,9 @@ kreios_DBD += base.dbd
 
 # Include dbd files from all support applications:
 kreios_DBD += asyn.dbd
+kreios_DBD += drvAsynIPPort.dbd
+kreios_DBD += drvAsynSerialPort.dbd
+kreios_DBD += busySupport.dbd
 kreios_DBD += ADSupport.dbd
 kreios_DBD += NDPluginSupport.dbd
 kreios_DBD += kreiosSupport.dbd
@@ -24,6 +27,7 @@ kreios_DBD += kreiosSupport.dbd
 # Add all the support libraries needed by this IOC
 kreios_LIBS += kreios
 kreios_LIBS += NDPlugin ADBase
+kreios_LIBS += busy
 kreios_LIBS += asyn
 kreios_LIBS += $(EPICS_BASE_IOC_LIBS)
 
