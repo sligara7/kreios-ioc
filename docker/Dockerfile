@@ -166,6 +166,9 @@ RUN git clone https://github.com/areaDetector/ADCore.git \
     && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "TIFF_INCLUDE=/usr/include /usr/include/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "TIFF_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
+    # Skip iocBoot - it contains example IOCs that require additional synApps modules
+    # (autosave, calc, sscan, etc.) that we don't need. We only need ADCore's libraries
+    # and templates for our KREIOS IOC.
     && sed -i '/iocBoot/d' Makefile \
     && make -j$(nproc)
 
