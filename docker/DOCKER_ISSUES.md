@@ -204,15 +204,82 @@ The IOC now includes:
 
 ---
 
-## Verified Working
+## Production Test Results
 
-After all fixes, the IOC starts successfully with PVs accessible:
+**Test Date**: 2026-01-28
+**Status**: All tests passed ✓
+
+### Test Summary
+
+| Category | Status | Details |
+|----------|--------|---------|
+| KREIOS Driver | ✓ Pass | Connected to simulator, all detector settings accessible |
+| Detector ID | ✓ Pass | SPECS GmbH KREIOS-150, FAT mode |
+| Analyzer Settings | ✓ Pass | Pass Energy: 10 eV, Kinetic Energy: 300 eV |
+| Image Plugins | ✓ Pass | 10 plugins loaded and operational |
+| File Plugins | ✓ Pass | TIFF, JPEG, HDF5, NetCDF available |
+| iocStats | ✓ Pass | Health monitoring active (7624 records) |
+| Autosave | ✓ Pass | Auto-rotating save files every 30 seconds |
+| Network Config | ✓ Pass | CA configured for production |
+
+### areaDetector Plugins Verified
 
 ```
-$ docker compose exec ioc caget KREIOS:cam1:Connected_RBV KREIOS:cam1:Manufacturer_RBV KREIOS:cam1:Model_RBV
+image1:  NDPluginStdArrays
+Stats1:  NDPluginStats
+ROI1:    NDPluginROI
+Trans1:  NDPluginTransform
+Proc1:   NDPluginProcess
+Over1:   NDPluginOverlay
+CC1:     NDPluginColorConvert
+CB1:     NDPluginCircularBuff
+Attr1:   NDPluginAttribute
+FFT1:    NDPluginFFT
+```
+
+### File Plugins Verified
+
+```
+TIFF1:    NDFileTIFF
+JPEG1:    NDFileJPEG
+HDF1:     NDFileHDF5 ver1.10.8
+netCDF1:  NDFileNetCDF
+```
+
+### iocStats Health Monitoring
+
+```
+KREIOS:ioc:HEARTBEAT      302
+KREIOS:ioc:STARTTOD       01/28/2026 16:28:47
+KREIOS:ioc:SYS_CPU_LOAD   1.90801%
+KREIOS:ioc:MEM_USED       6.7584e+07 bytes
+KREIOS:ioc:RECORD_CNT     7624
+KREIOS:ioc:UPTIME         00:05:02
+```
+
+### Autosave Verification
+
+```
+$ ls /opt/kreios-ioc/iocBoot/iocKreios/autosave/
+auto_settings.sav
+auto_settings.sav0
+auto_settings.sav1
+auto_settings.sav2
+auto_settings.savB
+```
+
+### Core KREIOS PVs
+
+```
 KREIOS:cam1:Connected_RBV      Connected
 KREIOS:cam1:Manufacturer_RBV   SPECS GmbH
 KREIOS:cam1:Model_RBV          KREIOS-150
+KREIOS:cam1:RunMode_RBV        FAT
+KREIOS:cam1:PassEnergy_RBV     10
+KREIOS:cam1:KineticEnergy_RBV  300
+KREIOS:cam1:AcquireTime        1
+KREIOS:cam1:NumImages          1
+KREIOS:cam1:ImageMode          Continuous
 ```
 
 ---
