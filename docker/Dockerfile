@@ -307,8 +307,9 @@ COPY scripts /opt/kreios-ioc/scripts
 
 # Fix paths in envPaths file (build paths -> runtime paths)
 # Also add all synApps module paths for commonPlugins.cmd
+# ADKREIOS follows areaDetector naming convention for nsls2.ioc_deploy compatibility
 RUN sed -i 's|/build/kreios-ioc|/opt/kreios-ioc|g' /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
-    && echo 'epicsEnvSet("KREIOS","/opt/kreios-ioc")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && echo 'epicsEnvSet("ADKREIOS","/opt/kreios-ioc")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
     && echo 'epicsEnvSet("SNCSEQ","/opt/epics/support/seq")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
     && echo 'epicsEnvSet("SSCAN","/opt/epics/support/sscan")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
     && echo 'epicsEnvSet("CALC","/opt/epics/support/calc")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \

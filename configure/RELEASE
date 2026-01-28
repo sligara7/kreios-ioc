@@ -5,8 +5,16 @@
 #
 # KREIOS-150 Momentum Microscope areaDetector Driver
 #
+# ADKREIOS follows areaDetector naming convention (ADSIMDETECTOR, ADPILATUS, etc.)
+# for compatibility with nsls2.ioc_deploy ansible deployment.
+#
 # Edit this file to point to your EPICS installation paths
 # or create a RELEASE.local file to override these settings.
+
+# ============================================================================
+# Self-reference for database path resolution
+# ============================================================================
+ADKREIOS = $(TOP)
 
 # ============================================================================
 # Required paths - must be set correctly for your installation

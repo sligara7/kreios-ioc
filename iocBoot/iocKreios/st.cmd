@@ -15,20 +15,20 @@ errlogInit(20000)
 
 #- Network configuration for Channel Access
 #- These settings prevent broadcast storms on large networks
-#- For Docker: uses localhost only
+#- For Docker: set EPICS_CAS_INTF_ADDR_LIST=0.0.0.0 via environment
 #- For production: adjust EPICS_CA_ADDR_LIST to include IOC subnet
-epicsEnvSet("EPICS_CA_AUTO_ADDR_LIST",          "NO")
-epicsEnvSet("EPICS_CA_ADDR_LIST",               "127.0.0.1")
-epicsEnvSet("EPICS_CAS_AUTO_BEACON_ADDR_LIST",  "NO")
-epicsEnvSet("EPICS_CAS_BEACON_ADDR_LIST",       "127.0.0.1")
-epicsEnvSet("EPICS_CAS_INTF_ADDR_LIST",         "127.0.0.1")
+epicsEnvSet("EPICS_CA_AUTO_ADDR_LIST",          "${EPICS_CA_AUTO_ADDR_LIST=NO}")
+epicsEnvSet("EPICS_CA_ADDR_LIST",               "${EPICS_CA_ADDR_LIST=127.0.0.1}")
+epicsEnvSet("EPICS_CAS_AUTO_BEACON_ADDR_LIST",  "${EPICS_CAS_AUTO_BEACON_ADDR_LIST=NO}")
+epicsEnvSet("EPICS_CAS_BEACON_ADDR_LIST",       "${EPICS_CAS_BEACON_ADDR_LIST=}")
+epicsEnvSet("EPICS_CAS_INTF_ADDR_LIST",         "${EPICS_CAS_INTF_ADDR_LIST=0.0.0.0}")
 
 #- PVAccess network configuration
-epicsEnvSet("EPICS_PVA_AUTO_ADDR_LIST",         "NO")
-epicsEnvSet("EPICS_PVA_ADDR_LIST",              "127.0.0.1")
-epicsEnvSet("EPICS_PVAS_AUTO_BEACON_ADDR_LIST", "NO")
-epicsEnvSet("EPICS_PVAS_BEACON_ADDR_LIST",      "127.0.0.1")
-epicsEnvSet("EPICS_PVAS_INTF_ADDR_LIST",        "127.0.0.1")
+epicsEnvSet("EPICS_PVA_AUTO_ADDR_LIST",         "${EPICS_PVA_AUTO_ADDR_LIST=NO}")
+epicsEnvSet("EPICS_PVA_ADDR_LIST",              "${EPICS_PVA_ADDR_LIST=127.0.0.1}")
+epicsEnvSet("EPICS_PVAS_AUTO_BEACON_ADDR_LIST", "${EPICS_PVAS_AUTO_BEACON_ADDR_LIST=NO}")
+epicsEnvSet("EPICS_PVAS_BEACON_ADDR_LIST",      "${EPICS_PVAS_BEACON_ADDR_LIST=}")
+epicsEnvSet("EPICS_PVAS_INTF_ADDR_LIST",        "${EPICS_PVAS_INTF_ADDR_LIST=0.0.0.0}")
 
 < envPaths
 
@@ -46,7 +46,7 @@ epicsEnvSet("YSIZE", "730")
 epicsEnvSet("NCHANS", "100000")
 epicsEnvSet("CBUFFS", "500")
 epicsEnvSet("MAX_THREADS", "5")
-epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db:$(KREIOS)/db")
+epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db:$(ADKREIOS)/db")
 
 #- Prodigy server connection parameters
 #- Reads from environment variables PRODIGY_HOST and PRODIGY_PORT
@@ -75,7 +75,7 @@ kreiosConfig("$(PORT)", "PRODIGY", 0, 0, 0, 0)
 epicsThreadSleep(2)
 
 #- Load KREIOS database
-dbLoadRecords("$(KREIOS)/db/kreios.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+dbLoadRecords("$(ADKREIOS)/db/kreios.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
 
 #- ===========================================================================
 #- Standard areaDetector plugins
@@ -99,13 +99,13 @@ dbLoadRecords("$(DEVIOCSTATS)/db/iocAdminSoft.db", "IOC=$(PREFIX)ioc")
 #- Autosave configuration
 #- ===========================================================================
 #- Set paths for autosave request files and save files
-set_requestfile_path("$(KREIOS)/iocBoot/$(IOC)")
+set_requestfile_path("$(ADKREIOS)/iocBoot/$(IOC)")
 set_requestfile_path("$(ADCORE)/iocBoot")
 set_requestfile_path("$(ADCORE)/ADApp/Db")
 set_requestfile_path("$(CALC)/calcApp/Db")
 set_requestfile_path("$(SSCAN)/sscanApp/Db")
 
-set_savefile_path("$(KREIOS)/iocBoot/$(IOC)/autosave")
+set_savefile_path("$(ADKREIOS)/iocBoot/$(IOC)/autosave")
 
 #- Note: autosave directory is created by Dockerfile
 #- For non-Docker deployments, create manually: mkdir -p iocBoot/iocKreios/autosave
