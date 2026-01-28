@@ -1,5 +1,4 @@
-#!/bin/bash
-#!../../bin/linux-x86_64/kreiosIOC
+#!../../bin/linux-x86_64/kreios
 
 #- KREIOS-150 Momentum Microscope IOC Startup Script
 #-
@@ -34,8 +33,8 @@ epicsEnvSet("PRODIGY_PORT", "${PRODIGY_PORT=7010}")
 cd "${TOP}"
 
 #- Register all support components
-dbLoadDatabase "dbd/kreiosIOC.dbd"
-kreiosIOC_registerRecordDeviceDriver pdbbase
+dbLoadDatabase "dbd/kreios.dbd"
+kreios_registerRecordDeviceDriver pdbbase
 
 #- Create asyn port for Prodigy communication
 drvAsynIPPortConfigure("PRODIGY", "$(PRODIGY_HOST):$(PRODIGY_PORT)", 0, 0, 0)

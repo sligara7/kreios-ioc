@@ -20,6 +20,7 @@ define DIR_template
 endef
 $(foreach dir, $(filter-out configure,$(DIRS)),$(eval $(call DIR_template,$(dir))))
 
-iocBoot_DEPEND_DIRS += kreiosApp
+iocApp_DEPEND_DIRS += kreiosApp
+iocBoot_DEPEND_DIRS += $(filter-out iocBoot,$(DIRS))
 
 include $(TOP)/configure/RULES_TOP

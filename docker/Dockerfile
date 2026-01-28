@@ -201,6 +201,9 @@ ENV EPICS_CA_ADDR_LIST=localhost
 ENV EPICS_CA_AUTO_ADDR_LIST=NO
 ENV EPICS_CA_MAX_ARRAY_BYTES=10000000
 
+# Add KREIOS library path
+ENV LD_LIBRARY_PATH=/opt/kreios-ioc/lib/linux-x86_64:${LD_LIBRARY_PATH}
+
 # Copy built EPICS installation
 COPY --from=builder ${EPICS_ROOT} ${EPICS_ROOT}
 
