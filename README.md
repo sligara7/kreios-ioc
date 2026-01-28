@@ -131,6 +131,93 @@ python3 scripts/test_connection.py localhost 7010
 
 ---
 
+## Ansible Deployment (NSLS-II Production)
+
+The KREIOS IOC is designed for deployment at NSLS-II beamlines using the `nsls2.ioc_deploy` Ansible collection. This provides automated, reproducible deployments with proper system integration.
+
+### Prerequisites
+
+- Access to `nsls2.ioc_deploy` Ansible collection
+- Access to `ioc_host_vars` configuration repository
+- Target host with `epics-bundle` package installed
+
+### Module Naming Convention
+
+The IOC uses the `ADKREIOS` environment variable for module paths, following areaDetector naming conventions (like `ADSIMDETECTOR`, `ADPILATUS`, etc.). This ensures compatibility with the ansible deployment system.
+
+### Deployment Files
+
+The following files have been added to support ansible deployment:
+
+**nsls2.ioc_deploy repository:**
+
+| File | Purpose |
+|------|---------|
+| `roles/install_module/vars/adkreios_1274906.yml` | Module build configuration |
+| `roles/device_roles/adkreios/schema.yml` | Environment variable validation |
+| `roles/device_roles/adkreios/tasks/main.yml` | Deployment tasks |
+| `roles/device_roles/adkreios/templates/base.cmd.j2` | Startup script template |
+| `roles/device_roles/adkreios/templates/auto_settings.req.j2` | Autosave configuration |
+| `roles/deploy_ioc/vars/adkreios.yml` | Device defaults |
+
+### IOC Configuration
+
+Create an IOC configuration file in `ioc_host_vars`:
+
+```yaml
+# Example: xf/ari/xf29id-ioc1.nsls2.bnl.local/kreios-det1.yml
+---
+kreios-det1:
+  type: "adkreios"
+  environment:
+    PREFIX: "XF:29ID2-ES{Det:Kreios}:"
+    ENGINEER: "Your Name"
+    PRODIGY_HOST: "xf29id-kreios.nsls2.bnl.local"
+    PRODIGY_PORT: 7010
+    XSIZE: 1285
+    YSIZE: 730
+```
+
+### Configuration Options
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `PREFIX` | Yes | - | EPICS PV prefix (e.g., `XF:29ID2-ES{Det:Kreios}:`) |
+| `PRODIGY_HOST` | Yes | - | Hostname/IP of Prodigy server |
+| `PRODIGY_PORT` | No | 7010 | Prodigy server TCP port |
+| `XSIZE` | No | 1285 | Detector X dimension (pixels) |
+| `YSIZE` | No | 730 | Detector Y dimension (pixels) |
+| `ENGINEER` | No | - | Responsible engineer name |
+
+### Running the Deployment
+
+```bash
+# Deploy KREIOS IOC to target host
+ansible-playbook -i inventory deploy.yml \
+  --limit xf29id-ioc1.nsls2.bnl.local \
+  -e "ioc_name=kreios-det1"
+```
+
+### Included areaDetector Plugins
+
+The deployed IOC includes:
+
+- **Standard Plugins**: NDStdArrays, Stats (x5), ROI (x4), Transform, Overlay, Process
+- **File Plugins**: HDF5, TIFF, JPEG, NetCDF
+- **Monitoring**: devIocStats for IOC health monitoring
+- **Persistence**: Autosave for PV value restoration
+
+### Development vs Production
+
+| Environment | Prodigy Connection | Notes |
+|-------------|-------------------|-------|
+| Docker (dev) | `simulator:7010` | Uses ProdigySimServer for testing |
+| Production | `<prodigy_host>:7010` | Connects to real SpecsLab Prodigy |
+
+For local development with Docker, see the [Docker section](#containerization-docker) above.
+
+---
+
 ## Recent Development Work: Test Suite Stabilization (January 2026)
 
 ### Summary
