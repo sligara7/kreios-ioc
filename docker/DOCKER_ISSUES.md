@@ -167,8 +167,40 @@ cat envPaths  # Verify paths
 | File | Change |
 |------|--------|
 | `docker/docker-compose.yml` | Removed obsolete `version: "3.8"` |
-| `docker/Dockerfile` | Added busy module, envPaths fix, CMD modification, ADCore iocBoot skip |
-| `iocApp/src/Makefile` | Added `drvAsynIPPort.dbd`, `drvAsynSerialPort.dbd`, `busySupport.dbd`, and `busy` library |
+| `docker/Dockerfile` | Added full synApps module stack, envPaths fix, autosave directory |
+| `iocApp/src/Makefile` | Added all synApps DBDs and libraries for production IOC |
+| `iocBoot/iocKreios/st.cmd` | Production startup with commonPlugins, autosave, iocStats |
+| `iocBoot/iocKreios/auto_settings.req` | Autosave request file |
+| `iocBoot/iocKreios/kreios_settings.req` | KREIOS-specific autosave settings |
+| `configure/RELEASE` | Updated with all required module paths |
+
+---
+
+## Production synApps Modules
+
+The following synApps modules are now built into the Docker image:
+
+| Module | Version | Purpose |
+|--------|---------|---------|
+| asyn | R4-44-2 | Communication layer |
+| seq | R2-2-9 | State notation compiler/sequencer |
+| sscan | R2-11-6 | Scan support |
+| calc | R3-7-5 | Calculation records |
+| autosave | R5-11 | PV value persistence |
+| iocStats | 3.2.0 | IOC health monitoring |
+| busy | R1-7-4 | Busy record support |
+
+---
+
+## Production Features
+
+The IOC now includes:
+
+1. **Autosave** - PV settings are saved every 30 seconds and restored on IOC restart
+2. **iocStats** - IOC health monitoring PVs (CPU, memory, heartbeat)
+3. **NDStdArrays** - Image plugin for live display in Phoebus/CSS
+4. **commonPlugins** - Standard areaDetector plugin chain (Stats, ROI, Process, etc.)
+5. **Network Configuration** - Proper EPICS CA/PVA settings for production networks
 
 ---
 

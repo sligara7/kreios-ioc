@@ -1,0 +1,12 @@
+# Autosave request file for KREIOS-150 IOC
+# This file defines which PV values should be saved and restored
+# between IOC restarts.
+
+# KREIOS detector settings
+file kreios_settings.req P=$(P), R=cam1:
+
+# Standard areaDetector plugin settings
+file NDStdArrays_settings.req   P=$(P), R=image1:
+
+# Include commonPlugin_settings if using commonPlugins.cmd
+file commonPlugin_settings.req  P=$(P)

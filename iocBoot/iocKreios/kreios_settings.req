@@ -1,0 +1,30 @@
+# KREIOS detector autosave settings
+# These PVs will be saved and restored between IOC restarts
+
+# Acquisition settings
+$(P)$(R)AcquireTime
+$(P)$(R)NumImages
+$(P)$(R)ImageMode
+
+# Analyzer settings
+$(P)$(R)PassEnergy
+$(P)$(R)KineticEnergy
+$(P)$(R)EnergyWidth
+$(P)$(R)StepWidth
+$(P)$(R)Samples
+
+# Run mode
+$(P)$(R)RunMode
+
+# Deflector settings
+$(P)$(R)DeflX
+$(P)$(R)DeflY
+
+# Entrance slit
+$(P)$(R)EntranceSlit
+
+# Detector region
+$(P)$(R)DetectorFirstX
+$(P)$(R)DetectorLastX
+$(P)$(R)DetectorFirstY
+$(P)$(R)DetectorLastY

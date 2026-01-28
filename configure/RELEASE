@@ -6,26 +6,60 @@
 # KREIOS-150 Momentum Microscope areaDetector Driver
 #
 # Edit this file to point to your EPICS installation paths
+# or create a RELEASE.local file to override these settings.
+
+# ============================================================================
+# Required paths - must be set correctly for your installation
+# ============================================================================
 
 # EPICS_BASE - Path to your EPICS base installation
 # Example: /opt/epics/base or /usr/local/epics/base-7.0.8
 EPICS_BASE = /path/to/epics/base
 
-# SUPPORT - Path to synApps support directory (optional)
-# Contains asyn, calc, etc.
+# SUPPORT - Path to synApps support directory
+# Contains asyn, calc, sscan, autosave, etc.
 SUPPORT = /path/to/epics/support
 
-# ASYN - Path to asyn driver
+# ============================================================================
+# synApps modules (required for production IOC)
+# ============================================================================
+
+# ASYN - Communication layer
 ASYN = $(SUPPORT)/asyn
 
-# AREA_DETECTOR - Path to areaDetector
+# SNCSEQ - State notation compiler/sequencer
+SNCSEQ = $(SUPPORT)/seq
+
+# SSCAN - Scan support
+SSCAN = $(SUPPORT)/sscan
+
+# CALC - Calculation records
+CALC = $(SUPPORT)/calc
+
+# AUTOSAVE - PV value persistence
+AUTOSAVE = $(SUPPORT)/autosave
+
+# DEVIOCSTATS - IOC health monitoring
+DEVIOCSTATS = $(SUPPORT)/iocStats
+
+# BUSY - Busy record support
+BUSY = $(SUPPORT)/busy
+
+# ============================================================================
+# areaDetector modules
+# ============================================================================
+
+# AREA_DETECTOR - Path to areaDetector top level
 AREA_DETECTOR = /path/to/areaDetector
 
-# ADCORE - Path to ADCore (part of areaDetector)
+# ADCORE - Core areaDetector libraries and plugins
 ADCORE = $(AREA_DETECTOR)/ADCore
 
-# ADSUPPORT - Path to ADSupport (part of areaDetector)
+# ADSUPPORT - Third-party support libraries for areaDetector
 ADSUPPORT = $(AREA_DETECTOR)/ADSupport
 
+# ============================================================================
 # Include local release definitions if present
+# Create RELEASE.local to override any paths above
+# ============================================================================
 -include $(TOP)/configure/RELEASE.local

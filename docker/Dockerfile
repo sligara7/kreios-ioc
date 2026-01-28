@@ -55,15 +55,69 @@ RUN git clone --branch ${EPICS_BASE_VERSION} --depth 1 \
     && make -j$(nproc)
 
 # ============================================================================
-# Build asyn
+# Build synApps modules required for production areaDetector IOC
+# Build order follows dependencies: seq -> sscan -> calc, then independent modules
 # ============================================================================
 WORKDIR ${EPICS_ROOT}/support
 
+# ============================================================================
+# Build asyn
+# ============================================================================
 RUN git clone --branch ${ASYN_VERSION} --depth 1 \
     https://github.com/epics-modules/asyn.git \
     && cd asyn \
     && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
     && echo "TIRPC=YES" >> configure/CONFIG_SITE.local \
+    && make -j$(nproc)
+
+# ============================================================================
+# Build sequencer (SNCSEQ) - state notation compiler
+# ============================================================================
+RUN git clone --branch R2-2-9 --depth 1 \
+    https://github.com/epics-modules/sequencer.git seq \
+    && cd seq \
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && make -j$(nproc)
+
+# ============================================================================
+# Build sscan - scan support
+# ============================================================================
+RUN git clone --branch R2-11-6 --depth 1 \
+    https://github.com/epics-modules/sscan.git \
+    && cd sscan \
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "SNCSEQ=${EPICS_ROOT}/support/seq" >> configure/RELEASE.local \
+    && make -j$(nproc)
+
+# ============================================================================
+# Build calc - calculation records
+# ============================================================================
+RUN git clone --branch R3-7-5 --depth 1 \
+    https://github.com/epics-modules/calc.git \
+    && cd calc \
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
+    && echo "SSCAN=${EPICS_ROOT}/support/sscan" >> configure/RELEASE.local \
+    && echo "SNCSEQ=${EPICS_ROOT}/support/seq" >> configure/RELEASE.local \
+    && make -j$(nproc)
+
+# ============================================================================
+# Build autosave - PV value persistence between IOC restarts
+# ============================================================================
+RUN git clone --branch R5-11 --depth 1 \
+    https://github.com/epics-modules/autosave.git \
+    && cd autosave \
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
+    && make -j$(nproc)
+
+# ============================================================================
+# Build iocStats (devIocStats) - IOC health monitoring
+# ============================================================================
+RUN git clone --branch 3.2.0 --depth 1 \
+    https://github.com/epics-modules/iocStats.git \
+    && cd iocStats \
+    && echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
     && make -j$(nproc)
 
 # ============================================================================
@@ -131,6 +185,11 @@ RUN git clone https://github.com/areaDetector/ADCore.git \
     && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
     && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
     && echo "BUSY=${EPICS_ROOT}/support/busy" >> configure/RELEASE.local \
+    && echo "CALC=${EPICS_ROOT}/support/calc" >> configure/RELEASE.local \
+    && echo "SSCAN=${EPICS_ROOT}/support/sscan" >> configure/RELEASE.local \
+    && echo "SNCSEQ=${EPICS_ROOT}/support/seq" >> configure/RELEASE.local \
+    && echo "AUTOSAVE=${EPICS_ROOT}/support/autosave" >> configure/RELEASE.local \
+    && echo "DEVIOCSTATS=${EPICS_ROOT}/support/iocStats" >> configure/RELEASE.local \
     && echo "ADSUPPORT=${EPICS_ROOT}/support/ADSupport" >> configure/RELEASE.local \
     && echo "" >> configure/CONFIG_SITE \
     && echo "# Include local site configuration" >> configure/CONFIG_SITE \
@@ -166,11 +225,19 @@ RUN git clone https://github.com/areaDetector/ADCore.git \
     && echo "TIFF_EXTERNAL=YES" >> configure/CONFIG_SITE.local \
     && echo "TIFF_INCLUDE=/usr/include /usr/include/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
     && echo "TIFF_LIB=/usr/lib/x86_64-linux-gnu" >> configure/CONFIG_SITE.local \
-    # Skip iocBoot - it contains example IOCs that require additional synApps modules
-    # (autosave, calc, sscan, etc.) that we don't need. We only need ADCore's libraries
-    # and templates for our KREIOS IOC.
+    # Skip building iocBoot example IOCs - we only need ADCore's libraries and templates
     && sed -i '/iocBoot/d' Makefile \
-    && make -j$(nproc)
+    # ADCore make may return non-zero even when libraries build successfully
+    # due to parallel job issues, so we verify essential libraries exist
+    && (make -j$(nproc) || true) \
+    && test -f lib/linux-x86_64/libADBase.so \
+    && test -f lib/linux-x86_64/libNDPlugin.so
+
+# Copy the EXAMPLE commonPlugins files to their final names (required for commonPlugins.cmd)
+# These files are in the source, not built, so we copy them after the build
+RUN cd ${EPICS_ROOT}/support/ADCore/iocBoot \
+    && cp EXAMPLE_commonPlugins.cmd commonPlugins.cmd \
+    && cp EXAMPLE_commonPlugin_settings.req commonPlugin_settings.req
 
 # ============================================================================
 # Build KREIOS Driver
@@ -180,10 +247,15 @@ COPY . /build/kreios-ioc
 
 WORKDIR /build/kreios-ioc
 
-# Create RELEASE.local for Docker build
+# Create RELEASE.local for Docker build with all synApps modules
 RUN echo "EPICS_BASE=${EPICS_BASE}" > configure/RELEASE.local \
     && echo "SUPPORT=${EPICS_ROOT}/support" >> configure/RELEASE.local \
     && echo "ASYN=${EPICS_ROOT}/support/asyn" >> configure/RELEASE.local \
+    && echo "SNCSEQ=${EPICS_ROOT}/support/seq" >> configure/RELEASE.local \
+    && echo "SSCAN=${EPICS_ROOT}/support/sscan" >> configure/RELEASE.local \
+    && echo "CALC=${EPICS_ROOT}/support/calc" >> configure/RELEASE.local \
+    && echo "AUTOSAVE=${EPICS_ROOT}/support/autosave" >> configure/RELEASE.local \
+    && echo "DEVIOCSTATS=${EPICS_ROOT}/support/iocStats" >> configure/RELEASE.local \
     && echo "BUSY=${EPICS_ROOT}/support/busy" >> configure/RELEASE.local \
     && echo "AREA_DETECTOR=${EPICS_ROOT}/support" >> configure/RELEASE.local \
     && echo "ADCORE=${EPICS_ROOT}/support/ADCore" >> configure/RELEASE.local \
@@ -234,8 +306,15 @@ COPY sim /opt/kreios-ioc/sim
 COPY scripts /opt/kreios-ioc/scripts
 
 # Fix paths in envPaths file (build paths -> runtime paths)
+# Also add all synApps module paths for commonPlugins.cmd
 RUN sed -i 's|/build/kreios-ioc|/opt/kreios-ioc|g' /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
-    && echo 'epicsEnvSet("KREIOS","/opt/kreios-ioc")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths
+    && echo 'epicsEnvSet("KREIOS","/opt/kreios-ioc")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && echo 'epicsEnvSet("SNCSEQ","/opt/epics/support/seq")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && echo 'epicsEnvSet("SSCAN","/opt/epics/support/sscan")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && echo 'epicsEnvSet("CALC","/opt/epics/support/calc")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && echo 'epicsEnvSet("AUTOSAVE","/opt/epics/support/autosave")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && echo 'epicsEnvSet("DEVIOCSTATS","/opt/epics/support/iocStats")' >> /opt/kreios-ioc/iocBoot/iocKreios/envPaths \
+    && mkdir -p /opt/kreios-ioc/iocBoot/iocKreios/autosave
 
 WORKDIR /opt/kreios-ioc
 
