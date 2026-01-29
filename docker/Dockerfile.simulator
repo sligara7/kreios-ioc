@@ -20,6 +20,9 @@ WORKDIR /app/sim
 # Expose simulator port
 EXPOSE 7010
 
+# Disable Python output buffering for real-time logs
+ENV PYTHONUNBUFFERED=1
+
 # Health check
 HEALTHCHECK --interval=5s --timeout=3s --retries=3 \
     CMD python3 -c "import socket; s=socket.socket(); s.connect(('localhost', 7010)); s.close()" || exit 1

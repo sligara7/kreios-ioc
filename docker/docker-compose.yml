@@ -43,6 +43,9 @@ services:
   # ============================================================================
   # KREIOS EPICS IOC
   # ============================================================================
+  # Uses host networking for proper EPICS Channel Access functionality.
+  # This allows CA clients on the host to discover and connect to PVs.
+  # The IOC connects to the simulator via localhost:7010 (exposed by simulator service).
   ioc:
     build:
       context: ..
@@ -50,19 +53,18 @@ services:
     depends_on:
       simulator:
         condition: service_healthy
-    ports:
-      - "5064:5064/tcp"
-      - "5064:5064/udp"
-      - "5065:5065/tcp"
-      - "5065:5065/udp"
+    network_mode: host
     environment:
-      - EPICS_CA_ADDR_LIST=
-      - EPICS_CA_AUTO_ADDR_LIST=YES
+      # CA client settings - use localhost since we're on host network
+      - EPICS_CA_ADDR_LIST=localhost
+      - EPICS_CA_AUTO_ADDR_LIST=NO
       - EPICS_CA_MAX_ARRAY_BYTES=10000000
-      - PRODIGY_HOST=simulator
+      # CA server settings - listen on all interfaces
+      - EPICS_CAS_INTF_ADDR_LIST=0.0.0.0
+      - EPICS_CAS_AUTO_BEACON_ADDR_LIST=YES
+      # Prodigy simulator connection via localhost (simulator exposes 7010 to host)
+      - PRODIGY_HOST=localhost
       - PRODIGY_PORT=7010
-    networks:
-      - kreios-net
     profiles:
       - full
 

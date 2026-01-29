@@ -150,42 +150,156 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
     def parse_command(self, command_line):
         """
         Parse incoming command and generate response.
-        
-        Command format: ?<id> Command [Params]
-        Response format: !<id> OK[:OutParams] or !<id> Error:<code> <message>
+
+        Supports two formats:
+        1. Full protocol: ?<id> Command [Params]
+           Response: !<id> OK[:OutParams] or !<id> Error:<code> <message>
+
+        2. Simple format (asynDriver compatible): Command[:Param=Value:...]
+           Response: OK:Key=Value:... or ERROR:Code=X:Message=Y
         """
         if not command_line:
             return None
-        
-        # Check for proper request format (starts with ?)
-        if command_line[0] != '?':
-            if not self.client_connected:
-                return "!FFFF Error: 4 Unknown message format."
-            return None
-        
+
+        # Check if this is the full protocol format (starts with ?)
+        if command_line[0] == '?':
+            return self._parse_full_protocol(command_line)
+        else:
+            # Simple format used by EPICS asynDriver
+            return self._parse_simple_format(command_line)
+
+    def _parse_full_protocol(self, command_line):
+        """Parse full protocol format: ?<id> Command [Params]"""
         # Extract request ID (4 hex digits)
         if len(command_line) < 5:
             return "!FFFF Error: 4 Unknown message format."
-        
+
         req_id = command_line[1:5]
-        
+
         # Extract command and parameters
         if len(command_line) < 7:
             return f"!{req_id} Error: 4 Unknown message format."
-        
+
         command_part = command_line[6:]  # Skip "?<id> "
-        
+
         # Parse command name and parameters
         tokens = command_part.split()
         if not tokens:
             return f"!{req_id} Error: 4 Unknown message format."
-        
+
         command_name = tokens[0]
         params = self.parse_parameters(tokens[1:]) if len(tokens) > 1 else {}
-        
+
         # Route to appropriate handler
         return self.execute_command(req_id, command_name, params)
-    
+
+    def _parse_simple_format(self, command_line):
+        """
+        Parse simple format used by EPICS asynDriver: Command[:Param=Value:...]
+        Response format: OK:Key=Value:... or ERROR:Code=X:Message=Y
+        """
+        # Auto-connect on first command in simple mode
+        if not self.client_connected:
+            self.client_connected = True
+            print(f"[{datetime.now()}] Auto-connected (simple protocol mode)")
+
+        # Split command and parameters on colon
+        parts = command_line.split(':')
+        command_name = parts[0]
+
+        # Parse parameters (Name=Value format)
+        params = {}
+        for part in parts[1:]:
+            if '=' in part:
+                key, value = part.split('=', 1)
+                # Remove quotes if present
+                if value.startswith('"') and value.endswith('"'):
+                    value = value[1:-1]
+                params[key] = value
+
+        # Execute command and convert response to simple format
+        full_response = self.execute_command("0000", command_name, params)
+
+        if full_response is None:
+            return None
+
+        # Convert from full format (!<id> OK: ...) to simple format (OK:...)
+        # Full format: "!0000 OK: Key:Value Key2:Value2"
+        # Simple format: "OK:Key=Value:Key2=Value2"
+        return self._convert_to_simple_response(full_response)
+
+    def _convert_to_simple_response(self, full_response):
+        """
+        Convert full protocol response to simple format.
+
+        Full format: "!0000 OK: Key:Value Key2:Value2" or "!0000 Error: N message"
+        Simple format: "OK:Key=Value:Key2=Value2" or "ERROR:Code=N:Message=..."
+        """
+        if full_response is None:
+            return None
+
+        # Remove the !<id> prefix (first 6 characters: "!XXXX ")
+        if full_response.startswith('!') and len(full_response) > 6:
+            response_body = full_response[6:]
+        else:
+            response_body = full_response
+
+        # Check for error response
+        if response_body.startswith("Error:"):
+            # Parse error: "Error: N message"
+            error_part = response_body[7:].strip()  # Skip "Error: "
+            parts = error_part.split(' ', 1)
+            code = parts[0] if parts else "0"
+            message = parts[1] if len(parts) > 1 else "Unknown error"
+            return f"ERROR:Code={code}:Message={message}"
+
+        # Handle OK response
+        if response_body.startswith("OK"):
+            # Check if there are parameters after "OK:"
+            if response_body.startswith("OK:"):
+                params_str = response_body[4:].strip()  # Skip "OK: "
+            elif response_body.startswith("OK "):
+                params_str = response_body[3:].strip()  # Skip "OK "
+            else:
+                return "OK"
+
+            if not params_str:
+                return "OK"
+
+            # Convert Key:Value Key2:Value2 to Key=Value:Key2=Value2
+            # Handle quoted values properly
+            result_parts = ["OK"]
+            tokens = []
+            current_token = ""
+            in_quotes = False
+
+            for char in params_str:
+                if char == '"':
+                    in_quotes = not in_quotes
+                    current_token += char
+                elif char == ' ' and not in_quotes:
+                    if current_token:
+                        tokens.append(current_token)
+                        current_token = ""
+                else:
+                    current_token += char
+
+            if current_token:
+                tokens.append(current_token)
+
+            for token in tokens:
+                if ':' in token:
+                    key, value = token.split(':', 1)
+                    # Remove quotes from value if present
+                    if value.startswith('"') and value.endswith('"'):
+                        value = value[1:-1]
+                    result_parts.append(f"{key}={value}")
+
+            return ':'.join(result_parts)
+
+        # Unknown format, return as-is
+        return response_body
+
     def parse_parameters(self, param_tokens):
         """
         Parse key:value parameters from command tokens.
@@ -290,7 +404,9 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
             return self.cmd_get_parameter_value(req_id, params)
         elif command == "SetAnalyzerParameterValue":
             return self.cmd_set_parameter_value(req_id, params)
-        
+        elif command == "GetSpectrumParameterInfo":
+            return self.cmd_get_spectrum_parameter_info(req_id, params)
+
         else:
             return f"!{req_id} Error: 101 Unknown command: {command}"
     
@@ -748,29 +864,78 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
     
     def cmd_get_parameter_info(self, req_id, params):
         """Get information about a specific parameter per protocol spec"""
-        param_name = params.get('ParameterName', '')
-        
+        # Accept both 'ParameterName' (full protocol) and 'Name' (simple protocol)
+        param_name = params.get('ParameterName', params.get('Name', ''))
+
         if param_name not in self.device_parameters:
             return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
-        
+
         param_info = self.device_parameters[param_name]
         value_type = param_info.get('type', 'double')
-        
+
         # Protocol requires: Type, ValueType, Unit, [Min, Max, Values]
         response = f'!{req_id} OK: Type:LogicalVoltage ValueType:{value_type} Unit:"V"'
-        
+
+        return response
+
+    def cmd_get_spectrum_parameter_info(self, req_id, params):
+        """Get information about spectrum parameters (LensMode, ScanRange, etc.)"""
+        # Accept both 'ParameterName' (full protocol) and 'Name' (simple protocol)
+        param_name = params.get('ParameterName', params.get('Name', ''))
+
+        # Spectrum parameter info for common parameters
+        spectrum_params = {
+            'LensMode': {
+                'Type': 'string',
+                'Values': ['HighMagnification', 'LowMagnification', 'WideAngle', 'LowAngular']
+            },
+            'ScanRange': {
+                'Type': 'string',
+                'Values': ['SmallArea', 'MediumArea', 'LargeArea']
+            },
+            'PassEnergy': {
+                'Type': 'double',
+                'Min': 1.0,
+                'Max': 500.0,
+                'Unit': 'eV'
+            },
+            'DwellTime': {
+                'Type': 'double',
+                'Min': 0.001,
+                'Max': 100.0,
+                'Unit': 's'
+            }
+        }
+
+        if param_name not in spectrum_params:
+            return f'!{req_id} Error: 206 Unknown spectrum parameter "{param_name}".'
+
+        info = spectrum_params[param_name]
+        response = f'!{req_id} OK: Type:{info["Type"]}'
+
+        if 'Values' in info:
+            values_str = ','.join(f'"{v}"' for v in info['Values'])
+            response += f' Values:[{values_str}]'
+        if 'Min' in info:
+            response += f' Min:{info["Min"]}'
+        if 'Max' in info:
+            response += f' Max:{info["Max"]}'
+        if 'Unit' in info:
+            response += f' Unit:"{info["Unit"]}"'
+
         return response
     
     def cmd_get_parameter_value(self, req_id, params):
         """Get current value of a parameter"""
-        param_name = params.get('ParameterName', '')
-        
+        # Accept both 'ParameterName' (full protocol) and 'Name' (simple protocol)
+        param_name = params.get('ParameterName', params.get('Name', ''))
+
         if param_name not in self.device_parameters:
             return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
-        
+
         param_info = self.device_parameters[param_name]
         value = param_info['value']
-        
+
         return f'!{req_id} OK: Name:"{param_name}" Value:{value}'
     
     def cmd_set_parameter_value(self, req_id, params):
