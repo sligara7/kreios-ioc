@@ -10,5 +10,12 @@ pytest-cov>=4.0.0
 # IOC dependencies (needed for imports in tests)
 caproto>=1.0.0
 
+# EPICS Channel Access (for integration tests)
+pyepics>=3.5.0
+
+# Bluesky ecosystem (for bluesky integration tests)
+ophyd>=1.6.0
+bluesky>=1.10.0
+
 # Optional: for more detailed test output
 pytest-sugar>=0.9.0
