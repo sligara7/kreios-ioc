@@ -526,10 +526,20 @@ class TestEPICSAcquisition:
         epics.caput(f"{prefix}StartEnergy", 400.0, wait=True)
         epics.caput(f"{prefix}EndEnergy", 402.0, wait=True)
         epics.caput(f"{prefix}StepWidth", 0.5, wait=True)
-        epics.caput(f"{prefix}DwellTime", 0.01, wait=True)
+        epics.caput(f"{prefix}AcquireTime", 0.01, wait=True)
         epics.caput(f"{prefix}PassEnergy", 20.0, wait=True)
         epics.caput(f"{prefix}ValuesPerSample", 1, wait=True)
         epics.caput(f"{prefix}NumSlices", 1, wait=True)
+
+        # Define and validate spectrum (required by Prodigy protocol)
+        epics.caput(f"{prefix}DefineSpectrum", 1, wait=True)
+        time.sleep(0.3)
+        epics.caput(f"{prefix}ValidateSpectrum", 1, wait=True)
+        time.sleep(0.3)
+
+        # Check spectrum is valid before starting
+        valid = epics.caget(f"{prefix}SpectrumValid_RBV")
+        assert valid == 1, "Spectrum should be valid after ValidateSpectrum"
 
         # Start acquisition
         epics.caput(f"{prefix}Acquire", 1, wait=True)
@@ -542,5 +552,5 @@ class TestEPICSAcquisition:
             time.sleep(0.1)
 
         # Check we got data
-        num_samples = epics.caget(f"{prefix}NumSamples_RBV")
+        num_samples = epics.caget(f"{prefix}Samples_RBV")
         assert num_samples > 0, "No samples acquired"
