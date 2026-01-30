@@ -1,6 +1,6 @@
 # KREIOS Happi Profile - Configuration Service Registration
 #
-# Devices and plans for bluesky-remote-architecture services
+# Devices and plans for the KREIOS-150 photoelectron spectrometer
 # Devices are loaded from happi database (happi_db.json)
 
 devices:

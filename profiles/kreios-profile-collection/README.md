@@ -1,6 +1,6 @@
 # KREIOS Profile Collection
 
-Profile collection for testing bluesky-remote-architecture services against the
+Profile collection providing ophyd devices and bluesky plans for the
 KREIOS-150 photoelectron spectrometer IOC.
 
 ## Overview
@@ -81,7 +81,7 @@ docker compose logs ioc
 RE(kreios_xps_spectrum(start_e=280, end_e=300, step=0.1, pass_energy=20))
 ```
 
-## Integration with bluesky-remote-architecture
+## Integration with Configuration Services
 
-This profile can be loaded by the configuration service to provide
+This profile can be loaded by configuration services to provide
 KREIOS devices and plans for remote experiment execution.

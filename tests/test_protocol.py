@@ -25,7 +25,8 @@ class TestMessageFormat:
     def test_request_format_invalid_no_question_mark(self, client):
         """Test that request without ? prefix is rejected."""
         response = client.send_raw("0001 Connect\n")
-        assert response is None or "Error" in response
+        # Simulator returns ERROR (uppercase) for unknown commands
+        assert response is None or "Error" in response or "ERROR" in response
 
     def test_request_format_invalid_short_id(self, client):
         """Test that request with short ID is rejected."""
@@ -208,7 +209,11 @@ class TestSpectrumValidation:
         assert "Error:" in response2
 
     def test_clear_spectrum(self, client):
-        """Test ClearSpectrum resets spectrum state."""
+        """Test ClearSpectrum clears data but preserves spectrum definition.
+
+        Per Prodigy protocol documentation (section 2.20):
+        "A cleared spectrum remains valid until a new definition is sent."
+        """
         client.send_command("Connect")
         client.send_command("DefineSpectrumFAT", {
             "StartEnergy": 400.0,
@@ -222,9 +227,9 @@ class TestSpectrumValidation:
         response = client.send_command("ClearSpectrum")
         assert "OK" in response
 
-        # Validate should now fail
+        # ValidateSpectrum should still succeed (spectrum definition preserved)
         response2 = client.send_command("ValidateSpectrum")
-        assert "Error:" in response2
+        assert "OK" in response2
 
 
 class TestParameterCommands:
