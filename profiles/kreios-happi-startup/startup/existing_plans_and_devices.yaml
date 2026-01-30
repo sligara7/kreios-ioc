@@ -1,0 +1,51 @@
+# KREIOS Happi Profile - Configuration Service Registration
+#
+# Devices and plans for bluesky-remote-architecture services
+# Devices are loaded from happi database (happi_db.json)
+
+devices:
+  - name: kreios
+    source: happi
+    description: "KREIOS-150 photoelectron spectrometer (full control)"
+    labels: [detectors, spectrometers, photoelectron]
+
+  - name: kreios_spectrum
+    source: happi
+    description: "KREIOS-150 simplified 1D spectrum device"
+    labels: [detectors, spectrometers]
+
+  - name: kreios_image
+    source: happi
+    description: "KREIOS-150 simplified 2D image device"
+    labels: [detectors, spectrometers, imaging]
+
+  - name: kreios_connected
+    source: happi
+    description: "KREIOS-150 connection status signal"
+    labels: [signals, status]
+
+  - name: kreios_progress
+    source: happi
+    description: "KREIOS-150 acquisition progress signal"
+    labels: [signals, status]
+
+plans:
+  - name: kreios_xps_spectrum
+    module: plans.kreios_plans
+    description: "Acquire standard XPS spectrum (1D)"
+
+  - name: kreios_survey
+    module: plans.kreios_plans
+    description: "Acquire wide-range XPS survey spectrum"
+
+  - name: kreios_arpes_image
+    module: plans.kreios_plans
+    description: "Acquire ARPES image (2D)"
+
+  - name: kreios_depth_profile
+    module: plans.kreios_plans
+    description: "Acquire depth profile (3D)"
+
+  - name: kreios_quick_test
+    module: plans.kreios_plans
+    description: "Quick test acquisition"

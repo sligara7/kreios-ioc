@@ -1,0 +1,43 @@
+# KREIOS BITS Profile - Configuration Service Registration
+#
+# Devices and plans for bluesky-remote-architecture services
+
+devices:
+  - name: kreios
+    module: devices.kreios_devices
+    class: KreiosDetector
+    description: "KREIOS-150 photoelectron spectrometer (full control)"
+    labels: [detectors, spectrometers, photoelectron]
+
+  - name: kreios_spectrum
+    module: devices.kreios_devices
+    class: KreiosSpectrum
+    description: "KREIOS-150 simplified 1D spectrum device"
+    labels: [detectors, spectrometers]
+
+  - name: kreios_image
+    module: devices.kreios_devices
+    class: KreiosImage
+    description: "KREIOS-150 simplified 2D image device"
+    labels: [detectors, spectrometers, imaging]
+
+plans:
+  - name: kreios_xps_spectrum
+    module: plans.kreios_plans
+    description: "Acquire standard XPS spectrum (1D)"
+
+  - name: kreios_survey
+    module: plans.kreios_plans
+    description: "Acquire wide-range XPS survey spectrum"
+
+  - name: kreios_arpes_image
+    module: plans.kreios_plans
+    description: "Acquire ARPES image (2D)"
+
+  - name: kreios_depth_profile
+    module: plans.kreios_plans
+    description: "Acquire depth profile (3D)"
+
+  - name: kreios_quick_test
+    module: plans.kreios_plans
+    description: "Quick test acquisition"

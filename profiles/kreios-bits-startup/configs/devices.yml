@@ -1,0 +1,66 @@
+# KREIOS-150 Device Definitions
+# BITS-style YAML device configuration
+#
+# Format:
+#   [module.class_or_creator]:
+#     - name: device_name
+#       [prefix: "PV:PREFIX:"]
+#       labels: [label1, label2]
+
+# =============================================================================
+# KREIOS Photoelectron Spectrometer
+# =============================================================================
+
+# Full spectrometer control device
+devices.kreios_devices.KreiosDetector:
+  - name: kreios
+    prefix: "KREIOS:cam1:"
+    labels: [detectors, spectrometers, photoelectron, baseline]
+
+# Simplified 1D spectrum device
+devices.kreios_devices.KreiosSpectrum:
+  - name: kreios_spectrum
+    prefix: "KREIOS:cam1:"
+    labels: [detectors, spectrometers]
+
+# Simplified 2D image device
+devices.kreios_devices.KreiosImage:
+  - name: kreios_image
+    prefix: "KREIOS:cam1:"
+    labels: [detectors, spectrometers, imaging]
+
+# =============================================================================
+# Individual Signal Access (for monitoring/debugging)
+# =============================================================================
+
+ophyd.EpicsSignalRO:
+  # Connection status
+  - name: kreios_connected
+    read_pv: "KREIOS:cam1:Connected_RBV"
+    labels: [signals, status]
+
+  # Acquisition progress
+  - name: kreios_progress
+    read_pv: "KREIOS:cam1:Progress_RBV"
+    labels: [signals, status]
+
+  # Current spectrum data (read-only)
+  - name: kreios_spectrum_data
+    read_pv: "KREIOS:cam1:Spectrum"
+    labels: [signals, data]
+
+# =============================================================================
+# Example: How to add motors for sample positioning
+# =============================================================================
+# ophyd.EpicsMotor:
+#   - name: sample_x
+#     prefix: "SAMPLE:m1"
+#     labels: [motors, sample_stage]
+#
+#   - name: sample_y
+#     prefix: "SAMPLE:m2"
+#     labels: [motors, sample_stage]
+#
+#   - name: sample_theta
+#     prefix: "SAMPLE:m3"
+#     labels: [motors, sample_stage]

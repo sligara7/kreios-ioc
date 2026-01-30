@@ -1,0 +1,85 @@
+# KREIOS-150 Instrument Configuration
+# BITS-style configuration for KREIOS photoelectron spectrometer
+#
+# See: https://github.com/BCDA-APS/BITS
+
+ICONFIG_VERSION: 2.0.0
+
+# =============================================================================
+# Run Engine Configuration
+# =============================================================================
+
+RUN_ENGINE:
+  DEFAULT_METADATA:
+    beamline_id: KREIOS-150
+    instrument_name: KREIOS Momentum Microscope
+    facility: NSLS-II
+    proposal_id: null
+    scan_id: 1
+
+  # Scan ID tracking (file-based for simplicity)
+  SCAN_ID_TRACKING:
+    enabled: true
+    file_path: ~/.kreios_scan_id.txt
+
+# =============================================================================
+# EPICS / Ophyd Configuration
+# =============================================================================
+
+OPHYD:
+  # Control layer: EPICS via PyEpics
+  CONTROL_LAYER: PyEpics
+  TIMEOUTS:
+    PV_CONNECTION: 15
+    PV_WRITE: 60
+
+# =============================================================================
+# EPICS Channel Access
+# =============================================================================
+
+EPICS:
+  CA_ADDR_LIST: localhost
+  CA_AUTO_ADDR_LIST: "NO"
+  CA_MAX_ARRAY_BYTES: 10000000
+
+# =============================================================================
+# KREIOS IOC Configuration
+# =============================================================================
+
+KREIOS:
+  # PV prefix for KREIOS IOC (areaDetector convention)
+  PREFIX: "KREIOS:cam1:"
+
+  # Prodigy server connection (for diagnostics)
+  PRODIGY_HOST: localhost
+  PRODIGY_PORT: 7010
+
+# =============================================================================
+# Baseline Configuration
+# =============================================================================
+
+BASELINE:
+  # Devices to record at start/end of each scan
+  DEVICES:
+    - kreios
+
+# =============================================================================
+# Best Effort Callback
+# =============================================================================
+
+BEC:
+  ENABLED: true
+  PLOTS: true
+  TABLE: true
+
+# =============================================================================
+# Data Management
+# =============================================================================
+
+DATABROKER:
+  CATALOG: temp
+
+# Data file format
+DATA_FILE:
+  FORMAT: hdf5
+  PATH: /tmp/kreios_data

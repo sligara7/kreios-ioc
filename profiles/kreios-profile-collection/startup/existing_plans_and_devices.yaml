@@ -1,0 +1,151 @@
+# KREIOS Profile - Plans and Devices for Configuration Service
+#
+# This file defines the available plans and devices for the
+# bluesky-remote-architecture configuration service.
+
+# =============================================================================
+# Devices
+# =============================================================================
+devices:
+  - name: kreios
+    module: startup.10-devices
+    description: "KREIOS-150 photoelectron spectrometer (full control)"
+    labels:
+      - detectors
+      - spectrometers
+      - kreios
+
+  - name: kreios_spectrum
+    module: startup.10-devices
+    description: "KREIOS-150 simplified 1D spectrum device"
+    labels:
+      - detectors
+      - spectrometers
+
+  - name: kreios_image
+    module: startup.10-devices
+    description: "KREIOS-150 simplified 2D image device"
+    labels:
+      - detectors
+      - spectrometers
+
+# =============================================================================
+# Plans
+# =============================================================================
+plans:
+  - name: kreios_xps_spectrum
+    module: startup.90-plans
+    description: "Acquire standard XPS spectrum (1D)"
+    parameters:
+      - name: start_e
+        type: float
+        default: 280
+        description: "Start energy (eV)"
+      - name: end_e
+        type: float
+        default: 300
+        description: "End energy (eV)"
+      - name: step_e
+        type: float
+        default: 0.1
+        description: "Energy step (eV)"
+      - name: pass_energy
+        type: float
+        default: 20.0
+        description: "Analyzer pass energy (eV)"
+      - name: dwell_time
+        type: float
+        default: 0.1
+        description: "Dwell time per point (seconds)"
+
+  - name: kreios_survey
+    module: startup.90-plans
+    description: "Acquire wide-range XPS survey spectrum"
+    parameters:
+      - name: start_e
+        type: float
+        default: 0
+        description: "Start energy (eV)"
+      - name: end_e
+        type: float
+        default: 1200
+        description: "End energy (eV)"
+      - name: step_e
+        type: float
+        default: 1.0
+        description: "Energy step (eV)"
+      - name: pass_energy
+        type: float
+        default: 100.0
+        description: "Analyzer pass energy (eV)"
+      - name: dwell_time
+        type: float
+        default: 0.05
+        description: "Dwell time per point (seconds)"
+
+  - name: kreios_arpes_image
+    module: startup.90-plans
+    description: "Acquire ARPES image (2D: energy x angle)"
+    parameters:
+      - name: start_e
+        type: float
+        default: 80
+        description: "Start energy (eV)"
+      - name: end_e
+        type: float
+        default: 90
+        description: "End energy (eV)"
+      - name: step_e
+        type: float
+        default: 0.05
+        description: "Energy step (eV)"
+      - name: n_pixels
+        type: int
+        default: 128
+        description: "Number of detector pixels"
+      - name: pass_energy
+        type: float
+        default: 10.0
+        description: "Analyzer pass energy (eV)"
+      - name: dwell_time
+        type: float
+        default: 0.1
+        description: "Dwell time per point (seconds)"
+
+  - name: kreios_depth_profile
+    module: startup.90-plans
+    description: "Acquire depth profile (3D volume)"
+    parameters:
+      - name: start_e
+        type: float
+        default: 280
+        description: "Start energy (eV)"
+      - name: end_e
+        type: float
+        default: 290
+        description: "End energy (eV)"
+      - name: step_e
+        type: float
+        default: 0.1
+        description: "Energy step (eV)"
+      - name: n_pixels
+        type: int
+        default: 1
+        description: "Number of detector pixels"
+      - name: n_slices
+        type: int
+        default: 10
+        description: "Number of depth slices"
+      - name: pass_energy
+        type: float
+        default: 20.0
+        description: "Analyzer pass energy (eV)"
+      - name: dwell_time
+        type: float
+        default: 0.1
+        description: "Dwell time per point (seconds)"
+
+  - name: kreios_quick_test
+    module: startup.90-plans
+    description: "Quick test acquisition for IOC connectivity"
+    parameters: []
