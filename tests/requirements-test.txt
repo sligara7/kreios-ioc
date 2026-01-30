@@ -1,4 +1,11 @@
 # Test dependencies for KREIOS-150 IOC
+#
+# NOTE: The preferred way to install dependencies is via pyproject.toml:
+#   pip install -e ".[test,ophyd,bluesky]"
+# Or with UV:
+#   uv pip install -e ".[test,ophyd,bluesky]"
+#
+# This file is maintained for backwards compatibility.
 # Install with: pip install -r tests/requirements-test.txt
 
 # Testing framework

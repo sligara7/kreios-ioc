@@ -1,6 +1,6 @@
 # Prodigy Simulator Docker Image
 #
-# Lightweight image for running the protocol simulator
+# Lightweight image for running the protocol simulator using UV
 #
 # Usage:
 #   docker build -t kreios-simulator -f docker/Dockerfile.simulator .
@@ -8,13 +8,21 @@
 
 FROM python:3.11-slim
 
+# Install UV
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 WORKDIR /app
 
-# Copy simulator files
+# Copy pyproject.toml, README, and source files
+COPY pyproject.toml README.md /app/
+COPY src/ /app/src/
 COPY sim/ /app/sim/
 COPY scripts/ /app/scripts/
 
-# Set working directory to sim folder
+# Install the package using UV (simulator has no external dependencies)
+RUN uv pip install --system -e ".[sim]"
+
+# Set working directory to sim folder for parameters.dat
 WORKDIR /app/sim
 
 # Expose simulator port
@@ -27,5 +35,5 @@ ENV PYTHONUNBUFFERED=1
 HEALTHCHECK --interval=5s --timeout=3s --retries=3 \
     CMD python3 -c "import socket; s=socket.socket(); s.connect(('localhost', 7010)); s.close()" || exit 1
 
-# Run the simulator
-CMD ["python3", "ProdigySimServer.py"]
+# Run the simulator using the installed CLI
+CMD ["kreios-simulator"]

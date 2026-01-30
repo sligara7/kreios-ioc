@@ -279,7 +279,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsz2 \
     python3 \
     python3-pip \
+    python3-venv \
     && rm -rf /var/lib/apt/lists/*
+
+# Install UV for fast Python package management
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Set up EPICS environment
 ENV EPICS_ROOT=/opt/epics
@@ -301,9 +305,15 @@ COPY --from=builder ${EPICS_ROOT} ${EPICS_ROOT}
 # Copy KREIOS IOC
 COPY --from=builder /build/kreios-ioc /opt/kreios-ioc
 
-# Copy simulator for integrated testing
+# Copy simulator and Python package files for integrated testing
 COPY sim /opt/kreios-ioc/sim
 COPY scripts /opt/kreios-ioc/scripts
+COPY pyproject.toml README.md /opt/kreios-ioc/
+COPY src /opt/kreios-ioc/src
+
+# Install the KREIOS Python package using UV (simulator only for IOC image)
+# This provides the kreios-simulator CLI command
+RUN uv pip install --system -e "/opt/kreios-ioc[sim]"
 
 # Fix paths in envPaths file (build paths -> runtime paths)
 # Also add all synApps module paths for commonPlugins.cmd

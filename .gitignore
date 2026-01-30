@@ -1,2 +1,65 @@
+# Python
 *.pyc
 __pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# UV / Virtual environments
+.venv/
+venv/
+ENV/
+.uv/
+uv.lock
+
+# Testing
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.hypothesis/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# EPICS build artifacts
+bin/
+lib/
+dbd/
+O.*/
+
+# macOS
+.DS_Store
+
+# Local configuration
+configure/RELEASE.local
+configure/CONFIG_SITE.local
+
+# Docker
+.docker/
+
+# Claude Code
+.claude/

@@ -1,0 +1,155 @@
+[project]
+name = "kreios-ioc"
+version = "0.1.0"
+description = "KREIOS-150 Momentum Microscope EPICS IOC and Python tools"
+readme = "README.md"
+license = { text = "BSD-3-Clause" }
+requires-python = ">=3.10"
+authors = [
+    { name = "NSLS-II", email = "controls@bnl.gov" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+keywords = ["epics", "areadetector", "kreios", "xps", "arpes", "photoelectron"]
+
+# Core dependencies (minimal for simulator)
+dependencies = []
+
+[project.optional-dependencies]
+# Simulator only - no external dependencies needed
+sim = []
+
+# EPICS/ophyd integration (synchronous)
+ophyd = [
+    "ophyd>=1.6.0",
+    "pyepics>=3.5.0",
+]
+
+# ophyd-async integration (asynchronous)
+ophyd-async = [
+    "ophyd-async>=0.8.0",
+]
+
+# Full Bluesky ecosystem
+bluesky = [
+    "kreios-ioc[ophyd]",
+    "bluesky>=1.10.0",
+    "databroker>=1.2.0",
+]
+
+# Development dependencies
+dev = [
+    "kreios-ioc[test]",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+# Test dependencies
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-timeout>=2.0.0",
+    "pytest-cov>=4.0.0",
+    "caproto>=1.0.0",
+]
+
+# All extras combined
+all = [
+    "kreios-ioc[ophyd]",
+    "kreios-ioc[ophyd-async]",
+    "kreios-ioc[bluesky]",
+    "kreios-ioc[test]",
+]
+
+[project.scripts]
+kreios-simulator = "kreios.sim:main"
+
+[project.urls]
+Homepage = "https://github.com/NSLS-II/kreios-ioc"
+Documentation = "https://github.com/NSLS-II/kreios-ioc#readme"
+Repository = "https://github.com/NSLS-II/kreios-ioc.git"
+Issues = "https://github.com/NSLS-II/kreios-ioc/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kreios"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/sim",
+    "/tests",
+    "/profiles",
+]
+
+# Development dependency group (PEP 735)
+[dependency-groups]
+dev = [
+    "kreios-ioc[dev]",
+]
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests requiring IOC",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src/kreios"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+
+# Ruff configuration
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["kreios"]
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true

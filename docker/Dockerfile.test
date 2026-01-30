@@ -1,6 +1,7 @@
 # Test Runner Docker Image
 #
 # Runs pytest tests against the simulator and optionally the EPICS IOC
+# Uses UV for fast dependency installation
 #
 # Usage:
 #   docker build -t kreios-test -f docker/Dockerfile.test .
@@ -8,19 +9,22 @@
 
 FROM python:3.11-slim
 
+# Install UV
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 WORKDIR /app
 
-# Install test dependencies
-RUN pip install --no-cache-dir \
-    pytest \
-    pytest-asyncio \
-    pytest-timeout \
-    pytest-cov \
-    pyepics
-
-# Copy test files
-COPY tests/ /app/tests/
+# Copy pyproject.toml, README, and source files
+COPY pyproject.toml README.md /app/
+COPY src/ /app/src/
 COPY sim/ /app/sim/
+
+# Install the package with test and ophyd dependencies using UV
+# Use --system to install into the system Python (no venv needed in Docker)
+RUN uv pip install --system -e ".[test,ophyd,bluesky]"
+
+# Copy test files (after dependencies to leverage cache)
+COPY tests/ /app/tests/
 
 # Create results directory
 RUN mkdir -p /app/results
