@@ -1,0 +1,998 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--KREIOS-150 Momentum Microscope Detector Screen-->
+<display version="2.0.0">
+  <name>KREIOS-150 Detector</name>
+  <macros>
+    <P>KREIOS:</P>
+    <R>cam1:</R>
+    <Sys>XF:29ID2-ES</Sys>
+    <Dev>{Det:KREIOS}</Dev>
+  </macros>
+  <width>1400</width>
+  <height>900</height>
+  <grid_step_x>6</grid_step_x>
+  <grid_step_y>6</grid_step_y>
+
+  <!-- Header -->
+  <widget type="rectangle" version="2.0.0">
+    <name>Header Background</name>
+    <width>1400</width>
+    <height>60</height>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+    <background_color>
+      <color red="0" green="118" blue="177"/>
+    </background_color>
+  </widget>
+
+  <widget type="label" version="2.0.0">
+    <name>Title</name>
+    <text>KREIOS-150 Momentum Microscope</text>
+    <x>20</x>
+    <y>15</y>
+    <width>500</width>
+    <height>30</height>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="20.0"/>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255"/>
+    </foreground_color>
+  </widget>
+
+  <widget type="label" version="2.0.0">
+    <name>Subtitle</name>
+    <text>SPECS ARPES Detector - ARI Beamline 29-ID-2</text>
+    <x>530</x>
+    <y>20</y>
+    <width>400</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="200" green="220" blue="255"/>
+    </foreground_color>
+  </widget>
+
+  <!-- Status indicator in header -->
+  <widget type="led" version="2.0.0">
+    <name>Connection LED</name>
+    <pv_name>$(P)$(R)AsynIO.CNCT</pv_name>
+    <x>1300</x>
+    <y>20</y>
+    <width>25</width>
+    <height>25</height>
+    <on_color>
+      <color red="0" green="255" blue="0"/>
+    </on_color>
+    <off_color>
+      <color red="255" green="0" blue="0"/>
+    </off_color>
+  </widget>
+
+  <widget type="label" version="2.0.0">
+    <name>Connection Label</name>
+    <text>Prodigy</text>
+    <x>1330</x>
+    <y>20</y>
+    <width>60</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="255" green="255" blue="255"/>
+    </foreground_color>
+  </widget>
+
+  <!-- Detector Info Section -->
+  <widget type="group" version="3.0.0">
+    <name>Detector Info</name>
+    <x>20</x>
+    <y>80</y>
+    <width>350</width>
+    <height>180</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Manufacturer Label</name>
+      <text>Manufacturer:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Manufacturer</name>
+      <pv_name>$(P)$(R)Manufacturer_RBV</pv_name>
+      <x>130</x>
+      <y>10</y>
+      <width>200</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Model Label</name>
+      <text>Model:</text>
+      <x>10</x>
+      <y>35</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Model</name>
+      <pv_name>$(P)$(R)Model_RBV</pv_name>
+      <x>130</x>
+      <y>35</y>
+      <width>200</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>State Label</name>
+      <text>State:</text>
+      <x>10</x>
+      <y>60</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Detector State</name>
+      <pv_name>$(P)$(R)DetectorState_RBV</pv_name>
+      <x>130</x>
+      <y>60</y>
+      <width>200</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Image Size Label</name>
+      <text>Image Size:</text>
+      <x>10</x>
+      <y>85</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>SizeX</name>
+      <pv_name>$(P)$(R)ArraySizeX_RBV</pv_name>
+      <x>130</x>
+      <y>85</y>
+      <width>70</width>
+      <height>22</height>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>x</name>
+      <text>x</text>
+      <x>205</x>
+      <y>85</y>
+      <width>20</width>
+      <height>22</height>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>SizeY</name>
+      <pv_name>$(P)$(R)ArraySizeY_RBV</pv_name>
+      <x>230</x>
+      <y>85</y>
+      <width>70</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Frame Count Label</name>
+      <text>Frame Count:</text>
+      <x>10</x>
+      <y>110</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>ArrayCounter</name>
+      <pv_name>$(P)$(R)ArrayCounter_RBV</pv_name>
+      <x>130</x>
+      <y>110</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Array Rate Label</name>
+      <text>Frame Rate:</text>
+      <x>10</x>
+      <y>135</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>ArrayRate</name>
+      <pv_name>$(P)$(R)ArrayRate_RBV</pv_name>
+      <x>130</x>
+      <y>135</y>
+      <width>80</width>
+      <height>22</height>
+      <precision>2</precision>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>Hz Label</name>
+      <text>Hz</text>
+      <x>215</x>
+      <y>135</y>
+      <width>30</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- Acquisition Controls Section -->
+  <widget type="group" version="3.0.0">
+    <name>Acquisition</name>
+    <x>20</x>
+    <y>280</y>
+    <width>350</width>
+    <height>300</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <!-- Acquire Button -->
+    <widget type="action_button" version="3.0.0">
+      <name>Start Button</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)$(R)Acquire</pv_name>
+          <value>1</value>
+          <description>Start Acquisition</description>
+        </action>
+      </actions>
+      <text>Acquire</text>
+      <x>10</x>
+      <y>10</y>
+      <width>150</width>
+      <height>40</height>
+      <font>
+        <font family="Liberation Sans" style="BOLD" size="16.0"/>
+      </font>
+      <background_color>
+        <color red="180" green="255" blue="180"/>
+      </background_color>
+    </widget>
+
+    <widget type="action_button" version="3.0.0">
+      <name>Stop Button</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)$(R)Acquire</pv_name>
+          <value>0</value>
+          <description>Stop Acquisition</description>
+        </action>
+      </actions>
+      <text>Stop</text>
+      <x>180</x>
+      <y>10</y>
+      <width>150</width>
+      <height>40</height>
+      <font>
+        <font family="Liberation Sans" style="BOLD" size="16.0"/>
+      </font>
+      <background_color>
+        <color red="255" green="180" blue="180"/>
+      </background_color>
+    </widget>
+
+    <widget type="textupdate" version="2.0.0">
+      <name>Acquire Status</name>
+      <pv_name>$(P)$(R)Acquire</pv_name>
+      <x>10</x>
+      <y>55</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+
+    <!-- Image Mode -->
+    <widget type="label" version="2.0.0">
+      <name>Image Mode Label</name>
+      <text>Image Mode:</text>
+      <x>10</x>
+      <y>85</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Image Mode</name>
+      <pv_name>$(P)$(R)ImageMode</pv_name>
+      <x>130</x>
+      <y>85</y>
+      <width>150</width>
+      <height>25</height>
+    </widget>
+
+    <!-- Num Images -->
+    <widget type="label" version="2.0.0">
+      <name>Num Images Label</name>
+      <text>Num Images:</text>
+      <x>10</x>
+      <y>115</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>Num Images</name>
+      <pv_name>$(P)$(R)NumImages</pv_name>
+      <x>130</x>
+      <y>115</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Num Images RBV</name>
+      <pv_name>$(P)$(R)NumImages_RBV</pv_name>
+      <x>240</x>
+      <y>115</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+
+    <!-- Num Images Counter -->
+    <widget type="label" version="2.0.0">
+      <name>Num Captured Label</name>
+      <text>Captured:</text>
+      <x>10</x>
+      <y>145</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Num Captured</name>
+      <pv_name>$(P)$(R)NumImagesCounter_RBV</pv_name>
+      <x>130</x>
+      <y>145</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+
+    <!-- Trigger Mode -->
+    <widget type="label" version="2.0.0">
+      <name>Trigger Mode Label</name>
+      <text>Trigger Mode:</text>
+      <x>10</x>
+      <y>175</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Trigger Mode</name>
+      <pv_name>$(P)$(R)TriggerMode</pv_name>
+      <x>130</x>
+      <y>175</y>
+      <width>150</width>
+      <height>25</height>
+    </widget>
+
+    <!-- Acquire Time -->
+    <widget type="label" version="2.0.0">
+      <name>Acquire Time Label</name>
+      <text>Acquire Time:</text>
+      <x>10</x>
+      <y>210</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>Acquire Time</name>
+      <pv_name>$(P)$(R)AcquireTime</pv_name>
+      <x>130</x>
+      <y>210</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Acquire Time RBV</name>
+      <pv_name>$(P)$(R)AcquireTime_RBV</pv_name>
+      <x>240</x>
+      <y>210</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+
+    <!-- Acquire Period -->
+    <widget type="label" version="2.0.0">
+      <name>Acquire Period Label</name>
+      <text>Acquire Period:</text>
+      <x>10</x>
+      <y>240</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>Acquire Period</name>
+      <pv_name>$(P)$(R)AcquirePeriod</pv_name>
+      <x>130</x>
+      <y>240</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Acquire Period RBV</name>
+      <pv_name>$(P)$(R)AcquirePeriod_RBV</pv_name>
+      <x>240</x>
+      <y>240</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- Prodigy Connection Section -->
+  <widget type="group" version="3.0.0">
+    <name>Prodigy Connection</name>
+    <x>20</x>
+    <y>600</y>
+    <width>350</width>
+    <height>130</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Prodigy Host Label</name>
+      <text>Prodigy Server:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>120</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Prodigy Host</name>
+      <pv_name>$(P)$(R)PortName_RBV</pv_name>
+      <x>140</x>
+      <y>10</y>
+      <width>180</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Connection Status Label</name>
+      <text>Connection:</text>
+      <x>10</x>
+      <y>40</y>
+      <width>120</width>
+      <height>22</height>
+    </widget>
+    <widget type="led" version="2.0.0">
+      <name>Connection Status LED</name>
+      <pv_name>$(P)$(R)AsynIO.CNCT</pv_name>
+      <x>140</x>
+      <y>40</y>
+      <width>22</width>
+      <height>22</height>
+      <on_color>
+        <color red="0" green="255" blue="0"/>
+      </on_color>
+      <off_color>
+        <color red="255" green="0" blue="0"/>
+      </off_color>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Connection Text</name>
+      <pv_name>$(P)$(R)AsynIO.CNCT</pv_name>
+      <x>170</x>
+      <y>40</y>
+      <width>120</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="action_button" version="3.0.0">
+      <name>Connect Button</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)$(R)AsynIO.CONN</pv_name>
+          <value>1</value>
+          <description>Connect to Prodigy</description>
+        </action>
+      </actions>
+      <text>Connect</text>
+      <x>10</x>
+      <y>75</y>
+      <width>100</width>
+      <height>30</height>
+      <background_color>
+        <color red="200" green="240" blue="200"/>
+      </background_color>
+    </widget>
+
+    <widget type="action_button" version="3.0.0">
+      <name>Disconnect Button</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)$(R)AsynIO.CONN</pv_name>
+          <value>0</value>
+          <description>Disconnect from Prodigy</description>
+        </action>
+      </actions>
+      <text>Disconnect</text>
+      <x>120</x>
+      <y>75</y>
+      <width>100</width>
+      <height>30</height>
+      <background_color>
+        <color red="240" green="200" blue="200"/>
+      </background_color>
+    </widget>
+  </widget>
+
+  <!-- Statistics Section -->
+  <widget type="group" version="3.0.0">
+    <name>Statistics</name>
+    <x>390</x>
+    <y>80</y>
+    <width>300</width>
+    <height>250</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Stats Enable Label</name>
+      <text>Enable Stats:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Stats Enable</name>
+      <pv_name>$(P)Stats1:EnableCallbacks</pv_name>
+      <x>120</x>
+      <y>10</y>
+      <width>100</width>
+      <height>25</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Min Label</name>
+      <text>Min:</text>
+      <x>10</x>
+      <y>45</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Min Value</name>
+      <pv_name>$(P)Stats1:MinValue_RBV</pv_name>
+      <x>120</x>
+      <y>45</y>
+      <width>120</width>
+      <height>22</height>
+      <precision>3</precision>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Max Label</name>
+      <text>Max:</text>
+      <x>10</x>
+      <y>70</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Max Value</name>
+      <pv_name>$(P)Stats1:MaxValue_RBV</pv_name>
+      <x>120</x>
+      <y>70</y>
+      <width>120</width>
+      <height>22</height>
+      <precision>3</precision>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Mean Label</name>
+      <text>Mean:</text>
+      <x>10</x>
+      <y>95</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Mean Value</name>
+      <pv_name>$(P)Stats1:MeanValue_RBV</pv_name>
+      <x>120</x>
+      <y>95</y>
+      <width>120</width>
+      <height>22</height>
+      <precision>3</precision>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Sigma Label</name>
+      <text>Sigma:</text>
+      <x>10</x>
+      <y>120</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Sigma Value</name>
+      <pv_name>$(P)Stats1:Sigma_RBV</pv_name>
+      <x>120</x>
+      <y>120</y>
+      <width>120</width>
+      <height>22</height>
+      <precision>3</precision>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Total Label</name>
+      <text>Total:</text>
+      <x>10</x>
+      <y>145</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Total Value</name>
+      <pv_name>$(P)Stats1:Total_RBV</pv_name>
+      <x>120</x>
+      <y>145</y>
+      <width>120</width>
+      <height>22</height>
+      <precision>0</precision>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Net Label</name>
+      <text>Net:</text>
+      <x>10</x>
+      <y>170</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Net Value</name>
+      <pv_name>$(P)Stats1:Net_RBV</pv_name>
+      <x>120</x>
+      <y>170</y>
+      <width>120</width>
+      <height>22</height>
+      <precision>0</precision>
+    </widget>
+  </widget>
+
+  <!-- File Saving Section -->
+  <widget type="group" version="3.0.0">
+    <name>File Saving</name>
+    <x>390</x>
+    <y>350</y>
+    <width>300</width>
+    <height>280</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>HDF5 Section Label</name>
+      <text>HDF5 File Writer</text>
+      <x>10</x>
+      <y>10</y>
+      <width>200</width>
+      <height>22</height>
+      <font>
+        <font family="Liberation Sans" style="BOLD" size="12.0"/>
+      </font>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Enable HDF Label</name>
+      <text>Enable:</text>
+      <x>10</x>
+      <y>35</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>HDF Enable</name>
+      <pv_name>$(P)HDF1:EnableCallbacks</pv_name>
+      <x>100</x>
+      <y>35</y>
+      <width>100</width>
+      <height>25</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>File Path Label</name>
+      <text>Path:</text>
+      <x>10</x>
+      <y>65</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>File Path</name>
+      <pv_name>$(P)HDF1:FilePath</pv_name>
+      <x>100</x>
+      <y>65</y>
+      <width>180</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>File Name Label</name>
+      <text>Name:</text>
+      <x>10</x>
+      <y>90</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>File Name</name>
+      <pv_name>$(P)HDF1:FileName</pv_name>
+      <x>100</x>
+      <y>90</y>
+      <width>180</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>File Number Label</name>
+      <text>Number:</text>
+      <x>10</x>
+      <y>115</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>File Number</name>
+      <pv_name>$(P)HDF1:FileNumber</pv_name>
+      <x>100</x>
+      <y>115</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Auto Increment Label</name>
+      <text>Auto Inc:</text>
+      <x>10</x>
+      <y>140</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Auto Increment</name>
+      <pv_name>$(P)HDF1:AutoIncrement</pv_name>
+      <x>100</x>
+      <y>140</y>
+      <width>100</width>
+      <height>25</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Capture Label</name>
+      <text>Capture:</text>
+      <x>10</x>
+      <y>175</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Capture Start</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)HDF1:Capture</pv_name>
+          <value>1</value>
+          <description>Start Capture</description>
+        </action>
+      </actions>
+      <text>Start</text>
+      <x>100</x>
+      <y>175</y>
+      <width>80</width>
+      <height>25</height>
+      <background_color>
+        <color red="200" green="255" blue="200"/>
+      </background_color>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Capture Stop</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)HDF1:Capture</pv_name>
+          <value>0</value>
+          <description>Stop Capture</description>
+        </action>
+      </actions>
+      <text>Stop</text>
+      <x>190</x>
+      <y>175</y>
+      <width>80</width>
+      <height>25</height>
+      <background_color>
+        <color red="255" green="200" blue="200"/>
+      </background_color>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Write Status Label</name>
+      <text>Status:</text>
+      <x>10</x>
+      <y>210</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Write Status</name>
+      <pv_name>$(P)HDF1:WriteStatus</pv_name>
+      <x>100</x>
+      <y>210</y>
+      <width>180</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- IOC Health Section -->
+  <widget type="group" version="3.0.0">
+    <name>IOC Health</name>
+    <x>390</x>
+    <y>650</y>
+    <width>300</width>
+    <height>100</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Heartbeat Label</name>
+      <text>Heartbeat:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Heartbeat</name>
+      <pv_name>$(P)ioc:HEARTBEAT</pv_name>
+      <x>120</x>
+      <y>10</y>
+      <width>80</width>
+      <height>22</height>
+    </widget>
+    <widget type="led" version="2.0.0">
+      <name>Heartbeat LED</name>
+      <pv_name>$(P)ioc:HEARTBEAT</pv_name>
+      <x>210</x>
+      <y>10</y>
+      <width>22</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Uptime Label</name>
+      <text>Uptime:</text>
+      <x>10</x>
+      <y>40</y>
+      <width>100</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Uptime</name>
+      <pv_name>$(P)ioc:UPTIME</pv_name>
+      <x>120</x>
+      <y>40</y>
+      <width>150</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- Image Display Placeholder -->
+  <widget type="group" version="3.0.0">
+    <name>Image Display</name>
+    <x>710</x>
+    <y>80</y>
+    <width>670</width>
+    <height>670</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Image Placeholder</name>
+      <text>Image Display Area</text>
+      <x>200</x>
+      <y>300</y>
+      <width>250</width>
+      <height>30</height>
+      <font>
+        <font family="Liberation Sans" style="BOLD" size="18.0"/>
+      </font>
+      <foreground_color>
+        <color red="128" green="128" blue="128"/>
+      </foreground_color>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Image Note</name>
+      <text>(Use PVAccess image viewer for live display)</text>
+      <x>150</x>
+      <y>340</y>
+      <width>350</width>
+      <height>25</height>
+      <foreground_color>
+        <color red="160" green="160" blue="160"/>
+      </foreground_color>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>PV Note</name>
+      <text>pva://$(P)Pva1:Image</text>
+      <x>200</x>
+      <y>370</y>
+      <width>250</width>
+      <height>25</height>
+      <foreground_color>
+        <color red="100" green="100" blue="200"/>
+      </foreground_color>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+  </widget>
+
+  <!-- Footer -->
+  <widget type="label" version="2.0.0">
+    <name>Footer</name>
+    <text>KREIOS-150 Momentum Microscope - SPECS GmbH - ARI Beamline 29-ID-2 - NSLS-II</text>
+    <x>20</x>
+    <y>865</y>
+    <width>700</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="128" green="128" blue="128"/>
+    </foreground_color>
+  </widget>
+
+</display>
