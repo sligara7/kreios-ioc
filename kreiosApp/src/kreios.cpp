@@ -953,7 +953,7 @@ asynStatus Kreios::defineSpectrumFAT()
     std::map<std::string, std::string> data;
     std::stringstream cmd;
     double startEnergy, endEnergy, stepWidth, passEnergy, dwellTime;
-    int lensMode, scanRange;
+    int lensMode, scanRange, valuesPerSample, numSlices;
     const char *functionName = "Kreios::defineSpectrumFAT";
 
     getDoubleParam(KREIOSStartEnergy_, &startEnergy);
@@ -963,6 +963,8 @@ asynStatus Kreios::defineSpectrumFAT()
     getDoubleParam(ADAcquireTime, &dwellTime);
     getIntegerParam(KREIOSLensMode_, &lensMode);
     getIntegerParam(KREIOSScanRange_, &scanRange);
+    getIntegerParam(KREIOSValuesPerSample_, &valuesPerSample);
+    getIntegerParam(KREIOSNumSlices_, &numSlices);
 
     cmd << KREIOS_CMD_DEFINE_FAT;
     cmd << ":StartEnergy=" << startEnergy;
@@ -976,6 +978,14 @@ asynStatus Kreios::defineSpectrumFAT()
     }
     if (scanRange < (int)scanRanges_.size()) {
         cmd << ":ScanRange=" << scanRanges_[scanRange];
+    }
+
+    // Include dimension parameters for 2D/3D acquisition
+    if (valuesPerSample > 1) {
+        cmd << ":ValuesPerSample=" << valuesPerSample;
+    }
+    if (numSlices > 1) {
+        cmd << ":NumberOfSlices=" << numSlices;
     }
 
     debug(functionName, "Command", cmd.str());

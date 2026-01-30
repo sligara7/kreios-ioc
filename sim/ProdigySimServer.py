@@ -726,8 +726,8 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         """Validate the defined spectrum"""
         if not self.spectrum_defined:
             return f"!{req_id} Error: 202 No spectrum defined."
-        
-        # Return spectrum parameters
+
+        # Return spectrum parameters including dimensionality info
         response = (
             f"!{req_id} OK: "
             f"StartEnergy:{self.start_energy} "
@@ -737,22 +737,36 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
             f"DwellTime:{self.dwell_time} "
             f"PassEnergy:{self.pass_energy} "
             f'LensMode:"{self.lens_mode}" '
-            f'ScanRange:"{self.scan_range}"'
+            f'ScanRange:"{self.scan_range}" '
+            f"ValuesPerSample:{self.values_per_sample} "
+            f"NumberOfSlices:{self.num_slices}"
         )
-        
+
         self.spectrum_validated = True
         self.acquisition_state = AcquisitionState.VALIDATED
         return response
     
     def cmd_clear_spectrum(self, req_id):
-        """Clear the defined spectrum"""
+        """Clear the spectrum data buffer.
+
+        Per Prodigy protocol documentation (section 2.20):
+        "A cleared spectrum remains valid until a new definition is sent."
+
+        This clears the internal data buffer but preserves the spectrum
+        definition and validation state.
+        """
         if self.acquisition_state in [AcquisitionState.RUNNING, AcquisitionState.PAUSED]:
             return f"!{req_id} Error: 209 Currently acquiring spectrum."
-        
-        self.spectrum_defined = False
-        self.spectrum_validated = False
+
+        # Clear data buffer but preserve spectrum definition/validation
         self.acquired_data = []
-        self.acquisition_state = AcquisitionState.IDLE
+
+        # Return to VALIDATED state if spectrum was validated, else IDLE
+        if self.spectrum_validated:
+            self.acquisition_state = AcquisitionState.VALIDATED
+        else:
+            self.acquisition_state = AcquisitionState.IDLE
+
         return f"!{req_id} OK"
     
     # ========== Acquisition Control Commands ==========
