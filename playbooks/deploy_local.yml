@@ -1,0 +1,440 @@
+---
+# Local deployment playbook for KREIOS-150 IOC
+#
+# Deploys the IOC to /epics/iocs/kreios-det1/ using a locally-built EPICS
+# stack (from scripts/build_epics_stack.sh). Generates the same directory
+# structure and startup scripts as the production nsls2.ioc_deploy role,
+# but runs on Ubuntu/Debian (the production role targets RHEL).
+#
+# Usage:
+#   ansible-playbook playbooks/deploy_local.yml
+#
+# Override Prodigy host (for USB-Ethernet connection to Windows machine):
+#   ansible-playbook playbooks/deploy_local.yml \
+#     -e prodigy_host=192.168.1.100
+#
+# Requirements:
+#   - EPICS stack built at /opt/epics (run scripts/build_epics_stack.sh)
+#   - KREIOS driver built (make -j$(nproc) in repo root)
+#   - procserv installed (apt install procserv)
+#   - ansible installed (pip install ansible)
+
+- name: Deploy KREIOS IOC locally
+  hosts: localhost
+  connection: local
+  become: true
+
+  vars:
+    # IOC identity
+    ioc_name: kreios-det1
+    ioc_type: adkreios
+
+    # Directory layout (matches production)
+    iocs_dir: /epics/iocs
+    ioc_dir: "{{ iocs_dir }}/{{ ioc_name }}"
+    common_dir: /epics/common
+    log_dir: /var/log/softioc
+    as_dir_name: as
+
+    # EPICS paths (native build from build_epics_stack.sh)
+    epics_base: /opt/epics/base
+    support: /opt/epics/support
+    adkreios_path: "{{ lookup('env', 'ADKREIOS') | default(playbook_dir + '/..', true) }}"
+
+    # IOC user/group (current user for laptop deployment)
+    softioc_user: "{{ ansible_user_id }}"
+    softioc_group: "{{ ansible_user_id }}"
+
+    # PV prefix and connection settings
+    prefix: "XF:29ID2-ES{Det:Kreios}:"
+    engineer: "A. Sligar"
+    prodigy_host: "{{ lookup('env', 'PRODIGY_HOST') | default('localhost', true) }}"
+    prodigy_port: "{{ lookup('env', 'PRODIGY_PORT') | default('7010', true) }}"
+
+    # IOC parameters (same defaults as deploy_ioc/vars/adkreios.yml)
+    port: KREIOS1
+    qsize: 20
+    xsize: 1285
+    ysize: 730
+    nchans: 100000
+    cbuffs: 500
+    max_threads: 5
+    nelements: 50000000
+    procserv_port: 4000
+
+    # Executable
+    executable: kreios
+
+    # Network (localhost for laptop)
+    epics_addr: "127.0.0.1"
+    epics_broadcast: "127.255.255.255"
+
+  tasks:
+    # ------------------------------------------------------------------
+    # Preflight checks
+    # ------------------------------------------------------------------
+    - name: Verify EPICS base is built
+      ansible.builtin.stat:
+        path: "{{ epics_base }}/bin/linux-x86_64/caget"
+      register: epics_base_check
+
+    - name: Fail if EPICS base not found
+      ansible.builtin.fail:
+        msg: >-
+          EPICS base not found at {{ epics_base }}.
+          Run scripts/build_epics_stack.sh first.
+      when: not epics_base_check.stat.exists
+
+    - name: Verify KREIOS driver is built
+      ansible.builtin.stat:
+        path: "{{ adkreios_path }}/bin/linux-x86_64/{{ executable }}"
+      register: kreios_check
+
+    - name: Fail if KREIOS driver not built
+      ansible.builtin.fail:
+        msg: >-
+          KREIOS driver not found at {{ adkreios_path }}/bin/linux-x86_64/{{ executable }}.
+          Run 'make -j$(nproc)' in the kreios-ioc directory.
+      when: not kreios_check.stat.exists
+
+    - name: Ensure procserv is installed
+      ansible.builtin.apt:
+        name: procserv
+        state: present
+
+    # ------------------------------------------------------------------
+    # Create directory structure
+    # ------------------------------------------------------------------
+    - name: Create IOC directory structure
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0775"
+      loop:
+        - "{{ iocs_dir }}"
+        - "{{ ioc_dir }}"
+        - "{{ ioc_dir }}/db"
+        - "{{ ioc_dir }}/iocBoot"
+        - "{{ ioc_dir }}/{{ as_dir_name }}"
+        - "{{ ioc_dir }}/{{ as_dir_name }}/req"
+        - "{{ ioc_dir }}/{{ as_dir_name }}/save"
+        - "{{ common_dir }}"
+        - "{{ log_dir }}"
+        - "{{ log_dir }}/{{ ioc_name }}"
+
+    # ------------------------------------------------------------------
+    # Generate network setup (netsetup.cmd)
+    # ------------------------------------------------------------------
+    - name: Generate netsetup.cmd
+      ansible.builtin.copy:
+        dest: "{{ common_dir }}/localhost-netsetup.cmd"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          #
+          # localhost-netsetup.cmd
+          #
+          epicsEnvSet("EPICS_CA_AUTO_ADDR_LIST",         "NO")
+          epicsEnvSet("EPICS_CA_ADDR_LIST",              "{{ epics_broadcast }}")
+          epicsEnvSet("EPICS_CAS_AUTO_BEACON_ADDR_LIST", "NO")
+          epicsEnvSet("EPICS_CAS_BEACON_ADDR_LIST",      "{{ epics_broadcast }}")
+          epicsEnvSet("EPICS_CAS_INTF_ADDR_LIST",        "{{ epics_addr }}")
+
+          epicsEnvSet("EPICS_PVA_AUTO_ADDR_LIST",         "NO")
+          epicsEnvSet("EPICS_PVA_ADDR_LIST",              "{{ epics_broadcast }}")
+          epicsEnvSet("EPICS_PVAS_AUTO_BEACON_ADDR_LIST", "NO")
+          epicsEnvSet("EPICS_PVAS_BEACON_ADDR_LIST",      "{{ epics_broadcast }}")
+          epicsEnvSet("EPICS_PVAS_INTF_ADDR_LIST",        "{{ epics_addr }}")
+
+    # ------------------------------------------------------------------
+    # Generate epicsEnv.cmd (environment variables)
+    # ------------------------------------------------------------------
+    - name: Generate epicsEnv.cmd
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/iocBoot/epicsEnv.cmd"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          < /epics/common/localhost-netsetup.cmd
+
+          errlogInit(20000)
+
+          epicsEnvSet("IOC", "{{ ioc_type }}")
+          epicsEnvSet("IOC_DIR", "{{ iocs_dir }}")
+          epicsEnvSet("TOP", "$(IOC_DIR)/{{ ioc_name }}")
+          epicsEnvSet("TEMPLATE_TOP", "{{ adkreios_path }}")
+          epicsEnvSet("HOSTNAME", "localhost")
+          epicsEnvSet("IOCNAME", "{{ ioc_name }}")
+          epicsEnvSet("EPICS_BASE", "{{ epics_base }}")
+          epicsEnvSet("ASYN", "{{ support }}/asyn")
+          epicsEnvSet("AUTOSAVE", "{{ support }}/autosave")
+          epicsEnvSet("BUSY", "{{ support }}/busy")
+          epicsEnvSet("CALC", "{{ support }}/calc")
+          epicsEnvSet("DEVIOCSTATS", "{{ support }}/iocStats")
+          epicsEnvSet("SSCAN", "{{ support }}/sscan")
+          epicsEnvSet("SNCSEQ", "{{ support }}/seq")
+          epicsEnvSet("ADCORE", "{{ support }}/ADCore")
+          epicsEnvSet("ADSUPPORT", "{{ support }}/ADSupport")
+          epicsEnvSet("ADKREIOS", "{{ adkreios_path }}")
+          epicsEnvSet("PORT", "{{ port }}")
+          epicsEnvSet("QSIZE", "{{ qsize }}")
+          epicsEnvSet("NCHANS", "{{ nchans }}")
+          epicsEnvSet("CBUFFS", "{{ cbuffs }}")
+          epicsEnvSet("MAX_THREADS", "{{ max_threads }}")
+          epicsEnvSet("XSIZE", "{{ xsize }}")
+          epicsEnvSet("YSIZE", "{{ ysize }}")
+          epicsEnvSet("NELEMENTS", "{{ nelements }}")
+          epicsEnvSet("PRODIGY_HOST", "{{ prodigy_host }}")
+          epicsEnvSet("PRODIGY_PORT", "{{ prodigy_port }}")
+          epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db:$(ADKREIOS)/db")
+          epicsEnvSet("PREFIX", "{{ prefix }}")
+          epicsEnvSet("ENGINEER", "{{ engineer }}")
+
+    # ------------------------------------------------------------------
+    # Generate base.cmd (device-specific startup)
+    # ------------------------------------------------------------------
+    - name: Generate base.cmd
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/iocBoot/base.cmd"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          errlogInit(20000)
+
+          dbLoadDatabase("{{ adkreios_path }}/dbd/{{ executable }}.dbd")
+          {{ executable }}_registerRecordDeviceDriver(pdbbase)
+
+          # Create asyn port for Prodigy communication
+          drvAsynIPPortConfigure("PRODIGY", "$(PRODIGY_HOST):$(PRODIGY_PORT)", 0, 0, 0)
+
+          # kreiosConfig(portName, driverPort, maxBuffers, maxMemory, priority, stackSize)
+          kreiosConfig("$(PORT)", "PRODIGY", 0, 0, 0, 0)
+          epicsThreadSleep(2)
+
+          # Load KREIOS database
+          dbLoadRecords("$(ADKREIOS)/db/kreios.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
+
+          # NDStdArrays plugin for image viewing
+          NDStdArraysConfigure("Image1", $(QSIZE), 0, "$(PORT)", 0, 0, 0, 0, 0, $(MAX_THREADS))
+          dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Float64,FTVL=DOUBLE,NELEMENTS=$(NELEMENTS)")
+
+    # ------------------------------------------------------------------
+    # Generate common.cmd (AD plugins, autosave setup)
+    # ------------------------------------------------------------------
+    - name: Generate common.cmd
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/iocBoot/common.cmd"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          # Load base set of plugins using commonPlugins.cmd
+          < $(ADCORE)/iocBoot/commonPlugins.cmd
+
+          # Load additional records standard for each IOC
+          dbLoadRecords("$(EPICS_BASE)/db/iocAdminSoft.db", "IOC=$(PREFIX)")
+          dbLoadRecords("$(EPICS_BASE)/db/save_restoreStatus.db", "P=$(PREFIX)")
+
+          save_restoreSet_Debug(0)
+          save_restoreSet_IncompleteSetsOk(1)
+          save_restoreSet_DatedBackupFiles(1)
+
+          set_savefile_path("$(TOP)/{{ as_dir_name }}/save")
+          set_requestfile_path("$(TOP)/{{ as_dir_name }}/req")
+          set_requestfile_path("$(EPICS_BASE)/req")
+
+          set_pass0_restoreFile("auto_settings.sav")
+          set_pass1_restoreFile("auto_settings.sav")
+
+          save_restoreSet_status_prefix("$(PREFIX)")
+
+    # ------------------------------------------------------------------
+    # Generate postInit.cmd (autosave monitor sets)
+    # ------------------------------------------------------------------
+    - name: Generate postInit.cmd
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/iocBoot/postInit.cmd"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          cd $(TOP)/{{ as_dir_name }}/req
+
+          create_monitor_set("auto_settings.req", 30, "P=$(PREFIX)")
+
+          cd $(TOP)
+
+    # ------------------------------------------------------------------
+    # Generate st.cmd (iocBoot startup script)
+    # ------------------------------------------------------------------
+    - name: Generate iocBoot/st.cmd
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/iocBoot/st.cmd"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0775"
+        content: |
+          #!{{ adkreios_path }}/bin/linux-x86_64/{{ executable }}
+
+          # Perform base environment setup and configuration
+          < ./epicsEnv.cmd
+
+          # Load IOC specific startup configuration
+          < ./base.cmd
+
+          # Load any additional configured databases, prep autosave
+          < ./common.cmd
+
+          iocInit()
+
+          # Perform standard IOC post-init actions
+          < ./postInit.cmd
+
+          dbl > $(TOP)/records.dbl
+          date
+
+          # IOC {{ ioc_name }} completed startup
+
+    # ------------------------------------------------------------------
+    # Generate top-level st.cmd
+    # ------------------------------------------------------------------
+    - name: Generate top-level st.cmd
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/st.cmd"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0775"
+        content: |
+          #!/bin/bash
+
+          cd iocBoot && ./st.cmd
+
+    # ------------------------------------------------------------------
+    # Deploy autosave request file
+    # ------------------------------------------------------------------
+    - name: Deploy auto_settings.req
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/{{ as_dir_name }}/req/auto_settings.req"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          file "kreios_settings.req",               P=$(P),  R=cam1:
+          file "NDStdArrays_settings.req",         P=$(P),  R=image1:
+          file "commonPlugin_settings.req",        P=$(P)
+
+    # ------------------------------------------------------------------
+    # Copy kreios_settings.req from source
+    # ------------------------------------------------------------------
+    - name: Copy kreios_settings.req
+      ansible.builtin.copy:
+        src: "{{ adkreios_path }}/iocBoot/iocKreios/kreios_settings.req"
+        dest: "{{ ioc_dir }}/{{ as_dir_name }}/req/kreios_settings.req"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        remote_src: true
+
+    # ------------------------------------------------------------------
+    # Generate manage-iocs config file
+    # ------------------------------------------------------------------
+    - name: Generate manage-iocs config
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/config"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          NAME={{ ioc_name }}
+          USER={{ softioc_user }}
+          PORT={{ procserv_port }}
+          HOST=localhost
+
+    # ------------------------------------------------------------------
+    # Write out IOC configuration for reference
+    # ------------------------------------------------------------------
+    - name: Write IOC configuration YAML
+      ansible.builtin.copy:
+        dest: "{{ ioc_dir }}/{{ ioc_name }}.yml"
+        owner: "{{ softioc_user }}"
+        group: "{{ softioc_group }}"
+        mode: "0664"
+        content: |
+          ---
+          {{ ioc_name }}:
+            type: "{{ ioc_type }}"
+            environment:
+              PREFIX: "{{ prefix }}"
+              ENGINEER: "{{ engineer }}"
+              PRODIGY_HOST: "{{ prodigy_host }}"
+              PRODIGY_PORT: {{ prodigy_port }}
+              XSIZE: {{ xsize }}
+              YSIZE: {{ ysize }}
+
+    # ------------------------------------------------------------------
+    # Install and enable systemd service
+    # ------------------------------------------------------------------
+    - name: Install systemd service
+      ansible.builtin.copy:
+        dest: "/etc/systemd/system/softioc-{{ ioc_name }}.service"
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=IOC {{ ioc_name }} via procServ
+          After=network.target
+
+          [Service]
+          User={{ softioc_user }}
+          ExecStart=/usr/bin/procServ -f -q -c {{ ioc_dir }} -i ^D^C^] -p /var/run/softioc-{{ ioc_name }}.pid -n {{ ioc_name }} --restrict -L {{ log_dir }}/{{ ioc_name }}/{{ ioc_name }}.log {{ procserv_port }} {{ ioc_dir }}/st.cmd
+          Environment="PROCPORT={{ procserv_port }}"
+          Environment="HOSTNAME=localhost"
+          Environment="IOCNAME={{ ioc_name }}"
+          Environment="TOP={{ ioc_dir }}"
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Enable IOC service
+      ansible.builtin.systemd:
+        name: "softioc-{{ ioc_name }}"
+        enabled: true
+
+    # ------------------------------------------------------------------
+    # Summary
+    # ------------------------------------------------------------------
+    - name: Print deployment summary
+      ansible.builtin.debug:
+        msg: |
+          ========================================
+          KREIOS IOC deployed successfully!
+          ========================================
+
+          IOC directory: {{ ioc_dir }}
+          PV prefix:     {{ prefix }}
+          Prodigy host:  {{ prodigy_host }}:{{ prodigy_port }}
+          procServ port: {{ procserv_port }}
+
+          Start the IOC:
+            sudo systemctl start softioc-{{ ioc_name }}
+
+          Check status:
+            sudo systemctl status softioc-{{ ioc_name }}
+
+          Connect to procServ console:
+            telnet localhost {{ procserv_port }}
+
+          Test PVs:
+            export EPICS_CA_ADDR_LIST=127.0.0.1
+            caget {{ prefix }}cam1:Connected_RBV
+          ========================================

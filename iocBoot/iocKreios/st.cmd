@@ -46,6 +46,7 @@ epicsEnvSet("YSIZE", "730")
 epicsEnvSet("NCHANS", "100000")
 epicsEnvSet("CBUFFS", "500")
 epicsEnvSet("MAX_THREADS", "5")
+epicsEnvSet("NELEMENTS", "${NELEMENTS=50000000}")
 epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db:$(ADKREIOS)/db")
 
 #- Prodigy server connection parameters
@@ -83,7 +84,7 @@ dbLoadRecords("$(ADKREIOS)/db/kreios.template", "P=$(PREFIX),R=cam1:,PORT=$(PORT
 
 #- NDStdArrays plugin for image viewing in Phoebus/CSS/ImageJ
 NDStdArraysConfigure("Image1", $(QSIZE), 0, "$(PORT)", 0, 0, 0, 0, 0, $(MAX_THREADS))
-dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Float64,FTVL=DOUBLE,NELEMENTS=$(NCHANS)")
+dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Float64,FTVL=DOUBLE,NELEMENTS=$(NELEMENTS)")
 
 #- Load all standard areaDetector plugins from ADCore
 #- This includes: Stats, ROI, Process, Overlay, FFT, etc.
