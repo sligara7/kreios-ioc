@@ -80,7 +80,61 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         
         # Device parameters loaded from file
         self.device_parameters = {}
-        
+
+        # Device commands (section 2.30-2.34)
+        self.device_commands = {
+            "XRC125MF.Activate Preset": {
+                "TargetVoltage": {"type": "Range", "value_type": "double", "unit": "kV", "value": 15.0},
+                "EmissionCurrent": {"type": "Range", "value_type": "double", "unit": "mA", "value": 15.0},
+            },
+            "Phoibos1D.Set Parameters": {
+                "DetectorVoltage": {"type": "Range", "value_type": "double", "unit": "V", "value": 1800.0},
+            },
+        }
+
+        # Templates for CreateDirectDeviceCommand (section 2.37)
+        self.device_templates = {
+            "Gas Flow": {
+                "device_command": "BrooksGF040.Operate",
+                "type": "DeviceCommand",
+                "params": {
+                    "mass_flow": {"type": "Range", "value_type": "double", "unit": "sccm", "value": 0.0},
+                },
+            },
+            "Ion Source": {
+                "device_command": "SPECS_IQE12_38.Operate",
+                "type": "DeviceCommand",
+                "params": {
+                    "Energy": {"type": "Range", "value_type": "double", "unit": "eV", "value": 1000.0},
+                    "EmissionCurrent": {"type": "Range", "value_type": "double", "unit": "mA", "value": 10.0},
+                },
+            },
+        }
+
+        # Direct device commands populated by CreateDirectDeviceCommand
+        self.direct_device_commands = {}
+
+        # System devices with live parameters (section 2.43-2.46)
+        self.devices = {
+            "Phoibos 1D": {
+                "type": "Analyzer",
+                "visible_name": "Phoibos 150 EP",
+                "live_params": {
+                    "Kinetic Energy": {"value_type": "double", "unit": "eV", "value": 300.0, "connectivity": "Online"},
+                    "Detector Voltage": {"value_type": "double", "unit": "V", "value": 1800.0, "connectivity": "Online"},
+                    "Count Rate": {"value_type": "double", "unit": "cps", "value": 1250.0, "connectivity": "Online"},
+                },
+            },
+            "XRC 125 MF": {
+                "type": "Source",
+                "visible_name": "XRC 125 MF X-Ray Source",
+                "live_params": {
+                    "Voltage": {"value_type": "double", "unit": "kV", "value": 15.0, "connectivity": "Online"},
+                    "Current": {"value_type": "double", "unit": "mA", "value": 15.0, "connectivity": "Online"},
+                },
+            },
+        }
+
         super().__init__(request, client_address, server)
     
     def setup(self):
@@ -406,6 +460,54 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
             return self.cmd_set_parameter_value(req_id, params)
         elif command == "GetSpectrumParameterInfo":
             return self.cmd_get_spectrum_parameter_info(req_id, params)
+        elif command == "GetSpectrumDataInfo":
+            return self.cmd_get_spectrum_data_info(req_id, params)
+        elif command == "SetSafeState":
+            return self.cmd_set_safe_state(req_id)
+        elif command == "DisconnectAnalyzer":
+            return f"!{req_id} OK"
+
+        # Analyzer direct voltage commands (2.26-2.27)
+        elif command == "SetAnalyzerParameterValueDirectly":
+            return self.cmd_set_analyzer_parameter_value_directly(req_id, params)
+        elif command == "ValidateAnalyzerParameterValueDirectly":
+            return self.cmd_validate_analyzer_parameter_value_directly(req_id, params)
+
+        # Device command functions (2.30-2.34)
+        elif command == "GetAllDeviceCommands":
+            return self.cmd_get_all_device_commands(req_id)
+        elif command == "GetAllDeviceParameterNames":
+            return self.cmd_get_all_device_parameter_names(req_id, params)
+        elif command == "GetDeviceParameterInfo":
+            return self.cmd_get_device_parameter_info(req_id, params)
+        elif command == "GetDeviceParameterValue":
+            return self.cmd_get_device_parameter_value(req_id, params)
+        elif command == "SetDeviceParameterValue":
+            return self.cmd_set_device_parameter_value(req_id, params)
+
+        # Direct device command functions (2.37-2.42)
+        elif command == "CreateDirectDeviceCommand":
+            return self.cmd_create_direct_device_command(req_id, params)
+        elif command == "GetDirectDeviceCommandInfo":
+            return self.cmd_get_direct_device_command_info(req_id, params)
+        elif command == "GetDirectDeviceParameterInfo":
+            return self.cmd_get_direct_device_parameter_info(req_id, params)
+        elif command == "GetDirectDeviceParameterValue":
+            return self.cmd_get_direct_device_parameter_value(req_id, params)
+        elif command == "SetDirectDeviceParameterValue":
+            return self.cmd_set_direct_device_parameter_value(req_id, params)
+        elif command == "ExecuteDirectDeviceCommand":
+            return self.cmd_execute_direct_device_command(req_id, params)
+
+        # Device information (2.43-2.46)
+        elif command == "GetAllDevices":
+            return self.cmd_get_all_devices(req_id)
+        elif command == "GetDeviceInfo":
+            return self.cmd_get_device_info(req_id, params)
+        elif command == "GetLiveParameterInfo":
+            return self.cmd_get_live_parameter_info(req_id, params)
+        elif command == "GetLiveParameterValue":
+            return self.cmd_get_live_parameter_value(req_id, params)
 
         else:
             return f"!{req_id} Error: 101 Unknown command: {command}"
@@ -547,36 +649,28 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
     
     def cmd_define_spectrum_fe(self, req_id, params):
         """
-        Define spectrum in Fixed Energies mode.
+        Define spectrum in Fixed Energies (FE) mode.
 
-        Params: Energies (array), TransmissionValues (array), DwellTime
+        Protocol params: KinEnergy, Samples, DwellTime, PassEnergy, LensMode, ScanRange
         """
         try:
-            # Parse energy array: Energies:[1.0,2.0,3.0,...]
-            energies_str = params.get('Energies', '[]')
-            if energies_str.startswith('[') and energies_str.endswith(']'):
-                self.fixed_energies = [float(x) for x in energies_str[1:-1].split(',') if x.strip()]
-
-            # Parse transmission array (optional)
-            trans_str = params.get('TransmissionValues', '[]')
-            if trans_str.startswith('[') and trans_str.endswith(']'):
-                self.fixed_transmission_values = [float(x) for x in trans_str[1:-1].split(',') if x.strip()]
-
+            kin_energy = float(params.get('KinEnergy', 300))
+            self.total_samples = int(params.get('Samples', 5))
             self.dwell_time = float(params.get('DwellTime', 0.1))
-            self.total_samples = len(self.fixed_energies)
+            self.pass_energy = float(params.get('PassEnergy', 10))
+            self.lens_mode = params.get('LensMode', 'HighMagnification')
+            self.scan_range = params.get('ScanRange', 'MediumArea')
 
-            # Set energy range for data generation (use min/max of fixed energies)
-            if self.fixed_energies:
-                self.start_energy = min(self.fixed_energies)
-                self.end_energy = max(self.fixed_energies)
-                # Use average spacing as step width
-                if len(self.fixed_energies) > 1:
-                    self.step_width = (self.end_energy - self.start_energy) / (len(self.fixed_energies) - 1)
-                else:
-                    self.step_width = 1.0  # Single energy point
+            # FE mode: fixed kinetic energy, multiple samples at that energy
+            self.start_energy = 0
+            self.end_energy = self.total_samples - 1
+            self.step_width = 1.0
 
             self.spectrum_defined = True
             self.spectrum_validated = False
+
+            print(f"  FE spectrum defined: KinEnergy={kin_energy}, "
+                  f"Samples={self.total_samples}, DwellTime={self.dwell_time}")
 
             return f"!{req_id} OK"
 
@@ -925,7 +1019,7 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
             return f'!{req_id} Error: 206 Unknown spectrum parameter "{param_name}".'
 
         info = spectrum_params[param_name]
-        response = f'!{req_id} OK: Type:{info["Type"]}'
+        response = f'!{req_id} OK: ValueType:{info["Type"]}'
 
         if 'Values' in info:
             values_str = ','.join(f'"{v}"' for v in info['Values'])
@@ -939,6 +1033,215 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
 
         return response
     
+    def cmd_get_spectrum_data_info(self, req_id, params):
+        """Get spectrum data info (OrdinateRange, AbscissaRange) per protocol spec 2.29"""
+        param_name = params.get('ParameterName', params.get('Name', ''))
+
+        if param_name == 'OrdinateRange':
+            # Non-energy axis range (e.g., angle or momentum)
+            return (f'!{req_id} OK: ValueType:double Unit:"deg" '
+                    f'Min:-0.571875 Max:1.77187')
+        elif param_name == 'AbscissaRange':
+            # Energy axis range
+            return (f'!{req_id} OK: ValueType:double Unit:"eV" '
+                    f'Min:{self.start_energy} Max:{self.end_energy}')
+        else:
+            return f'!{req_id} Error: 206 Unknown data info parameter "{param_name}".'
+
+    def cmd_set_safe_state(self, req_id):
+        """Set all devices into safe state per protocol spec 2.36"""
+        return f"!{req_id} OK"
+
+    # ========== Analyzer Direct Voltage Commands (2.26-2.27) ==========
+
+    def cmd_set_analyzer_parameter_value_directly(self, req_id, params):
+        """Set logical voltages/currents directly without acquisition (2.26)"""
+        if self.acquisition_state == AcquisitionState.RUNNING:
+            return f"!{req_id} Error: 214 Cannot set parameters during acquisition."
+        # Accept LensMode, ScanRange, Polarity
+        return f"!{req_id} OK"
+
+    def cmd_validate_analyzer_parameter_value_directly(self, req_id, params):
+        """Validate logical voltages/currents before setting (2.27)"""
+        return f"!{req_id} OK"
+
+    # ========== Device Command Functions (2.30-2.34) ==========
+
+    def cmd_get_all_device_commands(self, req_id):
+        """Get list of available device commands (2.30)"""
+        names = ','.join(f'"{name}"' for name in self.device_commands.keys())
+        return f"!{req_id} OK: DeviceCommands:[{names}]"
+
+    def cmd_get_all_device_parameter_names(self, req_id, params):
+        """Get device parameter names for a device command (2.31)"""
+        dev_cmd = params.get('DeviceCommand', '')
+        if dev_cmd not in self.device_commands:
+            return f'!{req_id} Error: 218 Unknown device command "{dev_cmd}".'
+        param_names = ','.join(f'"{n}"' for n in self.device_commands[dev_cmd].keys())
+        return f"!{req_id} OK: ParameterNames:[{param_names}]"
+
+    def cmd_get_device_parameter_info(self, req_id, params):
+        """Get information about single device parameter (2.32)"""
+        dev_cmd = params.get('DeviceCommand', '')
+        param_name = params.get('ParameterName', '')
+        if dev_cmd not in self.device_commands:
+            return f'!{req_id} Error: 218 Unknown device command "{dev_cmd}".'
+        cmd_params = self.device_commands[dev_cmd]
+        if param_name not in cmd_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        info = cmd_params[param_name]
+        return (f'!{req_id} OK: Type:{info["type"]} '
+                f'ValueType:{info["value_type"]} Unit:"{info["unit"]}"')
+
+    def cmd_get_device_parameter_value(self, req_id, params):
+        """Get value of single device parameter (2.33)"""
+        dev_cmd = params.get('DeviceCommand', '')
+        param_name = params.get('ParameterName', '')
+        if dev_cmd not in self.device_commands:
+            return f'!{req_id} Error: 218 Unknown device command "{dev_cmd}".'
+        cmd_params = self.device_commands[dev_cmd]
+        if param_name not in cmd_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        value = cmd_params[param_name]["value"]
+        return f'!{req_id} OK: Name:"{param_name}" Value:{value}'
+
+    def cmd_set_device_parameter_value(self, req_id, params):
+        """Set value of device parameter (2.34)"""
+        if self.acquisition_state == AcquisitionState.RUNNING:
+            return f"!{req_id} Error: 214 Cannot set parameters during acquisition."
+        dev_cmd = params.get('DeviceCommand', '')
+        param_name = params.get('ParameterName', '')
+        value = params.get('Value', '')
+        if dev_cmd not in self.device_commands:
+            return f'!{req_id} Error: 218 Unknown device command "{dev_cmd}".'
+        cmd_params = self.device_commands[dev_cmd]
+        if param_name not in cmd_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        try:
+            cmd_params[param_name]["value"] = float(value)
+        except (ValueError, TypeError):
+            cmd_params[param_name]["value"] = value
+        return f"!{req_id} OK"
+
+    # ========== Direct Device Command Functions (2.37-2.42) ==========
+
+    def cmd_create_direct_device_command(self, req_id, params):
+        """Create experiment item for device operation (2.37)"""
+        template = params.get('Template', '')
+        if template not in self.device_templates:
+            return f'!{req_id} Error: 219 Unknown template "{template}".'
+        tmpl = self.device_templates[template]
+        # Copy template params into direct_device_commands
+        import copy
+        self.direct_device_commands = {
+            tmpl["device_command"]: {
+                "type": tmpl["type"],
+                "template": template,
+                "params": copy.deepcopy(tmpl["params"]),
+            }
+        }
+        names = ','.join(f'"{n}"' for n in self.direct_device_commands.keys())
+        return f"!{req_id} OK: DeviceCommands:[{names}]"
+
+    def cmd_get_direct_device_command_info(self, req_id, params):
+        """Get info about device command from Devices item (2.38)"""
+        dev_cmd = params.get('DeviceCommand', '')
+        if dev_cmd not in self.direct_device_commands:
+            return f'!{req_id} Error: 218 No direct device command "{dev_cmd}".'
+        info = self.direct_device_commands[dev_cmd]
+        param_names = ','.join(f'"{n}"' for n in info["params"].keys())
+        return (f'!{req_id} OK: Type:"{info["type"]}" '
+                f'Name:"{dev_cmd}" ParameterNames:[{param_names}]')
+
+    def cmd_get_direct_device_parameter_info(self, req_id, params):
+        """Get info about parameter of direct device command (2.39)"""
+        dev_cmd = params.get('DeviceCommand', '')
+        param_name = params.get('ParameterName', '')
+        if dev_cmd not in self.direct_device_commands:
+            return f'!{req_id} Error: 218 No direct device command "{dev_cmd}".'
+        cmd_params = self.direct_device_commands[dev_cmd]["params"]
+        if param_name not in cmd_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        info = cmd_params[param_name]
+        return (f'!{req_id} OK: Type:{info["type"]} '
+                f'ValueType:{info["value_type"]} Unit:"{info["unit"]}"')
+
+    def cmd_get_direct_device_parameter_value(self, req_id, params):
+        """Get parameter value of direct device command (2.40)"""
+        dev_cmd = params.get('DeviceCommand', '')
+        param_name = params.get('ParameterName', '')
+        if dev_cmd not in self.direct_device_commands:
+            return f'!{req_id} Error: 218 No direct device command "{dev_cmd}".'
+        cmd_params = self.direct_device_commands[dev_cmd]["params"]
+        if param_name not in cmd_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        value = cmd_params[param_name]["value"]
+        return f'!{req_id} OK: Name:"{param_name}" Value:{value}'
+
+    def cmd_set_direct_device_parameter_value(self, req_id, params):
+        """Set parameter value of direct device command (2.41)"""
+        dev_cmd = params.get('DeviceCommand', '')
+        param_name = params.get('ParameterName', '')
+        value = params.get('Value', '')
+        if dev_cmd not in self.direct_device_commands:
+            return f'!{req_id} Error: 218 No direct device command "{dev_cmd}".'
+        cmd_params = self.direct_device_commands[dev_cmd]["params"]
+        if param_name not in cmd_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        try:
+            cmd_params[param_name]["value"] = float(value)
+        except (ValueError, TypeError):
+            cmd_params[param_name]["value"] = value
+        return f"!{req_id} OK"
+
+    def cmd_execute_direct_device_command(self, req_id, params):
+        """Run the Devices item (2.42)"""
+        if not self.direct_device_commands:
+            return f"!{req_id} Error: 219 No direct device command created."
+        return f"!{req_id} OK"
+
+    # ========== Device Information (2.43-2.46) ==========
+
+    def cmd_get_all_devices(self, req_id):
+        """Get list of available devices (2.43)"""
+        names = ','.join(f'"{name}"' for name in self.devices.keys())
+        return f"!{req_id} OK: Devices:[{names}]"
+
+    def cmd_get_device_info(self, req_id, params):
+        """Get device information (2.44)"""
+        device = params.get('Device', '')
+        if device not in self.devices:
+            return f'!{req_id} Error: 220 Unknown device "{device}".'
+        dev = self.devices[device]
+        param_names = ','.join(f'"{n}"' for n in dev["live_params"].keys())
+        return (f'!{req_id} OK: Type:"{dev["type"]}" '
+                f'VisibleName:"{dev["visible_name"]}" '
+                f'LiveParameterNames:[{param_names}]')
+
+    def cmd_get_live_parameter_info(self, req_id, params):
+        """Get information about live device parameter (2.45)"""
+        device = params.get('Device', '')
+        param_name = params.get('Parameter', '')
+        if device not in self.devices:
+            return f'!{req_id} Error: 220 Unknown device "{device}".'
+        live_params = self.devices[device]["live_params"]
+        if param_name not in live_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        info = live_params[param_name]
+        return f'!{req_id} OK: ValueType:{info["value_type"]} Unit:"{info["unit"]}"'
+
+    def cmd_get_live_parameter_value(self, req_id, params):
+        """Get current value of live device parameter (2.46)"""
+        device = params.get('Device', '')
+        param_name = params.get('Parameter', '')
+        if device not in self.devices:
+            return f'!{req_id} Error: 220 Unknown device "{device}".'
+        live_params = self.devices[device]["live_params"]
+        if param_name not in live_params:
+            return f'!{req_id} Error: 206 Unknown parameter "{param_name}".'
+        info = live_params[param_name]
+        return f'!{req_id} OK: Connectivity:{info["connectivity"]} Value:{info["value"]}'
+
     def cmd_get_parameter_value(self, req_id, params):
         """Get current value of a parameter"""
         # Accept both 'ParameterName' (full protocol) and 'Name' (simple protocol)

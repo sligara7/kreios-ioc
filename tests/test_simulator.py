@@ -295,6 +295,22 @@ class TestSimulatorDataGeneration:
         assert len(unique_values) > 1, "All pixel values are identical"
 
 
+class TestSimulatorControlCommands:
+    """Tests for simulator control commands (SetSafeState, DisconnectAnalyzer)."""
+
+    def test_set_safe_state(self, client):
+        """Test SetSafeState returns OK."""
+        client.send_command("Connect")
+        response = client.send_command("SetSafeState")
+        assert "OK" in response
+
+    def test_disconnect_analyzer(self, client):
+        """Test DisconnectAnalyzer returns OK."""
+        client.send_command("Connect")
+        response = client.send_command("DisconnectAnalyzer")
+        assert "OK" in response
+
+
 class TestSimulatorSpectrumModes:
     """Tests for different spectrum acquisition modes."""
 
@@ -379,6 +395,33 @@ class TestSimulatorSpectrumModes:
         response = client.send_command("GetAcquisitionData", {
             "FromIndex": 0,
             "ToIndex": 2,
+        })
+        assert "Data:[" in response
+
+    def test_lvs_mode(self, client, wait_for_complete_func):
+        """Test Logical Voltage Scan mode full workflow."""
+        client.send_command("Connect")
+        response = client.send_command("DefineSpectrumLVS", {
+            "Start": -0.5,
+            "End": 0.5,
+            "StepWidth": 0.25,
+            "KinEnergy": 280.0,
+            "DwellTime": 0.01,
+            "PassEnergy": 10.0,
+            "ScanVariable": "Focus Displacement 1 [nu]",
+        })
+        assert "OK" in response
+
+        validate_resp = client.send_command("ValidateSpectrum")
+        assert "OK" in validate_resp
+
+        client.send_command("Start")
+        wait_for_complete_func(client, timeout=10.0)
+
+        # LVS: (-0.5 to 0.5) / 0.25 + 1 = 5 samples
+        response = client.send_command("GetAcquisitionData", {
+            "FromIndex": 0,
+            "ToIndex": 4,
         })
         assert "Data:[" in response
 

@@ -248,22 +248,22 @@ PROTOCOL_COMMANDS = {
     "GetAllDeviceParameterNames": {
         "section": "2.31",
         "description": "Get device parameter names for a device command",
-        "params": {"DeviceCommand": "Analyzer.SetParameters"},
+        "params": {"DeviceCommand": "XRC125MF.Activate Preset"},
     },
     "GetDeviceParameterInfo": {
         "section": "2.32",
         "description": "Get information about single device parameter",
-        "params": {"ParameterName": "ChargeVoltage", "DeviceCommand": "Device.Operate"},
+        "params": {"ParameterName": "TargetVoltage", "DeviceCommand": "XRC125MF.Activate Preset"},
     },
     "GetDeviceParameterValue": {
         "section": "2.33",
         "description": "Get value of single device parameter",
-        "params": {"ParameterName": "ChargeVoltage", "DeviceCommand": "Device.Operate"},
+        "params": {"ParameterName": "TargetVoltage", "DeviceCommand": "XRC125MF.Activate Preset"},
     },
     "SetDeviceParameterValue": {
         "section": "2.34",
         "description": "Set value of device parameter",
-        "params": {"ParameterName": "ChargeVoltage", "DeviceCommand": "Device.Operate", "Value": 1.0},
+        "params": {"ParameterName": "TargetVoltage", "DeviceCommand": "XRC125MF.Activate Preset", "Value": 12.0},
     },
 
     # Analyzer Control
@@ -287,27 +287,32 @@ PROTOCOL_COMMANDS = {
     "GetDirectDeviceCommandInfo": {
         "section": "2.38",
         "description": "Get info about device command from Devices item",
-        "params": {"DeviceCommand": "Device.Operate"},
+        "params": {"DeviceCommand": "BrooksGF040.Operate"},
+        "requires_direct_device_command": True,
     },
     "GetDirectDeviceParameterInfo": {
         "section": "2.39",
         "description": "Get info about parameter of direct device command",
-        "params": {"DeviceCommand": "Device.Operate", "ParameterName": "mass_flow"},
+        "params": {"DeviceCommand": "BrooksGF040.Operate", "ParameterName": "mass_flow"},
+        "requires_direct_device_command": True,
     },
     "GetDirectDeviceParameterValue": {
         "section": "2.40",
         "description": "Get parameter value of direct device command",
-        "params": {"DeviceCommand": "Device.Operate", "ParameterName": "mass_flow"},
+        "params": {"DeviceCommand": "BrooksGF040.Operate", "ParameterName": "mass_flow"},
+        "requires_direct_device_command": True,
     },
     "SetDirectDeviceParameterValue": {
         "section": "2.41",
         "description": "Set parameter value of direct device command",
-        "params": {"DeviceCommand": "Device.Operate", "ParameterName": "mass_flow", "Value": 250.0},
+        "params": {"DeviceCommand": "BrooksGF040.Operate", "ParameterName": "mass_flow", "Value": 250.0},
+        "requires_direct_device_command": True,
     },
     "ExecuteDirectDeviceCommand": {
         "section": "2.42",
         "description": "Run the Devices item",
         "params": None,
+        "requires_direct_device_command": True,
     },
 
     # Device Information (added in v1.22)
@@ -319,17 +324,17 @@ PROTOCOL_COMMANDS = {
     "GetDeviceInfo": {
         "section": "2.44",
         "description": "Get device information",
-        "params": {"Device": "Analyzer"},
+        "params": {"Device": "Phoibos 1D"},
     },
     "GetLiveParameterInfo": {
         "section": "2.45",
         "description": "Get information about live device parameter",
-        "params": {"Device": "Analyzer", "Parameter": "Voltage"},
+        "params": {"Device": "Phoibos 1D", "Parameter": "Kinetic Energy"},
     },
     "GetLiveParameterValue": {
         "section": "2.46",
         "description": "Get current value of live device parameter",
-        "params": {"Device": "Analyzer", "Parameter": "Voltage"},
+        "params": {"Device": "Phoibos 1D", "Parameter": "Kinetic Energy"},
     },
 }
 
@@ -507,6 +512,60 @@ class TestProtocolCommandRecognition:
         response = client.send_command("GetAnalyzerVisibleName")
         assert "Error:101" not in response
         assert "OK" in response
+
+
+class TestAllCommandsRecognized:
+    """Parametrized smoke test: every protocol command is recognized by the simulator."""
+
+    @pytest.mark.parametrize("cmd_name", sorted(PROTOCOL_COMMANDS.keys()))
+    def test_command_recognized(self, client, cmd_name):
+        """Test that command is recognized (does not return Error 101)."""
+        cmd_info = PROTOCOL_COMMANDS[cmd_name]
+
+        client.send_command("Connect")
+
+        # Set up prerequisites for commands that need them
+        if cmd_info.get("requires_spectrum"):
+            client.send_command("DefineSpectrumFAT", {
+                "StartEnergy": 400.0, "EndEnergy": 402.0,
+                "StepWidth": 0.5, "DwellTime": 0.01, "PassEnergy": 20.0,
+            })
+
+        if cmd_info.get("requires_validated_spectrum"):
+            client.send_command("DefineSpectrumFAT", {
+                "StartEnergy": 400.0, "EndEnergy": 402.0,
+                "StepWidth": 0.5, "DwellTime": 0.01, "PassEnergy": 20.0,
+            })
+            client.send_command("ValidateSpectrum")
+
+        if cmd_info.get("requires_running_acquisition") or cmd_info.get("requires_acquisition"):
+            client.send_command("DefineSpectrumFAT", {
+                "StartEnergy": 400.0, "EndEnergy": 410.0,
+                "StepWidth": 0.5, "DwellTime": 0.5, "PassEnergy": 20.0,
+            })
+            client.send_command("ValidateSpectrum")
+            client.send_command("Start")
+
+        if cmd_info.get("requires_paused_acquisition"):
+            client.send_command("DefineSpectrumFAT", {
+                "StartEnergy": 400.0, "EndEnergy": 410.0,
+                "StepWidth": 0.5, "DwellTime": 0.5, "PassEnergy": 20.0,
+            })
+            client.send_command("ValidateSpectrum")
+            client.send_command("Start")
+            client.send_command("Pause")
+
+        if cmd_info.get("requires_direct_device_command"):
+            client.send_command("CreateDirectDeviceCommand", {"Template": "Gas Flow"})
+
+        # Skip Connect (already sent) and Disconnect (would break client)
+        if cmd_name in ("Connect", "Disconnect"):
+            return
+
+        response = client.send_command(cmd_name, cmd_info.get("params"))
+        assert "Error: 101" not in response, (
+            f"{cmd_name} (section {cmd_info['section']}) returned 'unknown command'"
+        )
 
 
 class TestProtocolCommandCoverage:

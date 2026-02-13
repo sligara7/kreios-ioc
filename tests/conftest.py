@@ -189,8 +189,11 @@ class ProdigyTestClient:
         request = f"?{req_id} {command}"
         if params:
             for key, value in params.items():
-                if isinstance(value, str) and " " in value:
+                if isinstance(value, str):
+                    # Protocol requires all string values to be quoted
                     request += f' {key}:"{value}"'
+                elif isinstance(value, float):
+                    request += f" {key}:{value}"
                 else:
                     request += f" {key}:{value}"
         request += "\n"

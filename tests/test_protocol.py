@@ -138,6 +138,20 @@ class TestSpectrumDefinitionCommands:
         })
         assert "OK" in response
 
+    def test_define_spectrum_lvs_success(self, client):
+        """Test DefineSpectrumLVS with ScanVariable."""
+        client.send_command("Connect")
+        response = client.send_command("DefineSpectrumLVS", {
+            "Start": -1.0,
+            "End": 1.0,
+            "StepWidth": 0.1,
+            "KinEnergy": 280.0,
+            "DwellTime": 0.1,
+            "PassEnergy": 10.0,
+            "ScanVariable": "Focus Displacement 1 [nu]",
+        })
+        assert "OK" in response
+
     def test_define_spectrum_with_2d_params(self, client):
         """Test DefineSpectrumFAT with ValuesPerSample for 2D data."""
         client.send_command("Connect")
@@ -208,6 +222,41 @@ class TestSpectrumValidation:
         response2 = client.send_command("ValidateSpectrum")
         assert "Error:" in response2
 
+    def test_check_spectrum_fe_no_side_effects(self, client):
+        """Test CheckSpectrumFE validates without setting spectrum."""
+        client.send_command("Connect")
+        response = client.send_command("CheckSpectrumFE", {
+            "KinEnergy": 300.0,
+            "Samples": 5,
+            "DwellTime": 0.1,
+            "PassEnergy": 10.0,
+        })
+        assert "OK" in response
+        assert "Samples:" in response
+
+        # ValidateSpectrum should fail since no spectrum is defined
+        response2 = client.send_command("ValidateSpectrum")
+        assert "Error:" in response2
+
+    def test_check_spectrum_lvs_no_side_effects(self, client):
+        """Test CheckSpectrumLVS validates without setting spectrum."""
+        client.send_command("Connect")
+        response = client.send_command("CheckSpectrumLVS", {
+            "Start": -1.0,
+            "End": 1.0,
+            "StepWidth": 0.1,
+            "KinEnergy": 280.0,
+            "DwellTime": 0.1,
+            "PassEnergy": 10.0,
+            "ScanVariable": "Focus Displacement 1 [nu]",
+        })
+        assert "OK" in response
+        assert "ScanVariable:" in response
+
+        # ValidateSpectrum should fail since no spectrum is defined
+        response2 = client.send_command("ValidateSpectrum")
+        assert "Error:" in response2
+
     def test_clear_spectrum(self, client):
         """Test ClearSpectrum clears data but preserves spectrum definition.
 
@@ -264,6 +313,88 @@ class TestParameterCommands:
         client.send_command("Connect")
         response = client.send_command("GetAnalyzerParameterValue", {
             "ParameterName": "NonExistentParameter"
+        })
+        assert "Error:" in response
+
+    def test_get_analyzer_parameter_info(self, client):
+        """Test GetAnalyzerParameterInfo returns type info."""
+        client.send_command("Connect")
+        response = client.send_command("GetAnalyzerParameterInfo", {
+            "ParameterName": "Detector Voltage",
+        })
+        assert "OK" in response
+        assert "ValueType:" in response
+
+    def test_get_analyzer_parameter_info_unknown(self, client):
+        """Test GetAnalyzerParameterInfo with unknown parameter fails."""
+        client.send_command("Connect")
+        response = client.send_command("GetAnalyzerParameterInfo", {
+            "ParameterName": "NonExistentParam",
+        })
+        assert "Error:" in response
+
+    def test_get_spectrum_parameter_info_lens_mode(self, client):
+        """Test GetSpectrumParameterInfo returns enum values for LensMode."""
+        client.send_command("Connect")
+        response = client.send_command("GetSpectrumParameterInfo", {
+            "ParameterName": "LensMode",
+        })
+        assert "OK" in response
+        assert "Values:[" in response
+
+    def test_get_spectrum_parameter_info_dwell_time(self, client):
+        """Test GetSpectrumParameterInfo returns range for DwellTime."""
+        client.send_command("Connect")
+        response = client.send_command("GetSpectrumParameterInfo", {
+            "ParameterName": "DwellTime",
+        })
+        assert "OK" in response
+        assert "Min:" in response
+        assert "Max:" in response
+
+    def test_get_spectrum_parameter_info_unknown(self, client):
+        """Test GetSpectrumParameterInfo with unknown parameter fails."""
+        client.send_command("Connect")
+        response = client.send_command("GetSpectrumParameterInfo", {
+            "ParameterName": "NoSuchParam",
+        })
+        assert "Error:" in response
+
+    def test_get_spectrum_data_info_ordinate(self, client):
+        """Test GetSpectrumDataInfo for OrdinateRange."""
+        client.send_command("Connect")
+        response = client.send_command("GetSpectrumDataInfo", {
+            "ParameterName": "OrdinateRange",
+        })
+        assert "OK" in response
+        assert "ValueType:" in response
+        assert "Unit:" in response
+        assert "Min:" in response
+        assert "Max:" in response
+
+    def test_get_spectrum_data_info_abscissa(self, client):
+        """Test GetSpectrumDataInfo for AbscissaRange returns energy range."""
+        client.send_command("Connect")
+        # Define a spectrum first so energy range is set
+        client.send_command("DefineSpectrumFAT", {
+            "StartEnergy": 400.0,
+            "EndEnergy": 410.0,
+            "StepWidth": 0.5,
+            "DwellTime": 0.1,
+            "PassEnergy": 20.0,
+        })
+        response = client.send_command("GetSpectrumDataInfo", {
+            "ParameterName": "AbscissaRange",
+        })
+        assert "OK" in response
+        assert "400" in response
+        assert "410" in response
+
+    def test_get_spectrum_data_info_unknown(self, client):
+        """Test GetSpectrumDataInfo with unknown parameter fails."""
+        client.send_command("Connect")
+        response = client.send_command("GetSpectrumDataInfo", {
+            "ParameterName": "UnknownRange",
         })
         assert "Error:" in response
 
