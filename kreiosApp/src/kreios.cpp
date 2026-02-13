@@ -266,12 +266,50 @@ Kreios::Kreios(const char *portName, const char *driverPort, int maxBuffers,
 
 /**
  * Make connection to the Prodigy server
+ *
+ * Establishes TCP connection, then sends protocol Connect command
+ * to initialize the Prodigy Remote In session.
  */
 asynStatus Kreios::makeConnection()
 {
     int status = asynSuccess;
+    const char *functionName = "Kreios::makeConnection";
 
     status = connect();
+
+    if (status == asynSuccess) {
+        // Send protocol Connect command
+        std::string response;
+        std::map<std::string, std::string> data;
+        status = commandResponse(KREIOS_CMD_CONNECT, response, data);
+
+        if (status == asynSuccess) {
+            // Store server name
+            if (data.count("ServerName") > 0) {
+                setStringParam(KREIOSServerName_, data["ServerName"].c_str());
+                debug(functionName, "Server name", data["ServerName"]);
+            }
+            // Parse and store protocol version (Major.Minor)
+            if (data.count("ProtocolVersion") > 0) {
+                std::string version = data["ProtocolVersion"];
+                size_t dotPos = version.find('.');
+                if (dotPos != std::string::npos) {
+                    try {
+                        int major = std::stoi(version.substr(0, dotPos));
+                        int minor = std::stoi(version.substr(dotPos + 1));
+                        setIntegerParam(KREIOSProtocolVersionMajor_, major);
+                        setIntegerParam(KREIOSProtocolVersionMinor_, minor);
+                        debug(functionName, "Protocol version", version);
+                    } catch (...) {
+                        debug(functionName, "Failed to parse protocol version", version);
+                    }
+                }
+            }
+            callParamCallbacks();
+        } else {
+            debug(functionName, "Protocol Connect command failed");
+        }
+    }
 
     if (status == asynSuccess) {
         if (firstConnect_ == true) {
@@ -327,7 +365,9 @@ asynStatus Kreios::connect()
 }
 
 /**
- * Disconnect from the low-level asyn port
+ * Disconnect from the Prodigy server
+ *
+ * Sends protocol Disconnect command before closing TCP connection.
  */
 asynStatus Kreios::disconnect()
 {
@@ -337,10 +377,15 @@ asynStatus Kreios::disconnect()
 
     getIntegerParam(KREIOSConnected_, &connected);
     if (connected == 1) {
+        // Send protocol Disconnect command before TCP disconnect
+        sendSimpleCommand(KREIOS_CMD_DISCONNECT);
+
         status = asynPortDisconnect(portUser_);
         if (status != asynSuccess) {
             debug(functionName, "Failed to disconnect from low level asynOctetSyncIO port", driverPort_);
         }
+        setIntegerParam(KREIOSConnected_, 0);
+        callParamCallbacks();
     }
     return status;
 }
@@ -967,25 +1012,25 @@ asynStatus Kreios::defineSpectrumFAT()
     getIntegerParam(KREIOSNumSlices_, &numSlices);
 
     cmd << KREIOS_CMD_DEFINE_FAT;
-    cmd << ":StartEnergy=" << startEnergy;
-    cmd << ":EndEnergy=" << endEnergy;
-    cmd << ":StepWidth=" << stepWidth;
-    cmd << ":PassEnergy=" << passEnergy;
-    cmd << ":DwellTime=" << dwellTime;
+    cmd << " StartEnergy:" << startEnergy;
+    cmd << " EndEnergy:" << endEnergy;
+    cmd << " StepWidth:" << stepWidth;
+    cmd << " PassEnergy:" << passEnergy;
+    cmd << " DwellTime:" << dwellTime;
 
     if (lensMode < (int)lensModes_.size()) {
-        cmd << ":LensMode=" << lensModes_[lensMode];
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
     }
     if (scanRange < (int)scanRanges_.size()) {
-        cmd << ":ScanRange=" << scanRanges_[scanRange];
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
     }
 
     // Include dimension parameters for 2D/3D acquisition
     if (valuesPerSample > 1) {
-        cmd << ":ValuesPerSample=" << valuesPerSample;
+        cmd << " ValuesPerSample:" << valuesPerSample;
     }
     if (numSlices > 1) {
-        cmd << ":NumberOfSlices=" << numSlices;
+        cmd << " NumberOfSlices:" << numSlices;
     }
 
     debug(functionName, "Command", cmd.str());
@@ -1013,17 +1058,17 @@ asynStatus Kreios::defineSpectrumSFAT()
     getIntegerParam(KREIOSScanRange_, &scanRange);
 
     cmd << KREIOS_CMD_DEFINE_SFAT;
-    cmd << ":StartEnergy=" << startEnergy;
-    cmd << ":EndEnergy=" << endEnergy;
-    cmd << ":StepWidth=" << stepWidth;
-    cmd << ":PassEnergy=" << passEnergy;
-    cmd << ":DwellTime=" << dwellTime;
+    cmd << " StartEnergy:" << startEnergy;
+    cmd << " EndEnergy:" << endEnergy;
+    cmd << " StepWidth:" << stepWidth;
+    cmd << " PassEnergy:" << passEnergy;
+    cmd << " DwellTime:" << dwellTime;
 
     if (lensMode < (int)lensModes_.size()) {
-        cmd << ":LensMode=" << lensModes_[lensMode];
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
     }
     if (scanRange < (int)scanRanges_.size()) {
-        cmd << ":ScanRange=" << scanRanges_[scanRange];
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
     }
 
     debug(functionName, "Command", cmd.str());
@@ -1051,17 +1096,17 @@ asynStatus Kreios::defineSpectrumFRR()
     getIntegerParam(KREIOSScanRange_, &scanRange);
 
     cmd << KREIOS_CMD_DEFINE_FRR;
-    cmd << ":StartEnergy=" << startEnergy;
-    cmd << ":EndEnergy=" << endEnergy;
-    cmd << ":StepWidth=" << stepWidth;
-    cmd << ":RetardingRatio=" << retardRatio;
-    cmd << ":DwellTime=" << dwellTime;
+    cmd << " StartEnergy:" << startEnergy;
+    cmd << " EndEnergy:" << endEnergy;
+    cmd << " StepWidth:" << stepWidth;
+    cmd << " RetardingRatio:" << retardRatio;
+    cmd << " DwellTime:" << dwellTime;
 
     if (lensMode < (int)lensModes_.size()) {
-        cmd << ":LensMode=" << lensModes_[lensMode];
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
     }
     if (scanRange < (int)scanRanges_.size()) {
-        cmd << ":ScanRange=" << scanRanges_[scanRange];
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
     }
 
     debug(functionName, "Command", cmd.str());
@@ -1088,16 +1133,16 @@ asynStatus Kreios::defineSpectrumFE()
     getIntegerParam(KREIOSSamples_, &samples);
 
     cmd << KREIOS_CMD_DEFINE_FE;
-    cmd << ":KineticEnergy=" << kineticEnergy;
-    cmd << ":PassEnergy=" << passEnergy;
-    cmd << ":DwellTime=" << dwellTime;
-    cmd << ":Samples=" << samples;
+    cmd << " KinEnergy:" << kineticEnergy;
+    cmd << " PassEnergy:" << passEnergy;
+    cmd << " DwellTime:" << dwellTime;
+    cmd << " Samples:" << samples;
 
     if (lensMode < (int)lensModes_.size()) {
-        cmd << ":LensMode=" << lensModes_[lensMode];
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
     }
     if (scanRange < (int)scanRanges_.size()) {
-        cmd << ":ScanRange=" << scanRanges_[scanRange];
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
     }
 
     debug(functionName, "Command", cmd.str());
@@ -1121,13 +1166,13 @@ asynStatus Kreios::defineSpectrumLVS()
     getIntegerParam(KREIOSScanRange_, &scanRange);
 
     cmd << KREIOS_CMD_DEFINE_LVS;
-    cmd << ":DwellTime=" << dwellTime;
+    cmd << " DwellTime:" << dwellTime;
 
     if (lensMode < (int)lensModes_.size()) {
-        cmd << ":LensMode=" << lensModes_[lensMode];
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
     }
     if (scanRange < (int)scanRanges_.size()) {
-        cmd << ":ScanRange=" << scanRanges_[scanRange];
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
     }
 
     debug(functionName, "Command", cmd.str());
@@ -1185,8 +1230,8 @@ asynStatus Kreios::readAcquisitionData(int startIndex, int endIndex, std::vector
     const char *functionName = "Kreios::readAcquisitionData";
 
     cmd << KREIOS_CMD_GET_DATA;
-    cmd << ":FromIndex=" << startIndex;
-    cmd << ":ToIndex=" << endIndex;
+    cmd << " FromIndex:" << startIndex;
+    cmd << " ToIndex:" << endIndex;
 
     debug(functionName, "Reading data", cmd.str());
     status = commandResponse(cmd.str(), response, data);
@@ -1223,7 +1268,7 @@ asynStatus Kreios::sendStartCommand(bool safeAfter)
 
     cmd << KREIOS_CMD_START;
     if (!safeAfter) {
-        cmd << ":SafeAfter=false";
+        cmd << " SetSafeStateAfter:\"false\"";
     }
 
     debug(functionName, "Starting acquisition", cmd.str());
@@ -1265,9 +1310,9 @@ asynStatus Kreios::readDeviceVisibleName()
     status = commandResponse(KREIOS_CMD_GET_VISNAME, response, data);
 
     if (status == asynSuccess) {
-        if (data.count("VisibleName") > 0) {
-            setStringParam(ADModel, data["VisibleName"].c_str());
-            debug(functionName, "Device name", data["VisibleName"]);
+        if (data.count("AnalyzerVisibleName") > 0) {
+            setStringParam(ADModel, data["AnalyzerVisibleName"].c_str());
+            debug(functionName, "Device name", data["AnalyzerVisibleName"]);
         }
     }
 
@@ -1295,12 +1340,12 @@ asynStatus Kreios::getAnalyserParameterType(const std::string &name, KREIOSValue
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_GET_INFO << ":Name=" << name;
+    cmd << KREIOS_CMD_GET_INFO << " ParameterName:\"" << name << "\"";
     status = commandResponse(cmd.str(), response, data);
 
     if (status == asynSuccess) {
-        if (data.count("Type") > 0) {
-            std::string type = data["Type"];
+        if (data.count("ValueType") > 0) {
+            std::string type = data["ValueType"];
             if (type == KREIOS_TYPE_DOUBLE) {
                 value = KREIOSTypeDouble;
             } else if (type == KREIOS_TYPE_INTEGER) {
@@ -1323,7 +1368,7 @@ asynStatus Kreios::getAnalyserParameter(const std::string &name, int &value)
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_GET_VALUE << ":Name=" << name;
+    cmd << KREIOS_CMD_GET_VALUE << " ParameterName:\"" << name << "\"";
     status = commandResponse(cmd.str(), response, data);
 
     if (status == asynSuccess) {
@@ -1346,7 +1391,7 @@ asynStatus Kreios::getAnalyserParameter(const std::string &name, double &value)
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_GET_VALUE << ":Name=" << name;
+    cmd << KREIOS_CMD_GET_VALUE << " ParameterName:\"" << name << "\"";
     status = commandResponse(cmd.str(), response, data);
 
     if (status == asynSuccess) {
@@ -1369,7 +1414,7 @@ asynStatus Kreios::getAnalyserParameter(const std::string &name, std::string &va
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_GET_VALUE << ":Name=" << name;
+    cmd << KREIOS_CMD_GET_VALUE << " ParameterName:\"" << name << "\"";
     status = commandResponse(cmd.str(), response, data);
 
     if (status == asynSuccess) {
@@ -1388,7 +1433,7 @@ asynStatus Kreios::getAnalyserParameter(const std::string &name, bool &value)
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_GET_VALUE << ":Name=" << name;
+    cmd << KREIOS_CMD_GET_VALUE << " ParameterName:\"" << name << "\"";
     status = commandResponse(cmd.str(), response, data);
 
     if (status == asynSuccess) {
@@ -1409,7 +1454,7 @@ asynStatus Kreios::setAnalyserParameter(const std::string &name, int value)
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_SET_VALUE << ":Name=" << name << ":Value=" << value;
+    cmd << KREIOS_CMD_SET_VALUE << " ParameterName:\"" << name << "\" Value:" << value;
     status = commandResponse(cmd.str(), response, data);
 
     return status;
@@ -1422,7 +1467,7 @@ asynStatus Kreios::setAnalyserParameter(const std::string &name, double value)
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_SET_VALUE << ":Name=" << name << ":Value=" << value;
+    cmd << KREIOS_CMD_SET_VALUE << " ParameterName:\"" << name << "\" Value:" << value;
     status = commandResponse(cmd.str(), response, data);
 
     return status;
@@ -1435,7 +1480,7 @@ asynStatus Kreios::setAnalyserParameter(const std::string &name, std::string val
     std::map<std::string, std::string> data;
     std::stringstream cmd;
 
-    cmd << KREIOS_CMD_SET_VALUE << ":Name=" << name << ":Value=" << value;
+    cmd << KREIOS_CMD_SET_VALUE << " ParameterName:\"" << name << "\" Value:\"" << value << "\"";
     status = commandResponse(cmd.str(), response, data);
 
     return status;
@@ -1490,7 +1535,7 @@ asynStatus Kreios::readSpectrumParameter(int param)
     const char *functionName = "Kreios::readSpectrumParameter";
 
     if (param == KREIOSLensMode_) {
-        cmd << KREIOS_CMD_GET_SPECTRUM << ":Name=LensMode";
+        cmd << KREIOS_CMD_GET_SPECTRUM << " ParameterName:\"LensMode\"";
         status = commandResponse(cmd.str(), response, data);
         if (status == asynSuccess && data.count("Values") > 0) {
             lensModes_.clear();
@@ -1505,7 +1550,7 @@ asynStatus Kreios::readSpectrumParameter(int param)
             debug(functionName, "Lens modes loaded", (int)lensModes_.size());
         }
     } else if (param == KREIOSScanRange_) {
-        cmd << KREIOS_CMD_GET_SPECTRUM << ":Name=ScanRange";
+        cmd << KREIOS_CMD_GET_SPECTRUM << " ParameterName:\"ScanRange\"";
         status = commandResponse(cmd.str(), response, data);
         if (status == asynSuccess && data.count("Values") > 0) {
             scanRanges_.clear();
@@ -1544,14 +1589,15 @@ asynStatus Kreios::readSpectrumDataInfo(KREIOSDataInfoParam_t param)
     const char *functionName = "Kreios::readSpectrumDataInfo";
 
     if (param == KREIOSOrdinateRange) {
-        status = commandResponse(KREIOS_CMD_GET_DATA_INFO ":Name=OrdinateRange", response, data);
+        std::string cmd = std::string(KREIOS_CMD_GET_DATA_INFO) + " ParameterName:\"OrdinateRange\"";
+        status = commandResponse(cmd, response, data);
         if (status == asynSuccess) {
             double min = 0.0, max = 0.0;
             std::string units;
             readDoubleData(data, "Min", min);
             readDoubleData(data, "Max", max);
-            if (data.count("Units") > 0) {
-                units = data["Units"];
+            if (data.count("Unit") > 0) {
+                units = data["Unit"];
             }
             setDoubleParam(KREIOSNonEnergyMin_, min);
             setDoubleParam(KREIOSNonEnergyMax_, max);
@@ -1611,37 +1657,103 @@ asynStatus Kreios::commandResponse(const std::string &command, std::string &resp
     char responseBuffer[KREIOS_MAX_STRING];
     const char *functionName = "Kreios::commandResponse";
 
-    // Increment message counter
+    // Increment message counter and format with ?<4-hex-id> prefix
     int msgCounter;
     getIntegerParam(KREIOSMsgCounter_, &msgCounter);
     setIntegerParam(KREIOSMsgCounter_, ++msgCounter);
 
-    status = asynWriteRead(command.c_str(), responseBuffer);
+    // Format the protocol message: ?<id> <command>
+    char formattedCmd[KREIOS_MAX_STRING];
+    snprintf(formattedCmd, sizeof(formattedCmd), "?%04X %s",
+             msgCounter & 0xFFFF, command.c_str());
+
+    debug(functionName, "Sending", formattedCmd);
+    status = asynWriteRead(formattedCmd, responseBuffer);
 
     if (status == asynSuccess) {
         response = responseBuffer;
-
-        // Parse response into key-value pairs
-        // Format: "OK:Key1=Value1:Key2=Value2" or "ERROR:Code=X:Message=Y"
         data.clear();
-        std::stringstream ss(response);
-        std::string token;
 
-        while (std::getline(ss, token, ':')) {
-            size_t pos = token.find('=');
-            if (pos != std::string::npos) {
-                std::string key = token.substr(0, pos);
-                std::string value = token.substr(pos + 1);
-                cleanString(key);
-                cleanString(value);
-                data[key] = value;
+        // Response format: !<id> OK[: key:value ...] or !<id> Error: <code> "message"
+        std::string resp = response;
+
+        // Strip !<id> prefix (6 chars: "!XXXX ")
+        if (resp.size() >= 6 && resp[0] == '!') {
+            resp = resp.substr(6);
+        }
+
+        if (resp.compare(0, 7, "Error: ") == 0) {
+            status = asynError;
+            // Parse error: "Error: <code> <message>"
+            std::string errBody = resp.substr(7);
+            size_t spacePos = errBody.find(' ');
+            if (spacePos != std::string::npos) {
+                data["Code"] = errBody.substr(0, spacePos);
+                data["Message"] = errBody.substr(spacePos + 1);
             } else {
-                // First token might be OK or ERROR
-                cleanString(token);
-                if (token == KREIOS_ERROR_STRING) {
-                    status = asynError;
-                }
+                data["Code"] = errBody;
             }
+            debug(functionName, "Error response", resp);
+        } else if (resp.compare(0, 4, "OK: ") == 0) {
+            // Parse space-separated key:value pairs from "OK: ..."
+            std::string body = resp.substr(4);
+            size_t pos = 0;
+
+            while (pos < body.size()) {
+                // Skip spaces
+                while (pos < body.size() && body[pos] == ' ') pos++;
+                if (pos >= body.size()) break;
+
+                // Find the colon separating key from value
+                size_t colonPos = body.find(':', pos);
+                if (colonPos == std::string::npos) break;
+
+                std::string key = body.substr(pos, colonPos - pos);
+                pos = colonPos + 1;
+
+                // Read the value
+                std::string value;
+                if (pos < body.size() && body[pos] == '"') {
+                    // Quoted string - find matching close quote
+                    pos++; // skip opening quote
+                    size_t start = pos;
+                    while (pos < body.size()) {
+                        if (body[pos] == '\\' && pos + 1 < body.size()) {
+                            pos += 2; // skip escaped char
+                        } else if (body[pos] == '"') {
+                            break;
+                        } else {
+                            pos++;
+                        }
+                    }
+                    value = body.substr(start, pos - start);
+                    if (pos < body.size()) pos++; // skip closing quote
+                } else if (pos < body.size() && body[pos] == '[') {
+                    // Bracketed array - find matching ]
+                    pos++; // skip opening bracket
+                    size_t start = pos;
+                    int depth = 1;
+                    while (pos < body.size() && depth > 0) {
+                        if (body[pos] == '[') depth++;
+                        else if (body[pos] == ']') depth--;
+                        pos++;
+                    }
+                    // Store value without brackets
+                    value = body.substr(start, pos - start - 1);
+                } else {
+                    // Plain value - read until space or end
+                    size_t start = pos;
+                    while (pos < body.size() && body[pos] != ' ') pos++;
+                    value = body.substr(start, pos - start);
+                }
+
+                data[key] = value;
+            }
+        } else if (resp.compare(0, 2, "OK") == 0) {
+            // Simple OK with no data
+        } else {
+            debug(functionName, "Unexpected response format", response);
+            status = asynError;
         }
     }
 
