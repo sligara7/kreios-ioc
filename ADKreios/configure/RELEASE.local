@@ -1,0 +1,15 @@
+# Local paths for standalone build
+# Auto-generated for testing - adjust paths for your installation
+
+EPICS_BASE=/opt/epics/base
+SUPPORT=/opt/epics/support
+ASYN=$(SUPPORT)/asyn
+SNCSEQ=$(SUPPORT)/seq
+SSCAN=$(SUPPORT)/sscan
+CALC=$(SUPPORT)/calc
+AUTOSAVE=$(SUPPORT)/autosave
+DEVIOCSTATS=$(SUPPORT)/iocStats
+BUSY=$(SUPPORT)/busy
+AREA_DETECTOR=$(SUPPORT)
+ADCORE=$(SUPPORT)/ADCore
+ADSUPPORT=$(SUPPORT)/ADSupport

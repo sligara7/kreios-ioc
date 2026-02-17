@@ -37,8 +37,6 @@ kreios_DBD += NDFileHDF5.dbd
 kreios_DBD += NDFileTIFF.dbd
 kreios_DBD += NDFileJPEG.dbd
 kreios_DBD += NDFileNetCDF.dbd
-# Note: NDFileNexus requires additional dependencies, disabled for now
-# kreios_DBD += NDFileNexus.dbd
 
 # KREIOS driver
 kreios_DBD += kreiosSupport.dbd

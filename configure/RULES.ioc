@@ -1,3 +1,0 @@
-# RULES.ioc - Build rules for IOC boot directories
-
-include $(EPICS_BASE)/configure/RULES.ioc

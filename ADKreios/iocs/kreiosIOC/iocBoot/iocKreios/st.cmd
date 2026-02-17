@@ -100,15 +100,14 @@ dbLoadRecords("$(DEVIOCSTATS)/db/iocAdminSoft.db", "IOC=$(PREFIX)ioc")
 #- Autosave configuration
 #- ===========================================================================
 #- Set paths for autosave request files and save files
-set_requestfile_path("$(ADKREIOS)/iocBoot/$(IOC)")
+set_requestfile_path("$(TOP)/iocBoot/$(IOC)")
 set_requestfile_path("$(ADCORE)/iocBoot")
 set_requestfile_path("$(ADCORE)/ADApp/Db")
 set_requestfile_path("$(CALC)/calcApp/Db")
 set_requestfile_path("$(SSCAN)/sscanApp/Db")
 
-set_savefile_path("$(ADKREIOS)/iocBoot/$(IOC)/autosave")
+set_savefile_path("$(TOP)/iocBoot/$(IOC)/autosave")
 
-#- Note: autosave directory is created by Dockerfile
 #- For non-Docker deployments, create manually: mkdir -p iocBoot/iocKreios/autosave
 
 #- Autosave settings: restore on boot, periodic save

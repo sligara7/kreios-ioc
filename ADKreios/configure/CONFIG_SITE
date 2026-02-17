@@ -1,0 +1,18 @@
+# CONFIG_SITE - ADKreios Site Configuration
+
+CHECK_RELEASE = YES
+
+# GCC 13 / _FORTIFY_SOURCE=3 workaround for EPICS Base R7.0.8 on Ubuntu 24.04
+# See: https://epics.anl.gov/tech-talk/2024/msg00531.php
+USR_CPPFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2
+
+# Get settings from AREA_DETECTOR if available
+-include $(AREA_DETECTOR)/configure/CONFIG_SITE
+-include $(AREA_DETECTOR)/configure/CONFIG_SITE.$(EPICS_HOST_ARCH)
+-include $(AREA_DETECTOR)/configure/CONFIG_SITE.$(EPICS_HOST_ARCH).Common
+ifdef T_A
+  -include $(AREA_DETECTOR)/configure/CONFIG_SITE.Common.$(T_A)
+  -include $(AREA_DETECTOR)/configure/CONFIG_SITE.$(EPICS_HOST_ARCH).$(T_A)
+endif
+
+-include $(TOP)/configure/CONFIG_SITE.local

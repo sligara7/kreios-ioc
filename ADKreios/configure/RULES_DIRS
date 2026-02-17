@@ -1,3 +1,1 @@
-# RULES_DIRS
-
 include $(EPICS_BASE)/configure/RULES_DIRS
