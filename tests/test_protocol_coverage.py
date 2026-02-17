@@ -248,22 +248,22 @@ PROTOCOL_COMMANDS = {
     "GetAllDeviceParameterNames": {
         "section": "2.31",
         "description": "Get device parameter names for a device command",
-        "params": {"DeviceCommand": "XRC125MF.Activate Preset"},
+        "params": {"DeviceCommand": "X-Ray Dummy.Operate"},
     },
     "GetDeviceParameterInfo": {
         "section": "2.32",
         "description": "Get information about single device parameter",
-        "params": {"ParameterName": "TargetVoltage", "DeviceCommand": "XRC125MF.Activate Preset"},
+        "params": {"ParameterName": "uanode", "DeviceCommand": "X-Ray Dummy.Operate"},
     },
     "GetDeviceParameterValue": {
         "section": "2.33",
         "description": "Get value of single device parameter",
-        "params": {"ParameterName": "TargetVoltage", "DeviceCommand": "XRC125MF.Activate Preset"},
+        "params": {"ParameterName": "uanode", "DeviceCommand": "X-Ray Dummy.Operate"},
     },
     "SetDeviceParameterValue": {
         "section": "2.34",
         "description": "Set value of device parameter",
-        "params": {"ParameterName": "TargetVoltage", "DeviceCommand": "XRC125MF.Activate Preset", "Value": 12.0},
+        "params": {"ParameterName": "uanode", "DeviceCommand": "X-Ray Dummy.Operate", "Value": 12.0},
     },
 
     # Analyzer Control
@@ -324,17 +324,17 @@ PROTOCOL_COMMANDS = {
     "GetDeviceInfo": {
         "section": "2.44",
         "description": "Get device information",
-        "params": {"Device": "Phoibos 1D"},
+        "params": {"Device": "Analyzer ND"},
     },
     "GetLiveParameterInfo": {
         "section": "2.45",
         "description": "Get information about live device parameter",
-        "params": {"Device": "Phoibos 1D", "Parameter": "Kinetic Energy"},
+        "params": {"Device": "Analyzer ND", "Parameter": "Kinetic Energy"},
     },
     "GetLiveParameterValue": {
         "section": "2.46",
         "description": "Get current value of live device parameter",
-        "params": {"Device": "Phoibos 1D", "Parameter": "Kinetic Energy"},
+        "params": {"Device": "Analyzer ND", "Parameter": "Kinetic Energy"},
     },
 }
 

@@ -2,8 +2,8 @@
 """
 SpecsLab Prodigy Remote In Protocol Simulator
 
-Simulates the SpecsLab Prodigy Remote In interface (v1.2) for KREIOS-150 detector.
-Based on the protocol specification from SpecsLabProdigy_RemoteIn.md
+Simulates the SpecsLab Prodigy Remote In interface (v1.22) for KREIOS-150 detector.
+Based on the protocol specification from SpecsLabProdigy_RemoteIn.pdf
 
 Protocol Summary:
 - TCP server on port 7010
@@ -82,13 +82,14 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         self.device_parameters = {}
 
         # Device commands (section 2.30-2.34)
+        # Matches real KREIOS Prodigy responses
         self.device_commands = {
-            "XRC125MF.Activate Preset": {
-                "TargetVoltage": {"type": "Range", "value_type": "double", "unit": "kV", "value": 15.0},
-                "EmissionCurrent": {"type": "Range", "value_type": "double", "unit": "mA", "value": 15.0},
+            "Analyzer ND.Configure 2D/XPS": {
+                # This command has no parameters (confirmed against real Prodigy)
             },
-            "Phoibos1D.Set Parameters": {
-                "DetectorVoltage": {"type": "Range", "value_type": "double", "unit": "V", "value": 1800.0},
+            "X-Ray Dummy.Operate": {
+                "uanode": {"type": "Range", "value_type": "double", "unit": "", "value": 14000.0},
+                "iemission": {"type": "Range", "value_type": "double", "unit": "", "value": 0.0142857143},
             },
         }
 
@@ -115,23 +116,36 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
         self.direct_device_commands = {}
 
         # System devices with live parameters (section 2.43-2.46)
+        # Matches real KREIOS Prodigy responses
         self.devices = {
-            "Phoibos 1D": {
-                "type": "Analyzer",
-                "visible_name": "Phoibos 150 EP",
+            "Analyzer ND": {
+                "type": "PhoibosND",
+                "visible_name": "KREIOS MM",
                 "live_params": {
                     "Kinetic Energy": {"value_type": "double", "unit": "eV", "value": 300.0, "connectivity": "Online"},
                     "Detector Voltage": {"value_type": "double", "unit": "V", "value": 1800.0, "connectivity": "Online"},
                     "Count Rate": {"value_type": "double", "unit": "cps", "value": 1250.0, "connectivity": "Online"},
                 },
             },
-            "XRC 125 MF": {
-                "type": "Source",
-                "visible_name": "XRC 125 MF X-Ray Source",
-                "live_params": {
-                    "Voltage": {"value_type": "double", "unit": "kV", "value": 15.0, "connectivity": "Online"},
-                    "Current": {"value_type": "double", "unit": "mA", "value": 15.0, "connectivity": "Online"},
-                },
+            "Aperture MCS2": {
+                "type": "Aperture MCS2",
+                "visible_name": "KREIOS Aperture",
+                "live_params": {},
+            },
+            "Beamline": {
+                "type": "Beamline",
+                "visible_name": "Monochromator",
+                "live_params": {},
+            },
+            "ILC 10": {
+                "type": "ILC10-Net",
+                "visible_name": "ILC 10",
+                "live_params": {},
+            },
+            "MCPS 36 Manipulator (Nanotec)": {
+                "type": "Nanotec Manipulator",
+                "visible_name": "KREIOS Hemisphere Slits",
+                "live_params": {},
             },
         }
 
@@ -520,7 +534,7 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
             return f"!{req_id} Error: 2 Already connected to a TCP client."
         
         self.client_connected = True
-        return f'!{req_id} OK: ServerName:"SpecsLab Prodigy Simulator" ProtocolVersion:1.2'
+        return f'!{req_id} OK: ServerName:"SpecsLab Prodigy 4.120.0-r122222 Release (Simulator)" ProtocolVersion:1.22'
     
     def cmd_disconnect(self, req_id):
         """Handle Disconnect command"""
@@ -968,7 +982,7 @@ class ProdigySimHandler(socketserver.StreamRequestHandler):
     
     def cmd_get_analyzer_visible_name(self, req_id):
         """Get analyzer visible name per protocol spec"""
-        return f'!{req_id} OK: AnalyzerVisibleName:"KREIOS-150 Simulator"'
+        return f'!{req_id} OK: AnalyzerVisibleName:"KREIOS MM"'
     
     def cmd_get_parameter_info(self, req_id, params):
         """Get information about a specific parameter per protocol spec"""
@@ -1388,7 +1402,7 @@ def main():
     print("=" * 70)
     print("SpecsLab Prodigy Remote In Protocol Simulator")
     print("=" * 70)
-    print(f"Protocol Version: 1.2")
+    print(f"Protocol Version: 1.22")
     print(f"Listening on: {HOST}:{PORT}")
     print(f"Single client connection enforced")
     print(f"Press Ctrl+C to stop")

@@ -63,17 +63,17 @@ class TestDeviceCommandFunctions:
         response = client.send_command("GetAllDeviceCommands")
         assert "OK" in response
         assert "DeviceCommands:[" in response
-        assert "XRC125MF.Activate Preset" in response
+        assert "X-Ray Dummy.Operate" in response
 
     def test_get_all_device_parameter_names(self, client):
         """Test GetAllDeviceParameterNames returns params for known command."""
         client.send_command("Connect")
         response = client.send_command("GetAllDeviceParameterNames", {
-            "DeviceCommand": "XRC125MF.Activate Preset",
+            "DeviceCommand": "X-Ray Dummy.Operate",
         })
         assert "OK" in response
         assert "ParameterNames:[" in response
-        assert "TargetVoltage" in response
+        assert "uanode" in response
 
     def test_get_all_device_parameter_names_unknown(self, client):
         """Test GetAllDeviceParameterNames with unknown command returns error."""
@@ -88,8 +88,8 @@ class TestDeviceCommandFunctions:
         """Test GetDeviceParameterInfo returns Type/ValueType/Unit."""
         client.send_command("Connect")
         response = client.send_command("GetDeviceParameterInfo", {
-            "DeviceCommand": "XRC125MF.Activate Preset",
-            "ParameterName": "TargetVoltage",
+            "DeviceCommand": "X-Ray Dummy.Operate",
+            "ParameterName": "uanode",
         })
         assert "OK" in response
         assert "Type:" in response
@@ -100,8 +100,8 @@ class TestDeviceCommandFunctions:
         """Test GetDeviceParameterValue returns Name/Value."""
         client.send_command("Connect")
         response = client.send_command("GetDeviceParameterValue", {
-            "DeviceCommand": "XRC125MF.Activate Preset",
-            "ParameterName": "TargetVoltage",
+            "DeviceCommand": "X-Ray Dummy.Operate",
+            "ParameterName": "uanode",
         })
         assert "OK" in response
         assert "Name:" in response
@@ -111,16 +111,16 @@ class TestDeviceCommandFunctions:
         """Test SetDeviceParameterValue updates value (verify with Get)."""
         client.send_command("Connect")
         response = client.send_command("SetDeviceParameterValue", {
-            "DeviceCommand": "XRC125MF.Activate Preset",
-            "ParameterName": "TargetVoltage",
+            "DeviceCommand": "X-Ray Dummy.Operate",
+            "ParameterName": "uanode",
             "Value": 12.0,
         })
         assert "OK" in response
 
         # Verify the value changed
         response2 = client.send_command("GetDeviceParameterValue", {
-            "DeviceCommand": "XRC125MF.Activate Preset",
-            "ParameterName": "TargetVoltage",
+            "DeviceCommand": "X-Ray Dummy.Operate",
+            "ParameterName": "uanode",
         })
         assert "12" in response2
 
@@ -138,8 +138,8 @@ class TestDeviceCommandFunctions:
         client.send_command("Start")
 
         response = client.send_command("SetDeviceParameterValue", {
-            "DeviceCommand": "XRC125MF.Activate Preset",
-            "ParameterName": "TargetVoltage",
+            "DeviceCommand": "X-Ray Dummy.Operate",
+            "ParameterName": "uanode",
             "Value": 10.0,
         })
         assert "Error:" in response
@@ -291,14 +291,14 @@ class TestDeviceInformation:
         response = client.send_command("GetAllDevices")
         assert "OK" in response
         assert "Devices:[" in response
-        assert "Phoibos 1D" in response
-        assert "XRC 125 MF" in response
+        assert "Analyzer ND" in response
+        assert "Beamline" in response
 
     def test_get_device_info(self, client):
         """Test GetDeviceInfo returns Type/VisibleName/LiveParameterNames."""
         client.send_command("Connect")
         response = client.send_command("GetDeviceInfo", {
-            "Device": "Phoibos 1D",
+            "Device": "Analyzer ND",
         })
         assert "OK" in response
         assert "Type:" in response
@@ -318,7 +318,7 @@ class TestDeviceInformation:
         """Test GetLiveParameterInfo returns ValueType/Unit."""
         client.send_command("Connect")
         response = client.send_command("GetLiveParameterInfo", {
-            "Device": "Phoibos 1D",
+            "Device": "Analyzer ND",
             "Parameter": "Kinetic Energy",
         })
         assert "OK" in response
@@ -329,7 +329,7 @@ class TestDeviceInformation:
         """Test GetLiveParameterInfo with unknown parameter returns error."""
         client.send_command("Connect")
         response = client.send_command("GetLiveParameterInfo", {
-            "Device": "Phoibos 1D",
+            "Device": "Analyzer ND",
             "Parameter": "NoSuchParam",
         })
         assert "Error:" in response
@@ -339,7 +339,7 @@ class TestDeviceInformation:
         """Test GetLiveParameterValue returns Connectivity/Value."""
         client.send_command("Connect")
         response = client.send_command("GetLiveParameterValue", {
-            "Device": "Phoibos 1D",
+            "Device": "Analyzer ND",
             "Parameter": "Kinetic Energy",
         })
         assert "OK" in response
@@ -360,8 +360,8 @@ class TestDeviceInformation:
         """Test GetLiveParameterValue reports Connectivity:Online."""
         client.send_command("Connect")
         response = client.send_command("GetLiveParameterValue", {
-            "Device": "XRC 125 MF",
-            "Parameter": "Voltage",
+            "Device": "Analyzer ND",
+            "Parameter": "Detector Voltage",
         })
         assert "OK" in response
         assert "Connectivity:Online" in response
