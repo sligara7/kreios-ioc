@@ -10,7 +10,7 @@ protocol (v1.22, TCP port 7010). It supports 1D (spectrum), 2D (image), and
 Momentum Microscopy, and PEEM.
 
 This driver replaces the older specsAnalyser driver (1D-only, circa 2017) with
-full 2D/3D support and all 27 Prodigy protocol commands.
+full 2D/3D support and all 46 Prodigy protocol commands.
 
 ## KREIOS-150 Specifications
 
@@ -30,7 +30,7 @@ full 2D/3D support and all 27 Prodigy protocol commands.
 - **Acquisition modes**: FAT, SFAT, FRR, FE, LVS
 - **Operating modes**: Spectroscopy, Momentum Microscopy, PEEM
 - **Data dimensionality**: 1D spectrum, 2D image, 3D volume
-- **Full protocol support**: All 27 Prodigy Remote In commands
+- **Full protocol support**: All 46 Prodigy Remote In v1.22 commands
 - **Spectrum validation**: CheckSpectrum with server-side parameter validation
 - **Direct voltage control**: SetAnalyzerParameterValueDirectly
 - **Device management**: GetAllDevices, device parameter query interface
@@ -117,7 +117,7 @@ Communication uses the SpecsLab Prodigy Remote In protocol:
 | Feature | specsAnalyser | ADKreios |
 |---------|--------------|----------|
 | Data dimensions | 1D only | 1D, 2D, 3D |
-| Protocol commands | ~10 | All 27 |
+| Protocol commands | ~10 | All 46 |
 | Operating modes | Spectroscopy | Spectroscopy, Momentum, PEEM |
 | Device query | None | Full query interface |
 | Direct voltage | None | Supported |

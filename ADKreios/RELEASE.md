@@ -7,7 +7,7 @@
 - KREIOS-150 momentum microscope areaDetector driver
 - SpecsLab Prodigy Remote In protocol v1.22 support
 - 1D (spectrum), 2D (image), 3D (volume) data acquisition
-- All 27 Prodigy protocol commands implemented
+- All 46 Prodigy protocol commands implemented
 - Operating modes: Spectroscopy, Momentum Microscopy, PEEM
 - Acquisition modes: FAT, SFAT, FRR, FE, LVS
 - CheckSpectrum with server-side parameter validation
