@@ -115,6 +115,39 @@
 #define KREIOS_CMD_GET_SPECTRUM "GetSpectrumParameterInfo"
 #define KREIOS_CMD_GET_DATA_INFO "GetSpectrumDataInfo"
 #define KREIOS_CMD_SET_SAFE_STATE "SetSafeState"
+#define KREIOS_CMD_DISCONNECT_ANALYZER "DisconnectAnalyzer"
+
+// CheckSpectrum variant commands
+#define KREIOS_CMD_CHECK_FAT   "CheckSpectrumFAT"
+#define KREIOS_CMD_CHECK_SFAT  "CheckSpectrumSFAT"
+#define KREIOS_CMD_CHECK_FRR   "CheckSpectrumFRR"
+#define KREIOS_CMD_CHECK_FE    "CheckSpectrumFE"
+#define KREIOS_CMD_CHECK_LVS   "CheckSpectrumLVS"
+
+// Analyzer direct voltage commands
+#define KREIOS_CMD_SET_VALUE_DIRECTLY      "SetAnalyzerParameterValueDirectly"
+#define KREIOS_CMD_VALIDATE_DIRECTLY       "ValidateAnalyzerParameterValueDirectly"
+
+// Device command functions
+#define KREIOS_CMD_GET_ALL_DEVICE_CMDS         "GetAllDeviceCommands"
+#define KREIOS_CMD_GET_ALL_DEVICE_PARAM_NAMES  "GetAllDeviceParameterNames"
+#define KREIOS_CMD_GET_DEVICE_PARAM_INFO       "GetDeviceParameterInfo"
+#define KREIOS_CMD_GET_DEVICE_PARAM_VALUE      "GetDeviceParameterValue"
+#define KREIOS_CMD_SET_DEVICE_PARAM_VALUE      "SetDeviceParameterValue"
+
+// Direct device command functions
+#define KREIOS_CMD_CREATE_DIRECT_DEVICE_CMD        "CreateDirectDeviceCommand"
+#define KREIOS_CMD_GET_DIRECT_DEVICE_CMD_INFO      "GetDirectDeviceCommandInfo"
+#define KREIOS_CMD_GET_DIRECT_DEVICE_PARAM_INFO    "GetDirectDeviceParameterInfo"
+#define KREIOS_CMD_GET_DIRECT_DEVICE_PARAM_VALUE   "GetDirectDeviceParameterValue"
+#define KREIOS_CMD_SET_DIRECT_DEVICE_PARAM_VALUE   "SetDirectDeviceParameterValue"
+#define KREIOS_CMD_EXEC_DIRECT_DEVICE_CMD          "ExecuteDirectDeviceCommand"
+
+// Device information commands (v1.22)
+#define KREIOS_CMD_GET_ALL_DEVICES       "GetAllDevices"
+#define KREIOS_CMD_GET_DEVICE_INFO       "GetDeviceInfo"
+#define KREIOS_CMD_GET_LIVE_PARAM_INFO   "GetLiveParameterInfo"
+#define KREIOS_CMD_GET_LIVE_PARAM_VALUE  "GetLiveParameterValue"
 
 // Pre-defined EPICS Parameter Names
 #define KREIOSConnectString                   "KREIOS_CONNECT"
@@ -192,6 +225,66 @@
 #define KREIOSSafeStateString                 "KREIOS_SAFE_STATE"
 #define KREIOSDataDelayMaxString              "KREIOS_DATA_DELAY_MAX"
 
+// Group A: Simple trigger commands
+#define KREIOSResumeString                    "KREIOS_RESUME"
+#define KREIOSDisconnectAnalyzerString        "KREIOS_DISCONNECT_ANALYZER"
+#define KREIOSSetSafeStateTriggerString       "KREIOS_SET_SAFE_STATE_TRIGGER"
+
+// Group B: CheckSpectrum
+#define KREIOSCheckSpectrumString             "KREIOS_CHECK_SPECTRUM"
+#define KREIOSCheckStartEnergyString          "KREIOS_CHECK_START_ENERGY"
+#define KREIOSCheckEndEnergyString            "KREIOS_CHECK_END_ENERGY"
+#define KREIOSCheckStepWidthString            "KREIOS_CHECK_STEP_WIDTH"
+#define KREIOSCheckSamplesString              "KREIOS_CHECK_SAMPLES"
+#define KREIOSCheckDwellTimeString            "KREIOS_CHECK_DWELL_TIME"
+#define KREIOSCheckPassEnergyString           "KREIOS_CHECK_PASS_ENERGY"
+
+// Group C: GetAllAnalyzerParameterNames
+#define KREIOSGetAllAnalyzerParamNamesString  "KREIOS_GET_ALL_ANALYZER_PARAMS"
+#define KREIOSAnalyzerParamNamesString        "KREIOS_ANALYZER_PARAM_NAMES"
+
+// Group D: Analyzer direct voltage
+#define KREIOSSetAnalyzerDirectlyString       "KREIOS_SET_ANALYZER_DIRECTLY"
+#define KREIOSValidateAnalyzerDirectlyString  "KREIOS_VALIDATE_ANALYZER_DIRECTLY"
+#define KREIOSDirectPolarityString            "KREIOS_DIRECT_POLARITY"
+#define KREIOSDirectParamNameString           "KREIOS_DIRECT_PARAM_NAME"
+#define KREIOSDirectParamValueString          "KREIOS_DIRECT_PARAM_VALUE"
+
+// Groups E/F/G: Shared query input PVs
+#define KREIOSQueryDeviceString               "KREIOS_QUERY_DEVICE"
+#define KREIOSQueryDeviceCmdString            "KREIOS_QUERY_DEVICE_CMD"
+#define KREIOSQueryParamNameQString           "KREIOS_QUERY_PARAM_NAME"
+#define KREIOSQueryValueString                "KREIOS_QUERY_VALUE"
+#define KREIOSQueryTemplateString             "KREIOS_QUERY_TEMPLATE"
+
+// Groups E/F/G: Trigger PVs (one per command)
+#define KREIOSGetAllDeviceCmdsString          "KREIOS_GET_ALL_DEVICE_CMDS"
+#define KREIOSGetAllDeviceParamNamesString    "KREIOS_GET_ALL_DEVICE_PARAM_NAMES"
+#define KREIOSGetDeviceParamInfoString        "KREIOS_GET_DEVICE_PARAM_INFO"
+#define KREIOSGetDeviceParamValueString       "KREIOS_GET_DEVICE_PARAM_VALUE"
+#define KREIOSSetDeviceParamValueString       "KREIOS_SET_DEVICE_PARAM_VALUE"
+#define KREIOSCreateDirectDeviceCmdString     "KREIOS_CREATE_DIRECT_DEVICE_CMD"
+#define KREIOSGetDirectDeviceCmdInfoString    "KREIOS_GET_DIRECT_DEVICE_CMD_INFO"
+#define KREIOSGetDirectDeviceParamInfoString  "KREIOS_GET_DIRECT_DEVICE_PARAM_INFO"
+#define KREIOSGetDirectDeviceParamValString   "KREIOS_GET_DIRECT_DEVICE_PARAM_VAL"
+#define KREIOSSetDirectDeviceParamValString   "KREIOS_SET_DIRECT_DEVICE_PARAM_VAL"
+#define KREIOSExecDirectDeviceCmdString       "KREIOS_EXEC_DIRECT_DEVICE_CMD"
+#define KREIOSGetAllDevicesString             "KREIOS_GET_ALL_DEVICES"
+#define KREIOSGetDeviceInfoString             "KREIOS_GET_DEVICE_INFO"
+#define KREIOSGetLiveParamInfoString          "KREIOS_GET_LIVE_PARAM_INFO"
+#define KREIOSGetLiveParamValueString         "KREIOS_GET_LIVE_PARAM_VALUE"
+
+// Groups E/F/G: Shared query output PVs
+#define KREIOSQueryResponseString             "KREIOS_QUERY_RESPONSE"
+#define KREIOSQueryParamNamesRBVString        "KREIOS_QUERY_PARAM_NAMES_RBV"
+#define KREIOSQueryValueTypeString            "KREIOS_QUERY_VALUE_TYPE"
+#define KREIOSQueryUnitString                 "KREIOS_QUERY_UNIT"
+#define KREIOSQueryParamValueRBVString        "KREIOS_QUERY_PARAM_VALUE"
+#define KREIOSQueryConnectivityString         "KREIOS_QUERY_CONNECTIVITY"
+#define KREIOSQueryDeviceTypeString           "KREIOS_QUERY_DEVICE_TYPE"
+#define KREIOSQueryVisibleNameRBVString       "KREIOS_QUERY_VISIBLE_NAME"
+#define KREIOSQueryStatusString               "KREIOS_QUERY_STATUS"
+
 // Parameter value types
 typedef enum {
     KREIOSTypeDouble,
@@ -245,6 +338,48 @@ public:
     asynStatus sendStartCommand(bool safeAfter);
     asynStatus sendSimpleCommand(const std::string& command,
                                  std::map<std::string, std::string> *data = NULL);
+
+    // CheckSpectrum variants
+    asynStatus checkSpectrum();
+    asynStatus checkSpectrumFAT();
+    asynStatus checkSpectrumSFAT();
+    asynStatus checkSpectrumFRR();
+    asynStatus checkSpectrumFE();
+    asynStatus checkSpectrumLVS();
+
+    // GetAllAnalyzerParameterNames
+    asynStatus getAllAnalyzerParameterNames();
+
+    // Analyzer direct voltage
+    asynStatus setAnalyzerParameterDirectly();
+    asynStatus validateAnalyzerParameterDirectly();
+
+    // Query interface helpers
+    asynStatus readQueryInputs(std::string &device, std::string &deviceCmd,
+                               std::string &paramName, std::string &value,
+                               std::string &tmpl);
+    asynStatus setQueryOutputs(const std::map<std::string, std::string> &data, bool ok);
+
+    // Device command handlers (Group E)
+    asynStatus queryGetAllDeviceCmds();
+    asynStatus queryGetAllDeviceParamNames();
+    asynStatus queryGetDeviceParamInfo();
+    asynStatus queryGetDeviceParamValue();
+    asynStatus querySetDeviceParamValue();
+
+    // Direct device command handlers (Group F)
+    asynStatus queryCreateDirectDeviceCmd();
+    asynStatus queryGetDirectDeviceCmdInfo();
+    asynStatus queryGetDirectDeviceParamInfo();
+    asynStatus queryGetDirectDeviceParamVal();
+    asynStatus querySetDirectDeviceParamVal();
+    asynStatus queryExecDirectDeviceCmd();
+
+    // Device information handlers (Group G)
+    asynStatus queryGetAllDevices();
+    asynStatus queryGetDeviceInfo();
+    asynStatus queryGetLiveParamInfo();
+    asynStatus queryGetLiveParamValue();
 
     // Device parameter management
     asynStatus readDeviceVisibleName();
@@ -368,7 +503,67 @@ protected:
     // Safe state and timing
     int KREIOSSafeState_;
     int KREIOSDataDelayMax_;
-    #define LAST_KREIOS_PARAM KREIOSDataDelayMax_
+
+    // Group A: Simple trigger commands
+    int KREIOSResume_;
+    int KREIOSDisconnectAnalyzer_;
+    int KREIOSSetSafeStateTrigger_;
+
+    // Group B: CheckSpectrum
+    int KREIOSCheckSpectrum_;
+    int KREIOSCheckStartEnergy_;
+    int KREIOSCheckEndEnergy_;
+    int KREIOSCheckStepWidth_;
+    int KREIOSCheckSamples_;
+    int KREIOSCheckDwellTime_;
+    int KREIOSCheckPassEnergy_;
+
+    // Group C: GetAllAnalyzerParameterNames
+    int KREIOSGetAllAnalyzerParamNames_;
+    int KREIOSAnalyzerParamNames_;
+
+    // Group D: Analyzer direct voltage
+    int KREIOSSetAnalyzerDirectly_;
+    int KREIOSValidateAnalyzerDirectly_;
+    int KREIOSDirectPolarity_;
+    int KREIOSDirectParamName_;
+    int KREIOSDirectParamValue_;
+
+    // Groups E/F/G: Shared query inputs
+    int KREIOSQueryDevice_;
+    int KREIOSQueryDeviceCmd_;
+    int KREIOSQueryParamNameQ_;
+    int KREIOSQueryValue_;
+    int KREIOSQueryTemplate_;
+
+    // Groups E/F/G: Trigger PVs
+    int KREIOSGetAllDeviceCmds_;
+    int KREIOSGetAllDeviceParamNames_;
+    int KREIOSGetDeviceParamInfo_;
+    int KREIOSGetDeviceParamValue_;
+    int KREIOSSetDeviceParamValue_;
+    int KREIOSCreateDirectDeviceCmd_;
+    int KREIOSGetDirectDeviceCmdInfo_;
+    int KREIOSGetDirectDeviceParamInfo_;
+    int KREIOSGetDirectDeviceParamVal_;
+    int KREIOSSetDirectDeviceParamVal_;
+    int KREIOSExecDirectDeviceCmd_;
+    int KREIOSGetAllDevices_;
+    int KREIOSGetDeviceInfo_;
+    int KREIOSGetLiveParamInfo_;
+    int KREIOSGetLiveParamValue_;
+
+    // Groups E/F/G: Shared query outputs
+    int KREIOSQueryResponse_;
+    int KREIOSQueryParamNamesRBV_;
+    int KREIOSQueryValueType_;
+    int KREIOSQueryUnit_;
+    int KREIOSQueryParamValueRBV_;
+    int KREIOSQueryConnectivity_;
+    int KREIOSQueryDeviceType_;
+    int KREIOSQueryVisibleNameRBV_;
+    int KREIOSQueryStatus_;
+    #define LAST_KREIOS_PARAM KREIOSQueryStatus_
 
 private:
     asynUser                           *portUser_;

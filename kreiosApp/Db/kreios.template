@@ -802,3 +802,433 @@ record(ai, "$(P)$(R)Magnification_RBV")
   field(SCAN, "I/O Intr")
   field(PREC, "1")
 }
+
+################### Group A: Simple Trigger Commands ###################
+
+# Resume acquisition
+record(bo, "$(P)$(R)Resume")
+{
+  field(DESC, "Resume acquisition")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_RESUME")
+  field(ZNAM, "Idle")
+  field(ONAM, "Resume")
+}
+
+# Disconnect analyzer
+record(bo, "$(P)$(R)DisconnectAnalyzer")
+{
+  field(DESC, "Disconnect analyzer hardware")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_DISCONNECT_ANALYZER")
+  field(ZNAM, "Idle")
+  field(ONAM, "Disconnect")
+}
+
+# Set safe state trigger
+record(bo, "$(P)$(R)SetSafeStateTrigger")
+{
+  field(DESC, "Set analyzer to safe state")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_SET_SAFE_STATE_TRIGGER")
+  field(ZNAM, "Idle")
+  field(ONAM, "Trigger")
+}
+
+################### Group B: CheckSpectrum ###################
+
+# CheckSpectrum trigger (dispatches to correct variant via RunMode)
+record(bo, "$(P)$(R)CheckSpectrum")
+{
+  field(DESC, "Check spectrum parameters")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CHECK_SPECTRUM")
+  field(ZNAM, "Idle")
+  field(ONAM, "Check")
+}
+
+# CheckSpectrum readback PVs (validated values from server)
+record(ai, "$(P)$(R)CheckStartEnergy_RBV")
+{
+  field(DESC, "Checked start energy")
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CHECK_START_ENERGY")
+  field(SCAN, "I/O Intr")
+  field(PREC, "3")
+  field(EGU,  "eV")
+}
+
+record(ai, "$(P)$(R)CheckEndEnergy_RBV")
+{
+  field(DESC, "Checked end energy")
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CHECK_END_ENERGY")
+  field(SCAN, "I/O Intr")
+  field(PREC, "3")
+  field(EGU,  "eV")
+}
+
+record(ai, "$(P)$(R)CheckStepWidth_RBV")
+{
+  field(DESC, "Checked step width")
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CHECK_STEP_WIDTH")
+  field(SCAN, "I/O Intr")
+  field(PREC, "5")
+  field(EGU,  "eV")
+}
+
+record(longin, "$(P)$(R)CheckSamples_RBV")
+{
+  field(DESC, "Checked samples count")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CHECK_SAMPLES")
+  field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)CheckDwellTime_RBV")
+{
+  field(DESC, "Checked dwell time")
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CHECK_DWELL_TIME")
+  field(SCAN, "I/O Intr")
+  field(PREC, "6")
+  field(EGU,  "s")
+}
+
+record(ai, "$(P)$(R)CheckPassEnergy_RBV")
+{
+  field(DESC, "Checked pass energy")
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CHECK_PASS_ENERGY")
+  field(SCAN, "I/O Intr")
+  field(PREC, "3")
+  field(EGU,  "eV")
+}
+
+################### Group C: GetAllAnalyzerParameterNames ###################
+
+record(bo, "$(P)$(R)GetAllAnalyzerParams")
+{
+  field(DESC, "Get all analyzer param names")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_ALL_ANALYZER_PARAMS")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(waveform, "$(P)$(R)AnalyzerParamNames_RBV")
+{
+  field(DESC, "Analyzer parameter names")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_ANALYZER_PARAM_NAMES")
+  field(SCAN, "I/O Intr")
+  field(FTVL, "CHAR")
+  field(NELM, "4096")
+}
+
+################### Group D: Analyzer Direct Voltage ###################
+
+# Polarity selection
+record(mbbo, "$(P)$(R)DirectPolarity")
+{
+  field(DESC, "Direct voltage polarity")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_DIRECT_POLARITY")
+  field(ZRST, "Unipolar")
+  field(ZRVL, "0")
+  field(ONST, "Bipolar")
+  field(ONVL, "1")
+}
+
+# Parameter name for direct set
+record(stringout, "$(P)$(R)DirectParamName")
+{
+  field(DESC, "Direct parameter name")
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_DIRECT_PARAM_NAME")
+}
+
+# Parameter value for direct set
+record(ao, "$(P)$(R)DirectParamValue")
+{
+  field(DESC, "Direct parameter value")
+  field(DTYP, "asynFloat64")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_DIRECT_PARAM_VALUE")
+  field(PREC, "6")
+}
+
+# Set directly trigger
+record(bo, "$(P)$(R)SetAnalyzerDirectly")
+{
+  field(DESC, "Set analyzer param directly")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_SET_ANALYZER_DIRECTLY")
+  field(ZNAM, "Idle")
+  field(ONAM, "Set")
+}
+
+# Validate directly trigger
+record(bo, "$(P)$(R)ValidateAnalyzerDirectly")
+{
+  field(DESC, "Validate analyzer param directly")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_VALIDATE_ANALYZER_DIRECTLY")
+  field(ZNAM, "Idle")
+  field(ONAM, "Validate")
+}
+
+################### Groups E/F/G: Shared Query Interface ###################
+
+# Shared input PVs
+record(stringout, "$(P)$(R)QueryDevice")
+{
+  field(DESC, "Query: device name")
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_DEVICE")
+}
+
+record(stringout, "$(P)$(R)QueryDeviceCmd")
+{
+  field(DESC, "Query: device command")
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_DEVICE_CMD")
+}
+
+record(stringout, "$(P)$(R)QueryParamName")
+{
+  field(DESC, "Query: parameter name")
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_PARAM_NAME")
+}
+
+record(stringout, "$(P)$(R)QueryValue")
+{
+  field(DESC, "Query: value to set")
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_VALUE")
+}
+
+record(stringout, "$(P)$(R)QueryTemplate")
+{
+  field(DESC, "Query: template name")
+  field(DTYP, "asynOctetWrite")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_TEMPLATE")
+}
+
+# Group E: Device Command triggers
+record(bo, "$(P)$(R)GetAllDeviceCmds")
+{
+  field(DESC, "Get all device commands")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_ALL_DEVICE_CMDS")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetAllDeviceParamNames")
+{
+  field(DESC, "Get device param names")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_ALL_DEVICE_PARAM_NAMES")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetDeviceParamInfo")
+{
+  field(DESC, "Get device param info")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_DEVICE_PARAM_INFO")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetDeviceParamValue")
+{
+  field(DESC, "Get device param value")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_DEVICE_PARAM_VALUE")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)SetDeviceParamValue")
+{
+  field(DESC, "Set device param value")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_SET_DEVICE_PARAM_VALUE")
+  field(ZNAM, "Idle")
+  field(ONAM, "Set")
+}
+
+# Group F: Direct Device Command triggers
+record(bo, "$(P)$(R)CreateDirectDeviceCmd")
+{
+  field(DESC, "Create direct device command")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_CREATE_DIRECT_DEVICE_CMD")
+  field(ZNAM, "Idle")
+  field(ONAM, "Create")
+}
+
+record(bo, "$(P)$(R)GetDirectDeviceCmdInfo")
+{
+  field(DESC, "Get direct device cmd info")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_DIRECT_DEVICE_CMD_INFO")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetDirectDeviceParamInfo")
+{
+  field(DESC, "Get direct device param info")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_DIRECT_DEVICE_PARAM_INFO")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetDirectDeviceParamVal")
+{
+  field(DESC, "Get direct device param value")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_DIRECT_DEVICE_PARAM_VAL")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)SetDirectDeviceParamVal")
+{
+  field(DESC, "Set direct device param value")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_SET_DIRECT_DEVICE_PARAM_VAL")
+  field(ZNAM, "Idle")
+  field(ONAM, "Set")
+}
+
+record(bo, "$(P)$(R)ExecDirectDeviceCmd")
+{
+  field(DESC, "Execute direct device cmd")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_EXEC_DIRECT_DEVICE_CMD")
+  field(ZNAM, "Idle")
+  field(ONAM, "Execute")
+}
+
+# Group G: Device Information triggers
+record(bo, "$(P)$(R)GetAllDevices")
+{
+  field(DESC, "Get all devices")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_ALL_DEVICES")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetDeviceInfo")
+{
+  field(DESC, "Get device info")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_DEVICE_INFO")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetLiveParamInfo")
+{
+  field(DESC, "Get live parameter info")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_LIVE_PARAM_INFO")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+record(bo, "$(P)$(R)GetLiveParamValue")
+{
+  field(DESC, "Get live parameter value")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_GET_LIVE_PARAM_VALUE")
+  field(ZNAM, "Idle")
+  field(ONAM, "Get")
+}
+
+# Shared output PVs
+record(waveform, "$(P)$(R)QueryResponse_RBV")
+{
+  field(DESC, "Query response list")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_RESPONSE")
+  field(SCAN, "I/O Intr")
+  field(FTVL, "CHAR")
+  field(NELM, "4096")
+}
+
+record(waveform, "$(P)$(R)QueryParamNames_RBV")
+{
+  field(DESC, "Query parameter names")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_PARAM_NAMES_RBV")
+  field(SCAN, "I/O Intr")
+  field(FTVL, "CHAR")
+  field(NELM, "4096")
+}
+
+record(stringin, "$(P)$(R)QueryValueType_RBV")
+{
+  field(DESC, "Query value type")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_VALUE_TYPE")
+  field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(P)$(R)QueryUnit_RBV")
+{
+  field(DESC, "Query unit")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_UNIT")
+  field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(P)$(R)QueryParamValue_RBV")
+{
+  field(DESC, "Query parameter value")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_PARAM_VALUE")
+  field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(P)$(R)QueryConnectivity_RBV")
+{
+  field(DESC, "Query connectivity")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_CONNECTIVITY")
+  field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(P)$(R)QueryDeviceType_RBV")
+{
+  field(DESC, "Query device type")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_DEVICE_TYPE")
+  field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(P)$(R)QueryVisibleName_RBV")
+{
+  field(DESC, "Query visible name")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_VISIBLE_NAME")
+  field(SCAN, "I/O Intr")
+}
+
+record(bi, "$(P)$(R)QueryStatus_RBV")
+{
+  field(DESC, "Last query status")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_QUERY_STATUS")
+  field(SCAN, "I/O Intr")
+  field(ZNAM, "Error")
+  field(ONAM, "OK")
+}

@@ -182,6 +182,66 @@ Kreios::Kreios(const char *portName, const char *driverPort, int maxBuffers,
     createParam(KREIOSSafeStateString,                 asynParamInt32,         &KREIOSSafeState_);
     createParam(KREIOSDataDelayMaxString,              asynParamFloat64,       &KREIOSDataDelayMax_);
 
+    // Group A: Simple trigger commands
+    createParam(KREIOSResumeString,                    asynParamInt32,         &KREIOSResume_);
+    createParam(KREIOSDisconnectAnalyzerString,        asynParamInt32,         &KREIOSDisconnectAnalyzer_);
+    createParam(KREIOSSetSafeStateTriggerString,       asynParamInt32,         &KREIOSSetSafeStateTrigger_);
+
+    // Group B: CheckSpectrum
+    createParam(KREIOSCheckSpectrumString,             asynParamInt32,         &KREIOSCheckSpectrum_);
+    createParam(KREIOSCheckStartEnergyString,          asynParamFloat64,       &KREIOSCheckStartEnergy_);
+    createParam(KREIOSCheckEndEnergyString,            asynParamFloat64,       &KREIOSCheckEndEnergy_);
+    createParam(KREIOSCheckStepWidthString,            asynParamFloat64,       &KREIOSCheckStepWidth_);
+    createParam(KREIOSCheckSamplesString,              asynParamInt32,         &KREIOSCheckSamples_);
+    createParam(KREIOSCheckDwellTimeString,            asynParamFloat64,       &KREIOSCheckDwellTime_);
+    createParam(KREIOSCheckPassEnergyString,           asynParamFloat64,       &KREIOSCheckPassEnergy_);
+
+    // Group C: GetAllAnalyzerParameterNames
+    createParam(KREIOSGetAllAnalyzerParamNamesString,  asynParamInt32,         &KREIOSGetAllAnalyzerParamNames_);
+    createParam(KREIOSAnalyzerParamNamesString,        asynParamOctet,         &KREIOSAnalyzerParamNames_);
+
+    // Group D: Analyzer direct voltage
+    createParam(KREIOSSetAnalyzerDirectlyString,       asynParamInt32,         &KREIOSSetAnalyzerDirectly_);
+    createParam(KREIOSValidateAnalyzerDirectlyString,  asynParamInt32,         &KREIOSValidateAnalyzerDirectly_);
+    createParam(KREIOSDirectPolarityString,            asynParamInt32,         &KREIOSDirectPolarity_);
+    createParam(KREIOSDirectParamNameString,           asynParamOctet,         &KREIOSDirectParamName_);
+    createParam(KREIOSDirectParamValueString,          asynParamFloat64,       &KREIOSDirectParamValue_);
+
+    // Groups E/F/G: Shared query inputs
+    createParam(KREIOSQueryDeviceString,               asynParamOctet,         &KREIOSQueryDevice_);
+    createParam(KREIOSQueryDeviceCmdString,            asynParamOctet,         &KREIOSQueryDeviceCmd_);
+    createParam(KREIOSQueryParamNameQString,           asynParamOctet,         &KREIOSQueryParamNameQ_);
+    createParam(KREIOSQueryValueString,                asynParamOctet,         &KREIOSQueryValue_);
+    createParam(KREIOSQueryTemplateString,             asynParamOctet,         &KREIOSQueryTemplate_);
+
+    // Groups E/F/G: Trigger PVs
+    createParam(KREIOSGetAllDeviceCmdsString,          asynParamInt32,         &KREIOSGetAllDeviceCmds_);
+    createParam(KREIOSGetAllDeviceParamNamesString,    asynParamInt32,         &KREIOSGetAllDeviceParamNames_);
+    createParam(KREIOSGetDeviceParamInfoString,        asynParamInt32,         &KREIOSGetDeviceParamInfo_);
+    createParam(KREIOSGetDeviceParamValueString,       asynParamInt32,         &KREIOSGetDeviceParamValue_);
+    createParam(KREIOSSetDeviceParamValueString,       asynParamInt32,         &KREIOSSetDeviceParamValue_);
+    createParam(KREIOSCreateDirectDeviceCmdString,     asynParamInt32,         &KREIOSCreateDirectDeviceCmd_);
+    createParam(KREIOSGetDirectDeviceCmdInfoString,    asynParamInt32,         &KREIOSGetDirectDeviceCmdInfo_);
+    createParam(KREIOSGetDirectDeviceParamInfoString,  asynParamInt32,         &KREIOSGetDirectDeviceParamInfo_);
+    createParam(KREIOSGetDirectDeviceParamValString,   asynParamInt32,         &KREIOSGetDirectDeviceParamVal_);
+    createParam(KREIOSSetDirectDeviceParamValString,   asynParamInt32,         &KREIOSSetDirectDeviceParamVal_);
+    createParam(KREIOSExecDirectDeviceCmdString,       asynParamInt32,         &KREIOSExecDirectDeviceCmd_);
+    createParam(KREIOSGetAllDevicesString,             asynParamInt32,         &KREIOSGetAllDevices_);
+    createParam(KREIOSGetDeviceInfoString,             asynParamInt32,         &KREIOSGetDeviceInfo_);
+    createParam(KREIOSGetLiveParamInfoString,          asynParamInt32,         &KREIOSGetLiveParamInfo_);
+    createParam(KREIOSGetLiveParamValueString,         asynParamInt32,         &KREIOSGetLiveParamValue_);
+
+    // Groups E/F/G: Shared query outputs
+    createParam(KREIOSQueryResponseString,             asynParamOctet,         &KREIOSQueryResponse_);
+    createParam(KREIOSQueryParamNamesRBVString,        asynParamOctet,         &KREIOSQueryParamNamesRBV_);
+    createParam(KREIOSQueryValueTypeString,            asynParamOctet,         &KREIOSQueryValueType_);
+    createParam(KREIOSQueryUnitString,                 asynParamOctet,         &KREIOSQueryUnit_);
+    createParam(KREIOSQueryParamValueRBVString,        asynParamOctet,         &KREIOSQueryParamValueRBV_);
+    createParam(KREIOSQueryConnectivityString,         asynParamOctet,         &KREIOSQueryConnectivity_);
+    createParam(KREIOSQueryDeviceTypeString,           asynParamOctet,         &KREIOSQueryDeviceType_);
+    createParam(KREIOSQueryVisibleNameRBVString,       asynParamOctet,         &KREIOSQueryVisibleNameRBV_);
+    createParam(KREIOSQueryStatusString,               asynParamInt32,         &KREIOSQueryStatus_);
+
     // Set default values
     setIntegerParam(KREIOSConnected_,                 0);
     setIntegerParam(KREIOSPauseAcq_,                  0);
@@ -915,6 +975,78 @@ asynStatus Kreios::writeInt32(asynUser *pasynUser, epicsInt32 value)
         } else {
             status = disconnect();
         }
+    // Group A: Simple trigger commands
+    } else if (function == KREIOSPauseAcq_) {
+        if (value == 1) {
+            status = sendSimpleCommand(KREIOS_CMD_PAUSE);
+        }
+    } else if (function == KREIOSResume_) {
+        if (value == 1) {
+            status = sendSimpleCommand(KREIOS_CMD_RESUME);
+            if (status == asynSuccess) {
+                setIntegerParam(KREIOSPauseAcq_, 0);
+            }
+        }
+    } else if (function == KREIOSDisconnectAnalyzer_) {
+        if (value == 1) {
+            status = sendSimpleCommand(KREIOS_CMD_DISCONNECT_ANALYZER);
+        }
+    } else if (function == KREIOSSetSafeStateTrigger_) {
+        if (value == 1) {
+            status = sendSimpleCommand(KREIOS_CMD_SET_SAFE_STATE);
+        }
+    // Group B: CheckSpectrum
+    } else if (function == KREIOSCheckSpectrum_) {
+        if (value == 1) {
+            status = checkSpectrum();
+        }
+    // Group C: GetAllAnalyzerParameterNames
+    } else if (function == KREIOSGetAllAnalyzerParamNames_) {
+        if (value == 1) {
+            status = getAllAnalyzerParameterNames();
+        }
+    // Group D: Analyzer direct voltage
+    } else if (function == KREIOSSetAnalyzerDirectly_) {
+        if (value == 1) {
+            status = setAnalyzerParameterDirectly();
+        }
+    } else if (function == KREIOSValidateAnalyzerDirectly_) {
+        if (value == 1) {
+            status = validateAnalyzerParameterDirectly();
+        }
+    // Group E: Device commands
+    } else if (function == KREIOSGetAllDeviceCmds_) {
+        if (value == 1) { status = queryGetAllDeviceCmds(); }
+    } else if (function == KREIOSGetAllDeviceParamNames_) {
+        if (value == 1) { status = queryGetAllDeviceParamNames(); }
+    } else if (function == KREIOSGetDeviceParamInfo_) {
+        if (value == 1) { status = queryGetDeviceParamInfo(); }
+    } else if (function == KREIOSGetDeviceParamValue_) {
+        if (value == 1) { status = queryGetDeviceParamValue(); }
+    } else if (function == KREIOSSetDeviceParamValue_) {
+        if (value == 1) { status = querySetDeviceParamValue(); }
+    // Group F: Direct device commands
+    } else if (function == KREIOSCreateDirectDeviceCmd_) {
+        if (value == 1) { status = queryCreateDirectDeviceCmd(); }
+    } else if (function == KREIOSGetDirectDeviceCmdInfo_) {
+        if (value == 1) { status = queryGetDirectDeviceCmdInfo(); }
+    } else if (function == KREIOSGetDirectDeviceParamInfo_) {
+        if (value == 1) { status = queryGetDirectDeviceParamInfo(); }
+    } else if (function == KREIOSGetDirectDeviceParamVal_) {
+        if (value == 1) { status = queryGetDirectDeviceParamVal(); }
+    } else if (function == KREIOSSetDirectDeviceParamVal_) {
+        if (value == 1) { status = querySetDirectDeviceParamVal(); }
+    } else if (function == KREIOSExecDirectDeviceCmd_) {
+        if (value == 1) { status = queryExecDirectDeviceCmd(); }
+    // Group G: Device information
+    } else if (function == KREIOSGetAllDevices_) {
+        if (value == 1) { status = queryGetAllDevices(); }
+    } else if (function == KREIOSGetDeviceInfo_) {
+        if (value == 1) { status = queryGetDeviceInfo(); }
+    } else if (function == KREIOSGetLiveParamInfo_) {
+        if (value == 1) { status = queryGetLiveParamInfo(); }
+    } else if (function == KREIOSGetLiveParamValue_) {
+        if (value == 1) { status = queryGetLiveParamValue(); }
     } else if (function < FIRST_KREIOS_PARAM) {
         status = ADDriver::writeInt32(pasynUser, value);
     }
@@ -1627,6 +1759,664 @@ asynStatus Kreios::readSpectrumDataInfo(KREIOSDataInfoParam_t param)
         }
     }
 
+    return status;
+}
+
+// ============================================================================
+// CheckSpectrum Methods (Group B)
+// ============================================================================
+
+asynStatus Kreios::checkSpectrum()
+{
+    int runMode;
+    getIntegerParam(KREIOSRunMode_, &runMode);
+
+    switch (runMode) {
+        case KREIOS_RUN_FAT:   return checkSpectrumFAT();
+        case KREIOS_RUN_SFAT:  return checkSpectrumSFAT();
+        case KREIOS_RUN_FRR:   return checkSpectrumFRR();
+        case KREIOS_RUN_FE:    return checkSpectrumFE();
+        case KREIOS_RUN_LVS:   return checkSpectrumLVS();
+        default:
+            debug("Kreios::checkSpectrum", "Invalid run mode", runMode);
+            return asynError;
+    }
+}
+
+asynStatus Kreios::checkSpectrumFAT()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+    double startEnergy, endEnergy, stepWidth, passEnergy, dwellTime;
+    int lensMode, scanRange;
+    const char *functionName = "Kreios::checkSpectrumFAT";
+
+    getDoubleParam(KREIOSStartEnergy_, &startEnergy);
+    getDoubleParam(KREIOSEndEnergy_, &endEnergy);
+    getDoubleParam(KREIOSStepWidth_, &stepWidth);
+    getDoubleParam(KREIOSPassEnergy_, &passEnergy);
+    getDoubleParam(ADAcquireTime, &dwellTime);
+    getIntegerParam(KREIOSLensMode_, &lensMode);
+    getIntegerParam(KREIOSScanRange_, &scanRange);
+
+    cmd << KREIOS_CMD_CHECK_FAT;
+    cmd << " StartEnergy:" << startEnergy;
+    cmd << " EndEnergy:" << endEnergy;
+    cmd << " StepWidth:" << stepWidth;
+    cmd << " PassEnergy:" << passEnergy;
+    cmd << " DwellTime:" << dwellTime;
+
+    if (lensMode < (int)lensModes_.size()) {
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
+    }
+    if (scanRange < (int)scanRanges_.size()) {
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
+    }
+
+    debug(functionName, "Command", cmd.str());
+    status = commandResponse(cmd.str(), response, data);
+
+    if (status == asynSuccess) {
+        int samples = 0;
+        double val;
+        if (readIntegerData(data, "Samples", samples) == asynSuccess)
+            setIntegerParam(KREIOSCheckSamples_, samples);
+        if (readDoubleData(data, "StartEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckStartEnergy_, val);
+        if (readDoubleData(data, "EndEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckEndEnergy_, val);
+        if (readDoubleData(data, "StepWidth", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckStepWidth_, val);
+        if (readDoubleData(data, "DwellTime", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckDwellTime_, val);
+        if (readDoubleData(data, "PassEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckPassEnergy_, val);
+        callParamCallbacks();
+    }
+
+    return status;
+}
+
+asynStatus Kreios::checkSpectrumSFAT()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+    double startEnergy, endEnergy, stepWidth, passEnergy, dwellTime;
+    int lensMode, scanRange;
+    const char *functionName = "Kreios::checkSpectrumSFAT";
+
+    getDoubleParam(KREIOSStartEnergy_, &startEnergy);
+    getDoubleParam(KREIOSEndEnergy_, &endEnergy);
+    getDoubleParam(KREIOSStepWidth_, &stepWidth);
+    getDoubleParam(KREIOSPassEnergy_, &passEnergy);
+    getDoubleParam(ADAcquireTime, &dwellTime);
+    getIntegerParam(KREIOSLensMode_, &lensMode);
+    getIntegerParam(KREIOSScanRange_, &scanRange);
+
+    cmd << KREIOS_CMD_CHECK_SFAT;
+    cmd << " StartEnergy:" << startEnergy;
+    cmd << " EndEnergy:" << endEnergy;
+    cmd << " StepWidth:" << stepWidth;
+    cmd << " PassEnergy:" << passEnergy;
+    cmd << " DwellTime:" << dwellTime;
+
+    if (lensMode < (int)lensModes_.size()) {
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
+    }
+    if (scanRange < (int)scanRanges_.size()) {
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
+    }
+
+    debug(functionName, "Command", cmd.str());
+    status = commandResponse(cmd.str(), response, data);
+
+    if (status == asynSuccess) {
+        int samples = 0;
+        double val;
+        if (readIntegerData(data, "Samples", samples) == asynSuccess)
+            setIntegerParam(KREIOSCheckSamples_, samples);
+        if (readDoubleData(data, "StartEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckStartEnergy_, val);
+        if (readDoubleData(data, "EndEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckEndEnergy_, val);
+        if (readDoubleData(data, "StepWidth", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckStepWidth_, val);
+        if (readDoubleData(data, "DwellTime", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckDwellTime_, val);
+        if (readDoubleData(data, "PassEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckPassEnergy_, val);
+        callParamCallbacks();
+    }
+
+    return status;
+}
+
+asynStatus Kreios::checkSpectrumFRR()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+    double startEnergy, endEnergy, stepWidth, retardRatio, dwellTime;
+    int lensMode, scanRange;
+    const char *functionName = "Kreios::checkSpectrumFRR";
+
+    getDoubleParam(KREIOSStartEnergy_, &startEnergy);
+    getDoubleParam(KREIOSEndEnergy_, &endEnergy);
+    getDoubleParam(KREIOSStepWidth_, &stepWidth);
+    getDoubleParam(KREIOSRetardingRatio_, &retardRatio);
+    getDoubleParam(ADAcquireTime, &dwellTime);
+    getIntegerParam(KREIOSLensMode_, &lensMode);
+    getIntegerParam(KREIOSScanRange_, &scanRange);
+
+    cmd << KREIOS_CMD_CHECK_FRR;
+    cmd << " StartEnergy:" << startEnergy;
+    cmd << " EndEnergy:" << endEnergy;
+    cmd << " StepWidth:" << stepWidth;
+    cmd << " RetardingRatio:" << retardRatio;
+    cmd << " DwellTime:" << dwellTime;
+
+    if (lensMode < (int)lensModes_.size()) {
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
+    }
+    if (scanRange < (int)scanRanges_.size()) {
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
+    }
+
+    debug(functionName, "Command", cmd.str());
+    status = commandResponse(cmd.str(), response, data);
+
+    if (status == asynSuccess) {
+        int samples = 0;
+        double val;
+        if (readIntegerData(data, "Samples", samples) == asynSuccess)
+            setIntegerParam(KREIOSCheckSamples_, samples);
+        if (readDoubleData(data, "StartEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckStartEnergy_, val);
+        if (readDoubleData(data, "EndEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckEndEnergy_, val);
+        if (readDoubleData(data, "StepWidth", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckStepWidth_, val);
+        if (readDoubleData(data, "DwellTime", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckDwellTime_, val);
+        callParamCallbacks();
+    }
+
+    return status;
+}
+
+asynStatus Kreios::checkSpectrumFE()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+    double kineticEnergy, passEnergy, dwellTime;
+    int lensMode, scanRange, samples;
+    const char *functionName = "Kreios::checkSpectrumFE";
+
+    getDoubleParam(KREIOSKineticEnergy_, &kineticEnergy);
+    getDoubleParam(KREIOSPassEnergy_, &passEnergy);
+    getDoubleParam(ADAcquireTime, &dwellTime);
+    getIntegerParam(KREIOSLensMode_, &lensMode);
+    getIntegerParam(KREIOSScanRange_, &scanRange);
+    getIntegerParam(KREIOSSamples_, &samples);
+
+    cmd << KREIOS_CMD_CHECK_FE;
+    cmd << " KinEnergy:" << kineticEnergy;
+    cmd << " PassEnergy:" << passEnergy;
+    cmd << " DwellTime:" << dwellTime;
+    cmd << " Samples:" << samples;
+
+    if (lensMode < (int)lensModes_.size()) {
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
+    }
+    if (scanRange < (int)scanRanges_.size()) {
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
+    }
+
+    debug(functionName, "Command", cmd.str());
+    status = commandResponse(cmd.str(), response, data);
+
+    if (status == asynSuccess) {
+        int chkSamples = 0;
+        double val;
+        if (readIntegerData(data, "Samples", chkSamples) == asynSuccess)
+            setIntegerParam(KREIOSCheckSamples_, chkSamples);
+        if (readDoubleData(data, "DwellTime", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckDwellTime_, val);
+        if (readDoubleData(data, "PassEnergy", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckPassEnergy_, val);
+        callParamCallbacks();
+    }
+
+    return status;
+}
+
+asynStatus Kreios::checkSpectrumLVS()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+    double dwellTime;
+    int lensMode, scanRange;
+    const char *functionName = "Kreios::checkSpectrumLVS";
+
+    getDoubleParam(ADAcquireTime, &dwellTime);
+    getIntegerParam(KREIOSLensMode_, &lensMode);
+    getIntegerParam(KREIOSScanRange_, &scanRange);
+
+    cmd << KREIOS_CMD_CHECK_LVS;
+    cmd << " DwellTime:" << dwellTime;
+
+    if (lensMode < (int)lensModes_.size()) {
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
+    }
+    if (scanRange < (int)scanRanges_.size()) {
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
+    }
+
+    debug(functionName, "Command", cmd.str());
+    status = commandResponse(cmd.str(), response, data);
+
+    if (status == asynSuccess) {
+        int samples = 0;
+        double val;
+        if (readIntegerData(data, "Samples", samples) == asynSuccess)
+            setIntegerParam(KREIOSCheckSamples_, samples);
+        if (readDoubleData(data, "DwellTime", val) == asynSuccess)
+            setDoubleParam(KREIOSCheckDwellTime_, val);
+        callParamCallbacks();
+    }
+
+    return status;
+}
+
+// ============================================================================
+// GetAllAnalyzerParameterNames (Group C)
+// ============================================================================
+
+asynStatus Kreios::getAllAnalyzerParameterNames()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    const char *functionName = "Kreios::getAllAnalyzerParameterNames";
+
+    status = commandResponse(KREIOS_CMD_GET_NAMES, response, data);
+
+    if (status == asynSuccess) {
+        if (data.count("ParameterNames") > 0) {
+            setStringParam(KREIOSAnalyzerParamNames_, data["ParameterNames"].c_str());
+            debug(functionName, "Parameter names", data["ParameterNames"]);
+        }
+        callParamCallbacks();
+    }
+
+    return status;
+}
+
+// ============================================================================
+// Analyzer Direct Voltage Methods (Group D)
+// ============================================================================
+
+asynStatus Kreios::setAnalyzerParameterDirectly()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+    int lensMode, scanRange, polarity;
+    char paramName[KREIOS_MAX_STRING];
+    double paramValue;
+    const char *functionName = "Kreios::setAnalyzerParameterDirectly";
+
+    getIntegerParam(KREIOSLensMode_, &lensMode);
+    getIntegerParam(KREIOSScanRange_, &scanRange);
+    getIntegerParam(KREIOSDirectPolarity_, &polarity);
+    getStringParam(KREIOSDirectParamName_, KREIOS_MAX_STRING, paramName);
+    getDoubleParam(KREIOSDirectParamValue_, &paramValue);
+
+    cmd << KREIOS_CMD_SET_VALUE_DIRECTLY;
+    if (lensMode < (int)lensModes_.size()) {
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
+    }
+    if (scanRange < (int)scanRanges_.size()) {
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
+    }
+    cmd << " Polarity:\"" << (polarity == 0 ? "unipolar" : "bipolar") << "\"";
+
+    if (strlen(paramName) > 0) {
+        cmd << " " << paramName << ":" << paramValue;
+    }
+
+    debug(functionName, "Command", cmd.str());
+    status = commandResponse(cmd.str(), response, data);
+
+    return status;
+}
+
+asynStatus Kreios::validateAnalyzerParameterDirectly()
+{
+    asynStatus status = asynSuccess;
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+    int lensMode, scanRange, polarity;
+    char paramName[KREIOS_MAX_STRING];
+    double paramValue;
+    const char *functionName = "Kreios::validateAnalyzerParameterDirectly";
+
+    getIntegerParam(KREIOSLensMode_, &lensMode);
+    getIntegerParam(KREIOSScanRange_, &scanRange);
+    getIntegerParam(KREIOSDirectPolarity_, &polarity);
+    getStringParam(KREIOSDirectParamName_, KREIOS_MAX_STRING, paramName);
+    getDoubleParam(KREIOSDirectParamValue_, &paramValue);
+
+    cmd << KREIOS_CMD_VALIDATE_DIRECTLY;
+    if (lensMode < (int)lensModes_.size()) {
+        cmd << " LensMode:\"" << lensModes_[lensMode] << "\"";
+    }
+    if (scanRange < (int)scanRanges_.size()) {
+        cmd << " ScanRange:\"" << scanRanges_[scanRange] << "\"";
+    }
+    cmd << " Polarity:\"" << (polarity == 0 ? "unipolar" : "bipolar") << "\"";
+
+    if (strlen(paramName) > 0) {
+        cmd << " " << paramName << ":" << paramValue;
+    }
+
+    debug(functionName, "Command", cmd.str());
+    status = commandResponse(cmd.str(), response, data);
+
+    return status;
+}
+
+// ============================================================================
+// Query Interface Helpers (Groups E/F/G)
+// ============================================================================
+
+asynStatus Kreios::readQueryInputs(std::string &device, std::string &deviceCmd,
+                                    std::string &paramName, std::string &value,
+                                    std::string &tmpl)
+{
+    char buf[KREIOS_MAX_STRING];
+
+    getStringParam(KREIOSQueryDevice_, KREIOS_MAX_STRING, buf);
+    device = buf;
+    getStringParam(KREIOSQueryDeviceCmd_, KREIOS_MAX_STRING, buf);
+    deviceCmd = buf;
+    getStringParam(KREIOSQueryParamNameQ_, KREIOS_MAX_STRING, buf);
+    paramName = buf;
+    getStringParam(KREIOSQueryValue_, KREIOS_MAX_STRING, buf);
+    value = buf;
+    getStringParam(KREIOSQueryTemplate_, KREIOS_MAX_STRING, buf);
+    tmpl = buf;
+
+    return asynSuccess;
+}
+
+asynStatus Kreios::setQueryOutputs(const std::map<std::string, std::string> &data, bool ok)
+{
+    setIntegerParam(KREIOSQueryStatus_, ok ? 1 : 0);
+
+    // Populate shared output PVs from response keys
+    if (data.count("DeviceCommands") > 0)
+        setStringParam(KREIOSQueryResponse_, data.at("DeviceCommands").c_str());
+    else if (data.count("Devices") > 0)
+        setStringParam(KREIOSQueryResponse_, data.at("Devices").c_str());
+    else if (data.count("ParameterNames") > 0)
+        setStringParam(KREIOSQueryResponse_, data.at("ParameterNames").c_str());
+
+    if (data.count("ParameterNames") > 0)
+        setStringParam(KREIOSQueryParamNamesRBV_, data.at("ParameterNames").c_str());
+    if (data.count("ValueType") > 0)
+        setStringParam(KREIOSQueryValueType_, data.at("ValueType").c_str());
+    if (data.count("Unit") > 0)
+        setStringParam(KREIOSQueryUnit_, data.at("Unit").c_str());
+    if (data.count("Value") > 0)
+        setStringParam(KREIOSQueryParamValueRBV_, data.at("Value").c_str());
+    if (data.count("Connectivity") > 0)
+        setStringParam(KREIOSQueryConnectivity_, data.at("Connectivity").c_str());
+    if (data.count("Type") > 0)
+        setStringParam(KREIOSQueryDeviceType_, data.at("Type").c_str());
+    if (data.count("VisibleName") > 0)
+        setStringParam(KREIOSQueryVisibleNameRBV_, data.at("VisibleName").c_str());
+
+    callParamCallbacks();
+    return asynSuccess;
+}
+
+// ============================================================================
+// Device Command Handlers (Group E)
+// ============================================================================
+
+asynStatus Kreios::queryGetAllDeviceCmds()
+{
+    std::string response;
+    std::map<std::string, std::string> data;
+
+    asynStatus status = commandResponse(KREIOS_CMD_GET_ALL_DEVICE_CMDS, response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetAllDeviceParamNames()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_ALL_DEVICE_PARAM_NAMES << " DeviceCommand:\"" << deviceCmd << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetDeviceParamInfo()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_DEVICE_PARAM_INFO
+        << " DeviceCommand:\"" << deviceCmd << "\""
+        << " ParameterName:\"" << paramName << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetDeviceParamValue()
+{
+    std::string response, device, deviceCmd, paramName, qvalue, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, qvalue, tmpl);
+    cmd << KREIOS_CMD_GET_DEVICE_PARAM_VALUE
+        << " DeviceCommand:\"" << deviceCmd << "\""
+        << " ParameterName:\"" << paramName << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::querySetDeviceParamValue()
+{
+    std::string response, device, deviceCmd, paramName, qvalue, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, qvalue, tmpl);
+    cmd << KREIOS_CMD_SET_DEVICE_PARAM_VALUE
+        << " DeviceCommand:\"" << deviceCmd << "\""
+        << " ParameterName:\"" << paramName << "\""
+        << " Value:" << qvalue;
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+// ============================================================================
+// Direct Device Command Handlers (Group F)
+// ============================================================================
+
+asynStatus Kreios::queryCreateDirectDeviceCmd()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_CREATE_DIRECT_DEVICE_CMD << " Template:\"" << tmpl << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetDirectDeviceCmdInfo()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_DIRECT_DEVICE_CMD_INFO << " DeviceCommand:\"" << deviceCmd << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetDirectDeviceParamInfo()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_DIRECT_DEVICE_PARAM_INFO
+        << " DeviceCommand:\"" << deviceCmd << "\""
+        << " ParameterName:\"" << paramName << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetDirectDeviceParamVal()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_DIRECT_DEVICE_PARAM_VALUE
+        << " DeviceCommand:\"" << deviceCmd << "\""
+        << " ParameterName:\"" << paramName << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::querySetDirectDeviceParamVal()
+{
+    std::string response, device, deviceCmd, paramName, qvalue, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, qvalue, tmpl);
+    cmd << KREIOS_CMD_SET_DIRECT_DEVICE_PARAM_VALUE
+        << " DeviceCommand:\"" << deviceCmd << "\""
+        << " ParameterName:\"" << paramName << "\""
+        << " Value:" << qvalue;
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryExecDirectDeviceCmd()
+{
+    std::string response;
+    std::map<std::string, std::string> data;
+
+    asynStatus status = commandResponse(KREIOS_CMD_EXEC_DIRECT_DEVICE_CMD, response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+// ============================================================================
+// Device Information Handlers (Group G)
+// ============================================================================
+
+asynStatus Kreios::queryGetAllDevices()
+{
+    std::string response;
+    std::map<std::string, std::string> data;
+
+    asynStatus status = commandResponse(KREIOS_CMD_GET_ALL_DEVICES, response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetDeviceInfo()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_DEVICE_INFO << " Device:\"" << device << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetLiveParamInfo()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_LIVE_PARAM_INFO
+        << " Device:\"" << device << "\""
+        << " Parameter:\"" << paramName << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
+    return status;
+}
+
+asynStatus Kreios::queryGetLiveParamValue()
+{
+    std::string response, device, deviceCmd, paramName, value, tmpl;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    readQueryInputs(device, deviceCmd, paramName, value, tmpl);
+    cmd << KREIOS_CMD_GET_LIVE_PARAM_VALUE
+        << " Device:\"" << device << "\""
+        << " Parameter:\"" << paramName << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    setQueryOutputs(data, status == asynSuccess);
     return status;
 }
 
