@@ -206,6 +206,88 @@ class KreiosDetectorAsync(StandardReadable, EpicsDevice):
     magnification: A[SignalRW[float], PvSuffix.rbv("Magnification"), ConfigSignal]
 
     # =========================================================================
+    # Group A: Simple Trigger Commands
+    # =========================================================================
+    resume: A[SignalRW[int], PvSuffix("Resume")]
+    disconnect_analyzer: A[SignalRW[int], PvSuffix("DisconnectAnalyzer")]
+    set_safe_state_trigger: A[SignalRW[int], PvSuffix("SetSafeStateTrigger")]
+
+    # =========================================================================
+    # Group B: CheckSpectrum
+    # =========================================================================
+    check_spectrum: A[SignalRW[int], PvSuffix("CheckSpectrum")]
+    check_start_energy: A[SignalR[float], PvSuffix("CheckStartEnergy_RBV")]
+    check_end_energy: A[SignalR[float], PvSuffix("CheckEndEnergy_RBV")]
+    check_step_width: A[SignalR[float], PvSuffix("CheckStepWidth_RBV")]
+    check_samples: A[SignalR[int], PvSuffix("CheckSamples_RBV")]
+    check_dwell_time: A[SignalR[float], PvSuffix("CheckDwellTime_RBV")]
+    check_pass_energy: A[SignalR[float], PvSuffix("CheckPassEnergy_RBV")]
+
+    # =========================================================================
+    # Group C: Analyzer Parameter Names
+    # =========================================================================
+    get_all_analyzer_params: A[SignalRW[int], PvSuffix("GetAllAnalyzerParams")]
+    analyzer_param_names: A[SignalR[str], PvSuffix("AnalyzerParamNames_RBV")]
+
+    # =========================================================================
+    # Group D: Direct Voltage Control
+    # =========================================================================
+    direct_polarity: A[SignalRW[int], PvSuffix("DirectPolarity")]
+    direct_param_name: A[SignalRW[str], PvSuffix("DirectParamName")]
+    direct_param_value: A[SignalRW[float], PvSuffix("DirectParamValue")]
+    set_analyzer_directly: A[SignalRW[int], PvSuffix("SetAnalyzerDirectly")]
+    validate_analyzer_directly: A[SignalRW[int], PvSuffix("ValidateAnalyzerDirectly")]
+
+    # =========================================================================
+    # Groups E/F/G: Query Interface — Inputs
+    # =========================================================================
+    query_device: A[SignalRW[str], PvSuffix("QueryDevice")]
+    query_device_cmd: A[SignalRW[str], PvSuffix("QueryDeviceCmd")]
+    query_param_name: A[SignalRW[str], PvSuffix("QueryParamName")]
+    query_value: A[SignalRW[str], PvSuffix("QueryValue")]
+    query_template: A[SignalRW[str], PvSuffix("QueryTemplate")]
+
+    # =========================================================================
+    # Group E: Device Command Triggers
+    # =========================================================================
+    get_all_device_cmds: A[SignalRW[int], PvSuffix("GetAllDeviceCmds")]
+    get_all_device_param_names: A[SignalRW[int], PvSuffix("GetAllDeviceParamNames")]
+    get_device_param_info: A[SignalRW[int], PvSuffix("GetDeviceParamInfo")]
+    get_device_param_value: A[SignalRW[int], PvSuffix("GetDeviceParamValue")]
+    set_device_param_value: A[SignalRW[int], PvSuffix("SetDeviceParamValue")]
+
+    # =========================================================================
+    # Group F: Direct Device Command Triggers
+    # =========================================================================
+    create_direct_device_cmd: A[SignalRW[int], PvSuffix("CreateDirectDeviceCmd")]
+    get_direct_device_cmd_info: A[SignalRW[int], PvSuffix("GetDirectDeviceCmdInfo")]
+    get_direct_device_param_info: A[SignalRW[int], PvSuffix("GetDirectDeviceParamInfo")]
+    get_direct_device_param_val: A[SignalRW[int], PvSuffix("GetDirectDeviceParamVal")]
+    set_direct_device_param_val: A[SignalRW[int], PvSuffix("SetDirectDeviceParamVal")]
+    exec_direct_device_cmd: A[SignalRW[int], PvSuffix("ExecDirectDeviceCmd")]
+
+    # =========================================================================
+    # Group G: Device Information Triggers
+    # =========================================================================
+    get_all_devices: A[SignalRW[int], PvSuffix("GetAllDevices")]
+    get_device_info: A[SignalRW[int], PvSuffix("GetDeviceInfo")]
+    get_live_param_info: A[SignalRW[int], PvSuffix("GetLiveParamInfo")]
+    get_live_param_value: A[SignalRW[int], PvSuffix("GetLiveParamValue")]
+
+    # =========================================================================
+    # Groups E/F/G: Query Interface — Outputs
+    # =========================================================================
+    query_response: A[SignalR[str], PvSuffix("QueryResponse_RBV")]
+    query_param_names_rbv: A[SignalR[str], PvSuffix("QueryParamNames_RBV")]
+    query_value_type: A[SignalR[str], PvSuffix("QueryValueType_RBV")]
+    query_unit: A[SignalR[str], PvSuffix("QueryUnit_RBV")]
+    query_param_value_rbv: A[SignalR[str], PvSuffix("QueryParamValue_RBV")]
+    query_connectivity: A[SignalR[str], PvSuffix("QueryConnectivity_RBV")]
+    query_device_type: A[SignalR[str], PvSuffix("QueryDeviceType_RBV")]
+    query_visible_name: A[SignalR[str], PvSuffix("QueryVisibleName_RBV")]
+    query_status: A[SignalR[int], PvSuffix("QueryStatus_RBV")]
+
+    # =========================================================================
     # Triggerable Interface
     # =========================================================================
 

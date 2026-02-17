@@ -3,7 +3,7 @@ KREIOS-Specific Bluesky Plans.
 
 Custom plans for KREIOS-150 photoelectron spectrometer measurements.
 These plans configure the spectrometer and acquire data using
-the ophyd devices defined in 10-devices.py.
+the ophyd-async devices defined in 11-devices-async.py.
 
 Note: Devices (kreios, kreios_spectrum, kreios_image) are available
 in the global namespace from earlier startup scripts. This follows
