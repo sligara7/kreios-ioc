@@ -246,10 +246,14 @@ Kreios::Kreios(const char *portName, const char *driverPort, int maxBuffers,
         // Attempt connection
         status |= makeConnection();
 
-        // Read in the lens modes
-        status |= readSpectrumParameter(KREIOSLensMode_);
-        // Read in the scan ranges
-        status |= readSpectrumParameter(KREIOSScanRange_);
+        // Read in the lens modes (non-fatal if analyzer disconnected)
+        if (readSpectrumParameter(KREIOSLensMode_) != asynSuccess) {
+            debug(functionName, "Warning: could not read lens modes - analyzer may be disconnected");
+        }
+        // Read in the scan ranges (non-fatal if analyzer disconnected)
+        if (readSpectrumParameter(KREIOSScanRange_) != asynSuccess) {
+            debug(functionName, "Warning: could not read scan ranges - analyzer may be disconnected");
+        }
         // Setup run modes
         status |= readRunModes();
         // Setup operating modes
@@ -261,6 +265,12 @@ Kreios::Kreios(const char *portName, const char *driverPort, int maxBuffers,
         setIntegerParam(ADStatus, ADStatusError);
         setStringParam(ADStatusMessage, "Failed to initialise - check connection");
         callParamCallbacks();
+    } else {
+        // Check if analyzer parameters were available
+        if (lensModes_.empty() || scanRanges_.empty()) {
+            setStringParam(ADStatusMessage, "Connected - analyzer not available");
+            callParamCallbacks();
+        }
     }
 }
 
@@ -313,28 +323,24 @@ asynStatus Kreios::makeConnection()
 
     if (status == asynSuccess) {
         if (firstConnect_ == true) {
-            // First connection - read device name
-            if (status == asynSuccess) {
-                status = readDeviceVisibleName();
+            // First connection - read device name (non-fatal)
+            if (readDeviceVisibleName() != asynSuccess) {
+                debug(functionName, "Warning: could not read device visible name");
             }
 
             // Setup EPICS parameters from hardware
-            if (status == asynSuccess) {
-                status = setupEPICSParameters();
-            }
+            setupEPICSParameters();
 
-            // Read number of non-energy channels
-            if (status == asynSuccess) {
-                int nonEnergyChannels = 0;
-                getAnalyserParameter("NumNonEnergyChannels", nonEnergyChannels);
+            // Read number of non-energy channels (non-fatal)
+            int nonEnergyChannels = 0;
+            if (getAnalyserParameter("NumNonEnergyChannels", nonEnergyChannels) == asynSuccess) {
                 setIntegerParam(KREIOSNonEnergyChannels_, nonEnergyChannels);
+            } else {
+                debug(functionName, "Warning: could not read NonEnergyChannels - analyzer may be disconnected");
             }
 
             callParamCallbacks();
-
-            if (status == asynSuccess) {
-                firstConnect_ = false;
-            }
+            firstConnect_ = false;
         }
     }
 
@@ -892,6 +898,20 @@ asynStatus Kreios::writeInt32(asynUser *pasynUser, epicsInt32 value)
     } else if (function == KREIOSConnect_) {
         if (value == 1) {
             status = makeConnection();
+            if (status == asynSuccess) {
+                // (Re)read analyzer parameters that may have been unavailable at startup
+                readSpectrumParameter(KREIOSLensMode_);
+                readSpectrumParameter(KREIOSScanRange_);
+                int nonEnergyChannels = 0;
+                if (getAnalyserParameter("NumNonEnergyChannels", nonEnergyChannels) == asynSuccess) {
+                    setIntegerParam(KREIOSNonEnergyChannels_, nonEnergyChannels);
+                }
+                if (lensModes_.empty() || scanRanges_.empty()) {
+                    setStringParam(ADStatusMessage, "Connected - analyzer not available");
+                } else {
+                    setStringParam(ADStatusMessage, "Connected");
+                }
+            }
         } else {
             status = disconnect();
         }
