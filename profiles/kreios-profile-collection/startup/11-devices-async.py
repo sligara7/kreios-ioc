@@ -1,60 +1,501 @@
 """
-KREIOS-150 Ophyd-Async Device Definitions (Primary).
+KREIOS-150 Ophyd-Async Device Definitions.
 
-This module loads ophyd-async device classes from the main kreios package
-and instantiates them for use in IPython/Bluesky sessions.
+Defines ophyd-async devices for the KREIOS-150 Momentum Microscope
+photoelectron spectrometer connected via the areaDetector-based EPICS IOC.
 
-For implementation details, see: src/kreios/devices/_async.py
+PV Prefix: KREIOS:cam1:* (configurable via KREIOS_PREFIX env var)
 
 Device Classes:
-- KreiosDetectorAsync: Full spectrometer control and readout
-- KreiosSpectrumAsync: 1D spectrum-only device
-- KreiosImageAsync: 2D image-only device
+- KreiosDetector: Full spectrometer control and readout
+- KreiosSpectrum: 1D spectrum-only device
+- KreiosImage: 2D image-only device
+
+Data dimensionality support:
+- 1D: Integrated spectrum (energy axis only)
+- 2D: Image (energy x detector pixels)
+- 3D: Volume (slices x energy x pixels)
+
+Operating modes:
+- Spectroscopy: Standard XPS/UPS measurements
+- Momentum: ARPES k-space imaging
+- PEEM: Photoemission electron microscopy
+
+Run modes:
+- FAT: Fixed Analyzer Transmission
+- SFAT: Snapshot FAT
+- FRR: Fixed Retarding Ratio
+- FE: Fixed Energy
+- LVS: Lens Voltage Scan
 """
 print(f"Loading file {__file__!r} ...")
 
-import asyncio
 import os
+from enum import IntEnum
+from typing import Annotated as A
 
-from kreios.devices import (
-    KreiosDetectorAsync,
-    KreiosImageAsync,
-    KreiosSpectrumAsync,
-    OperatingMode,
-    RunMode,
+import numpy as np
+
+from ophyd_async.core import (
+    Array1D,
+    AsyncStatus,
+    ConfigSignal,
+    HintedSignal,
+    SignalR,
+    SignalRW,
+    StandardReadable,
+    init_devices,
+    observe_value,
+    wait_for_value,
+)
+from ophyd_async.epics.core import (
+    EpicsDevice,
+    PvSuffix,
 )
 
 # Get PV prefix from environment
 KREIOS_PREFIX = os.environ.get("KREIOS_PREFIX", "KREIOS:cam1:")
 
+
+# =============================================================================
+# Enums for KREIOS modes
+# =============================================================================
+
+
+class RunMode(IntEnum):
+    """KREIOS run modes."""
+
+    FAT = 0  # Fixed Analyzer Transmission
+    SFAT = 1  # Snapshot FAT
+    FRR = 2  # Fixed Retarding Ratio
+    FE = 3  # Fixed Energy
+    LVS = 4  # Lens Voltage Scan
+
+
+class OperatingMode(IntEnum):
+    """KREIOS operating modes."""
+
+    SPECTROSCOPY = 0
+    MOMENTUM = 1
+    PEEM = 2
+
+
+# =============================================================================
+# KREIOS Detector Device - Full Control
+# =============================================================================
+
+
+class KreiosDetector(StandardReadable, EpicsDevice):
+    """
+    KREIOS-150 Momentum Microscope - Full Control.
+
+    Asynchronous ophyd device for controlling the KREIOS-150 via the
+    areaDetector IOC. Supports 1D (spectrum), 2D (imaging), and 3D
+    (depth profiling) modes.
+
+    PV naming follows areaDetector conventions with _RBV suffixes for readbacks.
+    """
+
+    # =========================================================================
+    # Connection Management
+    # =========================================================================
+    connect_cmd: A[SignalRW[int], PvSuffix("Connect")]
+    connected: A[SignalR[int], PvSuffix("Connected_RBV"), ConfigSignal]
+    server_name: A[SignalR[str], PvSuffix("ServerName_RBV"), ConfigSignal]
+    msg_counter: A[SignalR[int], PvSuffix("MsgCounter_RBV")]
+
+    # From ADBase template
+    manufacturer: A[SignalR[str], PvSuffix("Manufacturer_RBV"), ConfigSignal]
+    model: A[SignalR[str], PvSuffix("Model_RBV"), ConfigSignal]
+
+    # =========================================================================
+    # Acquisition Control
+    # =========================================================================
+    acquire: A[SignalRW[int], PvSuffix.rbv("Acquire")]
+    define_spectrum: A[SignalRW[int], PvSuffix("DefineSpectrum")]
+    validate_spectrum: A[SignalRW[int], PvSuffix("ValidateSpectrum")]
+    spectrum_valid: A[SignalR[int], PvSuffix("SpectrumValid_RBV")]
+
+    # Pause control
+    acq_pause: A[SignalRW[int], PvSuffix.rbv("Pause")]
+
+    # Safe state control
+    safe_state: A[SignalRW[int], PvSuffix.rbv("SafeState"), ConfigSignal]
+
+    # Data delay
+    data_delay_max: A[SignalRW[float], PvSuffix.rbv("DataDelayMax"), ConfigSignal]
+
+    # =========================================================================
+    # Energy Parameters (eV)
+    # =========================================================================
+    start_energy: A[SignalRW[float], PvSuffix.rbv("StartEnergy"), ConfigSignal]
+    end_energy: A[SignalRW[float], PvSuffix.rbv("EndEnergy"), ConfigSignal]
+    energy_width: A[SignalR[float], PvSuffix("EnergyWidth_RBV"), ConfigSignal]
+    step_width: A[SignalRW[float], PvSuffix.rbv("StepWidth"), ConfigSignal]
+    pass_energy: A[SignalRW[float], PvSuffix.rbv("PassEnergy"), ConfigSignal]
+    kinetic_energy: A[SignalRW[float], PvSuffix.rbv("KineticEnergy"), ConfigSignal]
+    retarding_ratio: A[SignalRW[float], PvSuffix.rbv("RetardingRatio"), ConfigSignal]
+
+    # =========================================================================
+    # Acquisition Mode
+    # =========================================================================
+    run_mode: A[SignalRW[int], PvSuffix.rbv("RunMode"), ConfigSignal]
+    operating_mode: A[SignalRW[int], PvSuffix.rbv("OperatingMode"), ConfigSignal]
+    lens_mode: A[SignalRW[int], PvSuffix.rbv("LensMode"), ConfigSignal]
+    scan_range: A[SignalRW[int], PvSuffix.rbv("ScanRange"), ConfigSignal]
+
+    # =========================================================================
+    # Dimension Parameters (for 1D/2D/3D modes)
+    # =========================================================================
+    samples: A[SignalRW[int], PvSuffix.rbv("Samples"), ConfigSignal]
+    samples_iteration: A[SignalR[int], PvSuffix("SamplesIteration_RBV"), ConfigSignal]
+    values_per_sample: A[SignalRW[int], PvSuffix.rbv("ValuesPerSample"), ConfigSignal]
+    num_slices: A[SignalRW[int], PvSuffix.rbv("NumSlices"), ConfigSignal]
+
+    # Non-energy axis parameters
+    non_energy_channels: A[SignalR[int], PvSuffix("NonEnergyChannels_RBV"), ConfigSignal]
+    non_energy_units: A[SignalR[str], PvSuffix("NonEnergyUnits_RBV"), ConfigSignal]
+    non_energy_min: A[SignalR[float], PvSuffix("NonEnergyMin_RBV"), ConfigSignal]
+    non_energy_max: A[SignalR[float], PvSuffix("NonEnergyMax_RBV"), ConfigSignal]
+
+    # =========================================================================
+    # Progress Monitoring
+    # =========================================================================
+    current_sample: A[SignalR[int], PvSuffix("CurrentSample_RBV")]
+    current_sample_iteration: A[SignalR[int], PvSuffix("CurrentSampleIteration_RBV")]
+    progress: A[SignalR[float], PvSuffix("Progress_RBV")]
+    progress_iteration: A[SignalR[float], PvSuffix("ProgressIteration_RBV")]
+    remaining_time: A[SignalR[float], PvSuffix("RemainingTime_RBV")]
+    remaining_time_iteration: A[SignalR[float], PvSuffix("RemainingTimeIteration_RBV")]
+
+    # =========================================================================
+    # Data Arrays
+    # =========================================================================
+    spectrum: A[SignalR[Array1D[np.float64]], PvSuffix("Spectrum"), HintedSignal]
+    image: A[SignalR[np.ndarray], PvSuffix("Image")]
+    volume: A[SignalR[np.ndarray], PvSuffix("Volume")]
+    energy_axis: A[SignalR[Array1D[np.float64]], PvSuffix("EnergyAxis")]
+
+    # =========================================================================
+    # Hardware Parameters
+    # =========================================================================
+    detector_voltage: A[SignalRW[float], PvSuffix.rbv("DetectorVoltage"), ConfigSignal]
+    bias_voltage: A[SignalRW[float], PvSuffix.rbv("BiasVoltage"), ConfigSignal]
+
+    # =========================================================================
+    # Momentum Microscopy Parameters (k-space)
+    # =========================================================================
+    kx_min: A[SignalRW[float], PvSuffix.rbv("KxMin"), ConfigSignal]
+    kx_max: A[SignalRW[float], PvSuffix.rbv("KxMax"), ConfigSignal]
+    ky_min: A[SignalRW[float], PvSuffix.rbv("KyMin"), ConfigSignal]
+    ky_max: A[SignalRW[float], PvSuffix.rbv("KyMax"), ConfigSignal]
+
+    # =========================================================================
+    # PEEM Parameters
+    # =========================================================================
+    field_of_view: A[SignalRW[float], PvSuffix.rbv("FieldOfView"), ConfigSignal]
+    magnification: A[SignalRW[float], PvSuffix.rbv("Magnification"), ConfigSignal]
+
+    # =========================================================================
+    # Group A: Simple Trigger Commands
+    # =========================================================================
+    resume: A[SignalRW[int], PvSuffix("Resume")]
+    disconnect_analyzer: A[SignalRW[int], PvSuffix("DisconnectAnalyzer")]
+    set_safe_state_trigger: A[SignalRW[int], PvSuffix("SetSafeStateTrigger")]
+
+    # =========================================================================
+    # Group B: CheckSpectrum
+    # =========================================================================
+    check_spectrum: A[SignalRW[int], PvSuffix("CheckSpectrum")]
+    check_start_energy: A[SignalR[float], PvSuffix("CheckStartEnergy_RBV")]
+    check_end_energy: A[SignalR[float], PvSuffix("CheckEndEnergy_RBV")]
+    check_step_width: A[SignalR[float], PvSuffix("CheckStepWidth_RBV")]
+    check_samples: A[SignalR[int], PvSuffix("CheckSamples_RBV")]
+    check_dwell_time: A[SignalR[float], PvSuffix("CheckDwellTime_RBV")]
+    check_pass_energy: A[SignalR[float], PvSuffix("CheckPassEnergy_RBV")]
+
+    # =========================================================================
+    # Group C: Analyzer Parameter Names
+    # =========================================================================
+    get_all_analyzer_params: A[SignalRW[int], PvSuffix("GetAllAnalyzerParams")]
+    analyzer_param_names: A[SignalR[str], PvSuffix("AnalyzerParamNames_RBV")]
+
+    # =========================================================================
+    # Group D: Direct Voltage Control
+    # =========================================================================
+    direct_polarity: A[SignalRW[int], PvSuffix("DirectPolarity")]
+    direct_param_name: A[SignalRW[str], PvSuffix("DirectParamName")]
+    direct_param_value: A[SignalRW[float], PvSuffix("DirectParamValue")]
+    set_analyzer_directly: A[SignalRW[int], PvSuffix("SetAnalyzerDirectly")]
+    validate_analyzer_directly: A[SignalRW[int], PvSuffix("ValidateAnalyzerDirectly")]
+
+    # =========================================================================
+    # Groups E/F/G: Query Interface — Inputs
+    # =========================================================================
+    query_device: A[SignalRW[str], PvSuffix("QueryDevice")]
+    query_device_cmd: A[SignalRW[str], PvSuffix("QueryDeviceCmd")]
+    query_param_name: A[SignalRW[str], PvSuffix("QueryParamName")]
+    query_value: A[SignalRW[str], PvSuffix("QueryValue")]
+    query_template: A[SignalRW[str], PvSuffix("QueryTemplate")]
+
+    # =========================================================================
+    # Group E: Device Command Triggers
+    # =========================================================================
+    get_all_device_cmds: A[SignalRW[int], PvSuffix("GetAllDeviceCmds")]
+    get_all_device_param_names: A[SignalRW[int], PvSuffix("GetAllDeviceParamNames")]
+    get_device_param_info: A[SignalRW[int], PvSuffix("GetDeviceParamInfo")]
+    get_device_param_value: A[SignalRW[int], PvSuffix("GetDeviceParamValue")]
+    set_device_param_value: A[SignalRW[int], PvSuffix("SetDeviceParamValue")]
+
+    # =========================================================================
+    # Group F: Direct Device Command Triggers
+    # =========================================================================
+    create_direct_device_cmd: A[SignalRW[int], PvSuffix("CreateDirectDeviceCmd")]
+    get_direct_device_cmd_info: A[SignalRW[int], PvSuffix("GetDirectDeviceCmdInfo")]
+    get_direct_device_param_info: A[SignalRW[int], PvSuffix("GetDirectDeviceParamInfo")]
+    get_direct_device_param_val: A[SignalRW[int], PvSuffix("GetDirectDeviceParamVal")]
+    set_direct_device_param_val: A[SignalRW[int], PvSuffix("SetDirectDeviceParamVal")]
+    exec_direct_device_cmd: A[SignalRW[int], PvSuffix("ExecDirectDeviceCmd")]
+
+    # =========================================================================
+    # Group G: Device Information Triggers
+    # =========================================================================
+    get_all_devices: A[SignalRW[int], PvSuffix("GetAllDevices")]
+    get_device_info: A[SignalRW[int], PvSuffix("GetDeviceInfo")]
+    get_live_param_info: A[SignalRW[int], PvSuffix("GetLiveParamInfo")]
+    get_live_param_value: A[SignalRW[int], PvSuffix("GetLiveParamValue")]
+
+    # =========================================================================
+    # Groups E/F/G: Query Interface — Outputs
+    # =========================================================================
+    query_response: A[SignalR[str], PvSuffix("QueryResponse_RBV")]
+    query_param_names_rbv: A[SignalR[str], PvSuffix("QueryParamNames_RBV")]
+    query_value_type: A[SignalR[str], PvSuffix("QueryValueType_RBV")]
+    query_unit: A[SignalR[str], PvSuffix("QueryUnit_RBV")]
+    query_param_value_rbv: A[SignalR[str], PvSuffix("QueryParamValue_RBV")]
+    query_connectivity: A[SignalR[str], PvSuffix("QueryConnectivity_RBV")]
+    query_device_type: A[SignalR[str], PvSuffix("QueryDeviceType_RBV")]
+    query_visible_name: A[SignalR[str], PvSuffix("QueryVisibleName_RBV")]
+    query_status: A[SignalR[int], PvSuffix("QueryStatus_RBV")]
+
+    # =========================================================================
+    # Triggerable Interface
+    # =========================================================================
+
+    @AsyncStatus.wrap
+    async def trigger(self) -> None:
+        """
+        Trigger spectrum acquisition and wait for completion.
+
+        Returns an AsyncStatus that completes when acquisition finishes.
+        """
+        # Start acquisition
+        await self.acquire.set(1)
+
+        # Wait for acquisition to complete (acquire goes back to 0)
+        async for value in observe_value(self.acquire, done_timeout=600):
+            if value == 0:
+                break
+
+    # =========================================================================
+    # Configuration Methods
+    # =========================================================================
+
+    async def configure_1d(
+        self,
+        start_e: float,
+        end_e: float,
+        step_e: float,
+        pass_energy: float = 20.0,
+    ) -> None:
+        """
+        Configure for 1D spectrum acquisition (standard XPS/UPS).
+
+        Parameters
+        ----------
+        start_e : float
+            Start energy (eV)
+        end_e : float
+            End energy (eV)
+        step_e : float
+            Energy step (eV)
+        pass_energy : float
+            Analyzer pass energy (eV)
+        """
+        await self.start_energy.set(start_e)
+        await self.end_energy.set(end_e)
+        await self.step_width.set(step_e)
+        await self.pass_energy.set(pass_energy)
+        await self.values_per_sample.set(1)
+        await self.num_slices.set(1)
+        await self.define_spectrum.set(1)
+
+    async def configure_2d(
+        self,
+        start_e: float,
+        end_e: float,
+        step_e: float,
+        n_pixels: int,
+        pass_energy: float = 20.0,
+    ) -> None:
+        """
+        Configure for 2D image acquisition (ARPES mode).
+
+        Parameters
+        ----------
+        start_e : float
+            Start energy (eV)
+        end_e : float
+            End energy (eV)
+        step_e : float
+            Energy step (eV)
+        n_pixels : int
+            Number of detector pixels
+        pass_energy : float
+            Analyzer pass energy (eV)
+        """
+        await self.start_energy.set(start_e)
+        await self.end_energy.set(end_e)
+        await self.step_width.set(step_e)
+        await self.pass_energy.set(pass_energy)
+        await self.values_per_sample.set(n_pixels)
+        await self.num_slices.set(1)
+        await self.define_spectrum.set(1)
+
+    async def configure_3d(
+        self,
+        start_e: float,
+        end_e: float,
+        step_e: float,
+        n_pixels: int,
+        n_slices: int,
+        pass_energy: float = 20.0,
+    ) -> None:
+        """
+        Configure for 3D volume acquisition (depth profiling).
+
+        Parameters
+        ----------
+        start_e : float
+            Start energy (eV)
+        end_e : float
+            End energy (eV)
+        step_e : float
+            Energy step (eV)
+        n_pixels : int
+            Number of detector pixels
+        n_slices : int
+            Number of depth slices
+        pass_energy : float
+            Analyzer pass energy (eV)
+        """
+        await self.start_energy.set(start_e)
+        await self.end_energy.set(end_e)
+        await self.step_width.set(step_e)
+        await self.pass_energy.set(pass_energy)
+        await self.values_per_sample.set(n_pixels)
+        await self.num_slices.set(n_slices)
+        await self.define_spectrum.set(1)
+
+    # =========================================================================
+    # Flyer Interface (for continuous scanning)
+    # =========================================================================
+
+    @AsyncStatus.wrap
+    async def kickoff(self) -> None:
+        """Start a flyer-style acquisition."""
+        await self.acquire.set(1)
+
+    @AsyncStatus.wrap
+    async def complete(self) -> None:
+        """Wait for acquisition to complete."""
+        await wait_for_value(self.acquire, 0, timeout=600)
+
+
+# =============================================================================
+# Simplified Devices for Specific Use Cases
+# =============================================================================
+
+
+class KreiosSpectrum(StandardReadable, EpicsDevice):
+    """
+    Simplified KREIOS device for 1D spectrum acquisition only.
+
+    Use this for basic XPS/UPS measurements where you only need
+    energy parameters and spectrum readout.
+    """
+
+    # Acquisition
+    acquire: A[SignalRW[int], PvSuffix.rbv("Acquire")]
+
+    # Energy parameters
+    start_energy: A[SignalRW[float], PvSuffix.rbv("StartEnergy"), ConfigSignal]
+    end_energy: A[SignalRW[float], PvSuffix.rbv("EndEnergy"), ConfigSignal]
+    step_width: A[SignalRW[float], PvSuffix.rbv("StepWidth"), ConfigSignal]
+    pass_energy: A[SignalRW[float], PvSuffix.rbv("PassEnergy"), ConfigSignal]
+
+    # Spectrum definition
+    define_spectrum: A[SignalRW[int], PvSuffix("DefineSpectrum")]
+    spectrum_valid: A[SignalR[int], PvSuffix("SpectrumValid_RBV")]
+
+    # Data
+    spectrum: A[SignalR[Array1D[np.float64]], PvSuffix("Spectrum"), HintedSignal]
+    energy_axis: A[SignalR[Array1D[np.float64]], PvSuffix("EnergyAxis")]
+
+    # Progress
+    progress: A[SignalR[float], PvSuffix("Progress_RBV")]
+
+    @AsyncStatus.wrap
+    async def trigger(self) -> None:
+        """Trigger spectrum acquisition and wait for completion."""
+        await self.acquire.set(1)
+        async for value in observe_value(self.acquire, done_timeout=300):
+            if value == 0:
+                break
+
+
+class KreiosImage(StandardReadable, EpicsDevice):
+    """
+    Simplified KREIOS device for 2D image acquisition.
+
+    Use this for ARPES or imaging measurements where you need
+    2D data (energy x detector pixels).
+    """
+
+    # Acquisition
+    acquire: A[SignalRW[int], PvSuffix.rbv("Acquire")]
+
+    # Energy parameters
+    start_energy: A[SignalRW[float], PvSuffix.rbv("StartEnergy"), ConfigSignal]
+    end_energy: A[SignalRW[float], PvSuffix.rbv("EndEnergy"), ConfigSignal]
+    step_width: A[SignalRW[float], PvSuffix.rbv("StepWidth"), ConfigSignal]
+    pass_energy: A[SignalRW[float], PvSuffix.rbv("PassEnergy"), ConfigSignal]
+
+    # Dimension
+    values_per_sample: A[SignalRW[int], PvSuffix.rbv("ValuesPerSample"), ConfigSignal]
+
+    # Spectrum definition
+    define_spectrum: A[SignalRW[int], PvSuffix("DefineSpectrum")]
+    spectrum_valid: A[SignalR[int], PvSuffix("SpectrumValid_RBV")]
+
+    # Data
+    image: A[SignalR[np.ndarray], PvSuffix("Image"), HintedSignal]
+
+    # Progress
+    progress: A[SignalR[float], PvSuffix("Progress_RBV")]
+
+    @AsyncStatus.wrap
+    async def trigger(self) -> None:
+        """Trigger image acquisition and wait for completion."""
+        await self.acquire.set(1)
+        async for value in observe_value(self.acquire, done_timeout=300):
+            if value == 0:
+                break
+
+
+# =============================================================================
+# Device Instantiation
+# =============================================================================
+
 print(f"  Creating KREIOS devices with prefix: {KREIOS_PREFIX}")
-
-# Device instances (names match what 90-plans.py expects)
-kreios = KreiosDetectorAsync(KREIOS_PREFIX, name="kreios")
-kreios_spectrum = KreiosSpectrumAsync(KREIOS_PREFIX, name="kreios_spectrum")
-kreios_image = KreiosImageAsync(KREIOS_PREFIX, name="kreios_image")
-
-# Connect devices
-print("  Connecting to KREIOS IOC...")
-try:
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(kreios.connect(timeout=10))
-    loop.run_until_complete(kreios_spectrum.connect(timeout=5))
-    loop.run_until_complete(kreios_image.connect(timeout=5))
-
-    print(f"    kreios connected: {KREIOS_PREFIX}")
-    try:
-        mfr = loop.run_until_complete(kreios.manufacturer.get_value())
-        model = loop.run_until_complete(kreios.model.get_value())
-        conn = loop.run_until_complete(kreios.connected.get_value())
-        print(f"    Manufacturer: {mfr}")
-        print(f"    Model: {model}")
-        print(f"    Connected to Prodigy: {conn}")
-    except Exception as e:
-        print(f"    Could not read device info: {e}")
-except Exception as e:
-    print(f"    WARNING: KREIOS IOC not available: {e}")
-    print("    Start the IOC and retry connection with:")
-    print("      await kreios.connect()")
-
 print()
