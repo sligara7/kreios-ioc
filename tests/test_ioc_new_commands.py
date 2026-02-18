@@ -25,31 +25,14 @@ Usage:
         -m pytest tests/test_ioc_new_commands.py -v
 """
 
-import os
 import time
 
 import pytest
 
 # Require pyepics
-epics = pytest.importorskip("epics")
+pytest.importorskip("epics")
 
-# PV prefix for the deployed IOC
-PREFIX = os.environ.get("EPICS_IOC_PREFIX", "XF:29ID2-ES{Det:Kreios}:cam1:")
-
-
-def pv(name):
-    """Build full PV name from suffix."""
-    return f"{PREFIX}{name}"
-
-
-def caget(name, **kwargs):
-    """Get a PV value with default timeout."""
-    return epics.caget(pv(name), timeout=5.0, **kwargs)
-
-
-def caput(name, value, **kwargs):
-    """Put a PV value with default timeout, waiting for completion."""
-    return epics.caput(pv(name), value, wait=True, timeout=5.0, **kwargs)
+from .ioc_helpers import caget, caput, ioc_connected
 
 
 def parse_response(response):
@@ -68,12 +51,6 @@ def parse_response(response):
 # ============================================================================
 # Skip conditions
 # ============================================================================
-
-def ioc_connected():
-    """Check if IOC is running and connected to Prodigy."""
-    val = caget("Connected_RBV")
-    return val is not None and val == 1
-
 
 # Skip entire module if IOC is not reachable
 pytestmark = pytest.mark.skipif(

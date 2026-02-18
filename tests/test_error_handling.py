@@ -21,9 +21,9 @@ USE_EXTERNAL_SIMULATOR = os.environ.get("USE_EXTERNAL_SIMULATOR", "0") == "1"
 class TestConnectionErrors:
     """Tests for connection error handling."""
 
-    def test_connect_to_nonexistent_server(self):
+    def test_connect_to_nonexistent_server(self, make_client):
         """Test connection to non-existent server fails gracefully."""
-        client = ProdigyTestClientSync(host="localhost", port=59999)
+        client = make_client(host="localhost", port=59999)
         try:
             client.connect(timeout=1.0)
             connected = True
@@ -32,9 +32,9 @@ class TestConnectionErrors:
 
         assert not connected
 
-    def test_reconnect_after_disconnect(self, simulator):
+    def test_reconnect_after_disconnect(self, simulator, make_client):
         """Test that reconnection works after disconnect."""
-        client = ProdigyTestClientSync()
+        client = make_client()
         client.connect()
         client.send_command("Connect")
         client.send_command("Disconnect")
@@ -51,9 +51,9 @@ class TestConnectionErrors:
         client.disconnect()
 
     @pytest.mark.skipif(USE_EXTERNAL_SIMULATOR, reason="Cannot control external simulator")
-    def test_server_gone_during_command(self, simulator):
+    def test_server_gone_during_command(self, simulator, make_client):
         """Test handling when server disconnects during operation."""
-        client = ProdigyTestClientSync()
+        client = make_client()
         client.connect()
         client.send_command("Connect")
 
@@ -377,62 +377,3 @@ class TestRecoveryScenarios:
             "PassEnergy": 50.0,
         })
         assert "OK" in response
-
-
-# Helper class for synchronous testing
-class ProdigyTestClientSync:
-    """Synchronous test client for error testing."""
-
-    def __init__(self, host=None, port=None):
-        import os
-        self.host = host or os.environ.get("SIMULATOR_HOST", "localhost")
-        self.port = port or int(os.environ.get("SIMULATOR_PORT", "7010"))
-        self.sock = None
-        self.request_counter = 0
-
-    def connect(self, timeout=5.0):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(timeout)
-        self.sock.connect((self.host, self.port))
-
-    def disconnect(self):
-        if self.sock:
-            try:
-                self.sock.close()
-            except Exception:
-                pass
-            self.sock = None
-
-    def send_command(self, command, params=None, timeout=10.0):
-        if not self.sock:
-            raise RuntimeError("Not connected")
-
-        self.request_counter = (self.request_counter + 1) % 10000
-        req_id = f"{self.request_counter:04X}"
-
-        request = f"?{req_id} {command}"
-        if params:
-            for key, value in params.items():
-                if isinstance(value, str) and " " in value:
-                    request += f' {key}:"{value}"'
-                else:
-                    request += f" {key}:{value}"
-        request += "\n"
-
-        self.sock.sendall(request.encode("utf-8"))
-        self.sock.settimeout(timeout)
-        response = self.sock.recv(65536).decode("utf-8").strip()
-        return response
-
-    def send_raw(self, raw_message, timeout=10.0):
-        if not self.sock:
-            raise RuntimeError("Not connected")
-
-        self.sock.sendall(raw_message.encode("utf-8"))
-        self.sock.settimeout(timeout)
-
-        try:
-            response = self.sock.recv(65536).decode("utf-8").strip()
-            return response
-        except socket.timeout:
-            return None

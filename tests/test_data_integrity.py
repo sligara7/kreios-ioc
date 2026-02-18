@@ -12,6 +12,11 @@ Tests verify:
 import pytest
 import math
 
+# Constants matching the C++ driver definitions
+MAX_SPECTRUM_SIZE = 100000  # Maximum 1D spectrum points
+MAX_IMAGE_SIZE = 2000000    # Maximum 2D image pixels
+MAX_VOLUME_SIZE = 50000000  # Maximum 3D volume voxels
+
 
 class TestDataReshaping:
     """Tests for reshaping flat data arrays to N-D."""
@@ -196,6 +201,120 @@ class TestEnergyAxisCalculation:
 
         assert len(energy_axis) == 1
         assert energy_axis[0] == 405.0
+
+
+class TestDataArraySizes:
+    """Tests for data array size calculations."""
+
+    def test_1d_array_size(self):
+        """Test 1D spectrum array size calculation."""
+        n_samples = 21
+        values_per_sample = 1
+        n_slices = 1
+
+        total = n_samples * values_per_sample * n_slices
+        assert total == 21
+        assert total <= MAX_SPECTRUM_SIZE
+
+    def test_2d_array_size(self):
+        """Test 2D image array size calculation."""
+        n_samples = 100
+        values_per_sample = 128
+        n_slices = 1
+
+        total = n_samples * values_per_sample * n_slices
+        assert total == 12800
+        assert total <= MAX_IMAGE_SIZE
+
+    def test_3d_array_size(self):
+        """Test 3D volume array size calculation."""
+        n_samples = 100
+        values_per_sample = 128
+        n_slices = 50
+
+        total = n_samples * values_per_sample * n_slices
+        assert total == 640000
+        assert total <= MAX_VOLUME_SIZE
+
+    def test_max_1d_samples(self):
+        """Test maximum number of 1D samples."""
+        max_samples = MAX_SPECTRUM_SIZE
+        assert max_samples == 100000
+
+    def test_max_2d_samples(self):
+        """Test maximum number of 2D samples (e.g., 1000 x 2000)."""
+        max_samples = 1000
+        max_pixels = 2000
+        total = max_samples * max_pixels
+        assert total == MAX_IMAGE_SIZE
+
+    def test_kreios_detector_capacity(self):
+        """Test KREIOS-150 full detector capacity (1285 x 730)."""
+        detector_x = 1285
+        detector_y = 730
+        full_detector_pixels = detector_x * detector_y
+        assert full_detector_pixels == 938050
+        assert full_detector_pixels <= MAX_IMAGE_SIZE
+
+
+class TestSimulatedDataGeneration:
+    """Tests for simulated data generation formulas."""
+
+    def test_gaussian_peak_at_center(self):
+        """Test Gaussian peak intensity at center energy."""
+        center_energy = 405.0
+        sigma = 10.0 / 6  # For range 400-410
+        peak_intensity = 1000
+
+        energy = 405.0
+        intensity = peak_intensity * math.exp(
+            -((energy - center_energy) ** 2) / (2 * sigma ** 2)
+        )
+        assert abs(intensity - 1000) < 1e-6
+
+    def test_gaussian_peak_symmetry(self):
+        """Test Gaussian peak is symmetric around center."""
+        center_energy = 405.0
+        sigma = 10.0 / 6
+        peak_intensity = 1000
+
+        # Test points equidistant from center
+        offset = 2.0
+        intensity_low = peak_intensity * math.exp(
+            -((center_energy - offset - center_energy) ** 2) / (2 * sigma ** 2)
+        )
+        intensity_high = peak_intensity * math.exp(
+            -((center_energy + offset - center_energy) ** 2) / (2 * sigma ** 2)
+        )
+
+        assert abs(intensity_low - intensity_high) < 1e-10
+
+    def test_gaussian_peak_falloff(self):
+        """Test Gaussian peak falls off from center."""
+        center_energy = 405.0
+        sigma = 10.0 / 6
+        peak_intensity = 1000
+
+        intensity_center = peak_intensity * math.exp(0)  # At center = peak
+        intensity_1sigma = peak_intensity * math.exp(-0.5)  # At 1 sigma
+        intensity_2sigma = peak_intensity * math.exp(-2.0)  # At 2 sigma
+
+        assert intensity_center == 1000
+        assert intensity_1sigma < intensity_center
+        assert intensity_2sigma < intensity_1sigma
+
+    def test_spatial_offset_formula(self):
+        """Test spatial offset for 2D data (angle/momentum resolved)."""
+        n_pixels = 10
+
+        # Center pixel should have minimal offset
+        pixel_center = n_pixels // 2
+        offset_center = (pixel_center - n_pixels / 2) * 0.2
+        assert abs(offset_center) < 0.2
+
+        # Edge pixels should have non-zero offset
+        offset_edge = (0 - n_pixels / 2) * 0.2
+        assert offset_edge < 0  # Negative offset for left edge
 
 
 class TestDataAccumulation:

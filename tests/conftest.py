@@ -10,7 +10,7 @@ Environment Variables:
 - SIMULATOR_HOST: Hostname for simulator (default: localhost)
 - SIMULATOR_PORT: Port for simulator (default: 7010)
 - USE_EXTERNAL_SIMULATOR: If "1", don't start local simulator
-- EPICS_IOC_PREFIX: PV prefix for EPICS IOC tests (default: KREIOS:cam1:)
+- EPICS_IOC_PREFIX: PV prefix for EPICS IOC tests (default: XF:29ID2-ES{Det:Kreios}:cam1:)
 """
 
 import asyncio
@@ -33,7 +33,6 @@ sys.path.insert(0, str(PROJECT_ROOT / "sim"))
 SIMULATOR_HOST = os.environ.get("SIMULATOR_HOST", "localhost")
 SIMULATOR_PORT = int(os.environ.get("SIMULATOR_PORT", "7010"))
 USE_EXTERNAL_SIMULATOR = os.environ.get("USE_EXTERNAL_SIMULATOR", "0") == "1"
-EPICS_IOC_PREFIX = os.environ.get("EPICS_IOC_PREFIX", "KREIOS:cam1:")
 
 
 # ============================================================================
@@ -430,3 +429,24 @@ def parse_response_func():
 def wait_for_complete_func():
     """Fixture providing the wait_for_acquisition_complete helper function."""
     return wait_for_acquisition_complete
+
+
+@pytest.fixture
+def make_client():
+    """Fixture providing a factory for ProdigyTestClient instances.
+
+    Returns a callable that creates ProdigyTestClient with optional
+    host/port overrides. Useful for tests that need non-default connection
+    parameters (e.g., testing connection to a non-existent server).
+    """
+    clients = []
+
+    def _make(host=None, port=None):
+        c = ProdigyTestClient(host=host, port=port)
+        clients.append(c)
+        return c
+
+    yield _make
+
+    for c in clients:
+        c.disconnect()
