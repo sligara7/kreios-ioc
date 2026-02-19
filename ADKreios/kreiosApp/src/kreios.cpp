@@ -242,6 +242,18 @@ Kreios::Kreios(const char *portName, const char *driverPort, int maxBuffers,
     createParam(KREIOSQueryVisibleNameRBVString,       asynParamOctet,         &KREIOSQueryVisibleNameRBV_);
     createParam(KREIOSQueryStatusString,               asynParamInt32,         &KREIOSQueryStatus_);
 
+    // UVS 300 UV Source
+    createParam(KREIOSUVSPollString,                   asynParamInt32,         &KREIOSUVSPoll_);
+    createParam(KREIOSUVSConnectedString,              asynParamInt32,         &KREIOSUVSConnected_);
+    createParam(KREIOSUVSGasSelectString,              asynParamInt32,         &KREIOSUVSGasSelect_);
+    createParam(KREIOSUVSGasSelectRBVString,           asynParamInt32,         &KREIOSUVSGasSelectRBV_);
+    createParam(KREIOSUVSDischargeString,              asynParamInt32,         &KREIOSUVSDischarge_);
+    createParam(KREIOSUVSDischargeRBVString,           asynParamInt32,         &KREIOSUVSDischargeRBV_);
+    createParam(KREIOSUVSEmissionCurrentString,        asynParamFloat64,       &KREIOSUVSEmissionCurrent_);
+    createParam(KREIOSUVSPressureString,               asynParamFloat64,       &KREIOSUVSPressure_);
+    createParam(KREIOSUVSStatusString,                 asynParamOctet,         &KREIOSUVSStatus_);
+    createParam(KREIOSUVSInterlockString,              asynParamInt32,         &KREIOSUVSInterlock_);
+
     // Set default values
     setIntegerParam(KREIOSConnected_,                 0);
     setIntegerParam(KREIOSPauseAcq_,                  0);
@@ -260,6 +272,12 @@ Kreios::Kreios(const char *portName, const char *driverPort, int maxBuffers,
     setIntegerParam(KREIOSValuesPerSample_,           1);
     setIntegerParam(KREIOSNumSlices_,                 1);
     setIntegerParam(KREIOSNonEnergyChannels_,         1);
+
+    // UVS 300 defaults
+    setIntegerParam(KREIOSUVSGasSelect_,             0);
+    setIntegerParam(KREIOSUVSDischarge_,             0);
+    setIntegerParam(KREIOSUVSConnected_,             0);
+    setStringParam(KREIOSUVSStatus_,                 "Unknown");
 
     // Set standard ADDriver parameters
     setStringParam(ADManufacturer, "SPECS GmbH");
@@ -1047,6 +1065,18 @@ asynStatus Kreios::writeInt32(asynUser *pasynUser, epicsInt32 value)
         if (value == 1) { status = queryGetLiveParamInfo(); }
     } else if (function == KREIOSGetLiveParamValue_) {
         if (value == 1) { status = queryGetLiveParamValue(); }
+    // UVS 300 UV Source
+    } else if (function == KREIOSUVSGasSelect_) {
+        std::string gasVal;
+        if (value == 0) gasVal = "He I";
+        else if (value == 1) gasVal = "He II";
+        else gasVal = "H2";
+        status = uvsSetDeviceParamValue(UVS_PARAM_GAS_TYPE, gasVal);
+    } else if (function == KREIOSUVSDischarge_) {
+        status = uvsSetDeviceParamValue(UVS_PARAM_DISCHARGE,
+                                         value ? "true" : "false");
+    } else if (function == KREIOSUVSPoll_) {
+        status = pollUVS300();
     } else if (function < FIRST_KREIOS_PARAM) {
         status = ADDriver::writeInt32(pasynUser, value);
     }
@@ -2418,6 +2448,114 @@ asynStatus Kreios::queryGetLiveParamValue()
     asynStatus status = commandResponse(cmd.str(), response, data);
     setQueryOutputs(data, status == asynSuccess);
     return status;
+}
+
+// ============================================================================
+// UVS 300 UV Source Methods
+// ============================================================================
+
+asynStatus Kreios::uvsGetDeviceParamValue(const std::string &paramName,
+                                            std::string &value)
+{
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    cmd << KREIOS_CMD_GET_DEVICE_PARAM_VALUE
+        << " DeviceCommand:\"" << UVS_CMD_CONTROL << "\""
+        << " ParameterName:\"" << paramName << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    if (status == asynSuccess && data.count("ParameterValue") > 0) {
+        value = data["ParameterValue"];
+    }
+    return status;
+}
+
+asynStatus Kreios::uvsSetDeviceParamValue(const std::string &paramName,
+                                            const std::string &value)
+{
+    std::string response;
+    std::map<std::string, std::string> data;
+    std::stringstream cmd;
+
+    cmd << KREIOS_CMD_SET_DEVICE_PARAM_VALUE
+        << " DeviceCommand:\"" << UVS_CMD_CONTROL << "\""
+        << " ParameterName:\"" << paramName << "\""
+        << " Value:\"" << value << "\"";
+
+    asynStatus status = commandResponse(cmd.str(), response, data);
+    return status;
+}
+
+asynStatus Kreios::pollUVS300()
+{
+    const char *functionName = "Kreios::pollUVS300";
+    std::string value;
+    int failCount = 0;
+
+    // Gas type
+    if (uvsGetDeviceParamValue(UVS_PARAM_GAS_TYPE, value) == asynSuccess) {
+        int gasVal = 0;
+        if (value == "He II" || value == "1") gasVal = 1;
+        else if (value == "H2" || value == "2") gasVal = 2;
+        setIntegerParam(KREIOSUVSGasSelectRBV_, gasVal);
+    } else {
+        failCount++;
+    }
+
+    // Discharge
+    if (uvsGetDeviceParamValue(UVS_PARAM_DISCHARGE, value) == asynSuccess) {
+        int disch = (value == "true" || value == "1" || value == "True") ? 1 : 0;
+        setIntegerParam(KREIOSUVSDischargeRBV_, disch);
+    } else {
+        failCount++;
+    }
+
+    // Emission current
+    if (uvsGetDeviceParamValue(UVS_PARAM_EMISSION, value) == asynSuccess) {
+        double emission = 0.0;
+        try { emission = std::stod(value); } catch (...) {}
+        setDoubleParam(KREIOSUVSEmissionCurrent_, emission);
+    } else {
+        failCount++;
+    }
+
+    // Pressure
+    if (uvsGetDeviceParamValue(UVS_PARAM_PRESSURE, value) == asynSuccess) {
+        double pressure = 0.0;
+        try { pressure = std::stod(value); } catch (...) {}
+        setDoubleParam(KREIOSUVSPressure_, pressure);
+    } else {
+        failCount++;
+    }
+
+    // Status
+    if (uvsGetDeviceParamValue(UVS_PARAM_STATUS, value) == asynSuccess) {
+        setStringParam(KREIOSUVSStatus_, value.c_str());
+    } else {
+        failCount++;
+    }
+
+    // Interlock
+    if (uvsGetDeviceParamValue(UVS_PARAM_INTERLOCK, value) == asynSuccess) {
+        int interlock = (value == "true" || value == "1" || value == "True"
+                         || value == "OK") ? 1 : 0;
+        setIntegerParam(KREIOSUVSInterlock_, interlock);
+    } else {
+        failCount++;
+    }
+
+    // If all 6 reads failed, device is not connected
+    setIntegerParam(KREIOSUVSConnected_, (failCount < 6) ? 1 : 0);
+
+    if (failCount == 6) {
+        setStringParam(KREIOSUVSStatus_, "Not Connected");
+        debug(functionName, "UVS 300 not reachable, all reads failed");
+    }
+
+    callParamCallbacks();
+    return (failCount < 6) ? asynSuccess : asynError;
 }
 
 // ============================================================================

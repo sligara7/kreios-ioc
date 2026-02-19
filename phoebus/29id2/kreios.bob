@@ -982,6 +982,33 @@
     </widget>
   </widget>
 
+  <!-- UVS 300 UV Source Button -->
+  <widget type="action_button" version="3.0.0">
+    <name>UVS 300 Button</name>
+    <actions>
+      <action type="open_display">
+        <file>uvs300.bob</file>
+        <macros>
+          <P>$(P)</P>
+          <R>$(R)</R>
+        </macros>
+        <target>window</target>
+        <description>Open UVS 300 UV Source</description>
+      </action>
+    </actions>
+    <text>UVS 300 UV Source</text>
+    <x>20</x>
+    <y>750</y>
+    <width>200</width>
+    <height>35</height>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <background_color>
+      <color red="200" green="220" blue="255"/>
+    </background_color>
+  </widget>
+
   <!-- Footer -->
   <widget type="label" version="2.0.0">
     <name>Footer</name>

@@ -1232,3 +1232,120 @@ record(bi, "$(P)$(R)QueryStatus_RBV")
   field(ZNAM, "Error")
   field(ONAM, "OK")
 }
+
+################### UVS 300 UV Source ###################
+
+# Poll trigger — set SCAN="1 second" in st.cmd or substitutions
+record(longout, "$(P)$(R)UVSPoll")
+{
+  field(DESC, "UVS 300 poll trigger")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_POLL")
+  field(SCAN, "1 second")
+  field(VAL,  "1")
+}
+
+# UVS connected status
+record(bi, "$(P)$(R)UVSConnected_RBV")
+{
+  field(DESC, "UVS 300 connected")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_CONNECTED")
+  field(SCAN, "I/O Intr")
+  field(ZNAM, "Not Connected")
+  field(ONAM, "Connected")
+  field(ZSV,  "MINOR")
+}
+
+# Gas selection (write)
+record(mbbo, "$(P)$(R)UVSGasSelect")
+{
+  field(DESC, "UVS gas selection")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_GAS_SELECT")
+  field(ZRST, "He I")
+  field(ZRVL, "0")
+  field(ONST, "He II")
+  field(ONVL, "1")
+  field(TWST, "H2")
+  field(TWVL, "2")
+}
+
+# Gas selection readback
+record(mbbi, "$(P)$(R)UVSGasSelect_RBV")
+{
+  field(DESC, "UVS gas readback")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_GAS_SELECT_RBV")
+  field(SCAN, "I/O Intr")
+  field(ZRST, "He I")
+  field(ZRVL, "0")
+  field(ONST, "He II")
+  field(ONVL, "1")
+  field(TWST, "H2")
+  field(TWVL, "2")
+}
+
+# Discharge control (write)
+record(bo, "$(P)$(R)UVSDischarge")
+{
+  field(DESC, "UVS discharge control")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_DISCHARGE")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+}
+
+# Discharge readback
+record(bi, "$(P)$(R)UVSDischarge_RBV")
+{
+  field(DESC, "UVS discharge status")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_DISCHARGE_RBV")
+  field(SCAN, "I/O Intr")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+}
+
+# Emission current readback
+record(ai, "$(P)$(R)UVSEmissionCurrent_RBV")
+{
+  field(DESC, "UVS emission current")
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_EMISSION_CURRENT")
+  field(SCAN, "I/O Intr")
+  field(PREC, "3")
+  field(EGU,  "mA")
+}
+
+# Pressure readback
+record(ai, "$(P)$(R)UVSPressure_RBV")
+{
+  field(DESC, "UVS pressure")
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_PRESSURE")
+  field(SCAN, "I/O Intr")
+  field(PREC, "2")
+  field(EGU,  "mbar")
+}
+
+# Status text readback
+record(stringin, "$(P)$(R)UVSStatus_RBV")
+{
+  field(DESC, "UVS status text")
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_STATUS")
+  field(SCAN, "I/O Intr")
+}
+
+# Interlock readback
+record(bi, "$(P)$(R)UVSInterlock_RBV")
+{
+  field(DESC, "UVS interlock status")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),$(ADDR=0),$(TIMEOUT=1))KREIOS_UVS_INTERLOCK")
+  field(SCAN, "I/O Intr")
+  field(ZNAM, "Fault")
+  field(ONAM, "OK")
+  field(ZSV,  "MAJOR")
+}

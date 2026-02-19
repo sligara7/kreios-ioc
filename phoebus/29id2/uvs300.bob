@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--UVS 300 UV Source Control Screen-->
+<display version="2.0.0">
+  <name>UVS 300 UV Source</name>
+  <macros>
+    <P>KREIOS:</P>
+    <R>cam1:</R>
+  </macros>
+  <width>450</width>
+  <height>500</height>
+  <grid_step_x>6</grid_step_x>
+  <grid_step_y>6</grid_step_y>
+
+  <!-- Header -->
+  <widget type="rectangle" version="2.0.0">
+    <name>Header Background</name>
+    <width>450</width>
+    <height>50</height>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+    <background_color>
+      <color red="0" green="118" blue="177"/>
+    </background_color>
+  </widget>
+
+  <widget type="label" version="2.0.0">
+    <name>Title</name>
+    <text>UVS 300 UV Source</text>
+    <x>15</x>
+    <y>10</y>
+    <width>300</width>
+    <height>30</height>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="18.0"/>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255"/>
+    </foreground_color>
+  </widget>
+
+  <!-- Status Section -->
+  <widget type="group" version="3.0.0">
+    <name>Status</name>
+    <x>15</x>
+    <y>65</y>
+    <width>420</width>
+    <height>105</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Connected Label</name>
+      <text>Connected:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="led" version="2.0.0">
+      <name>Connected LED</name>
+      <pv_name>$(P)$(R)UVSConnected_RBV</pv_name>
+      <x>130</x>
+      <y>10</y>
+      <width>22</width>
+      <height>22</height>
+      <on_color>
+        <color red="0" green="255" blue="0"/>
+      </on_color>
+      <off_color>
+        <color red="255" green="0" blue="0"/>
+      </off_color>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Connected Text</name>
+      <pv_name>$(P)$(R)UVSConnected_RBV</pv_name>
+      <x>160</x>
+      <y>10</y>
+      <width>120</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Status Label</name>
+      <text>Status:</text>
+      <x>10</x>
+      <y>40</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Status Text</name>
+      <pv_name>$(P)$(R)UVSStatus_RBV</pv_name>
+      <x>130</x>
+      <y>40</y>
+      <width>270</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Interlock Label</name>
+      <text>Interlock:</text>
+      <x>10</x>
+      <y>70</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="led" version="2.0.0">
+      <name>Interlock LED</name>
+      <pv_name>$(P)$(R)UVSInterlock_RBV</pv_name>
+      <x>130</x>
+      <y>70</y>
+      <width>22</width>
+      <height>22</height>
+      <on_color>
+        <color red="0" green="255" blue="0"/>
+      </on_color>
+      <off_color>
+        <color red="255" green="0" blue="0"/>
+      </off_color>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Interlock Text</name>
+      <pv_name>$(P)$(R)UVSInterlock_RBV</pv_name>
+      <x>160</x>
+      <y>70</y>
+      <width>120</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- Gas Selection Section -->
+  <widget type="group" version="3.0.0">
+    <name>Gas Selection</name>
+    <x>15</x>
+    <y>185</y>
+    <width>420</width>
+    <height>75</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Gas Select Label</name>
+      <text>Gas:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>Gas Select</name>
+      <pv_name>$(P)$(R)UVSGasSelect</pv_name>
+      <x>130</x>
+      <y>10</y>
+      <width>150</width>
+      <height>25</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Gas RBV Label</name>
+      <text>Readback:</text>
+      <x>10</x>
+      <y>42</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Gas RBV</name>
+      <pv_name>$(P)$(R)UVSGasSelect_RBV</pv_name>
+      <x>130</x>
+      <y>42</y>
+      <width>150</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- Discharge Control Section -->
+  <widget type="group" version="3.0.0">
+    <name>Discharge Control</name>
+    <x>15</x>
+    <y>275</y>
+    <width>420</width>
+    <height>75</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Discharge Label</name>
+      <text>Discharge:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Discharge On</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)$(R)UVSDischarge</pv_name>
+          <value>1</value>
+          <description>Discharge On</description>
+        </action>
+      </actions>
+      <text>On</text>
+      <x>130</x>
+      <y>10</y>
+      <width>80</width>
+      <height>28</height>
+      <background_color>
+        <color red="200" green="255" blue="200"/>
+      </background_color>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Discharge Off</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)$(R)UVSDischarge</pv_name>
+          <value>0</value>
+          <description>Discharge Off</description>
+        </action>
+      </actions>
+      <text>Off</text>
+      <x>220</x>
+      <y>10</y>
+      <width>80</width>
+      <height>28</height>
+      <background_color>
+        <color red="255" green="200" blue="200"/>
+      </background_color>
+    </widget>
+    <widget type="led" version="2.0.0">
+      <name>Discharge LED</name>
+      <pv_name>$(P)$(R)UVSDischarge_RBV</pv_name>
+      <x>310</x>
+      <y>12</y>
+      <width>22</width>
+      <height>22</height>
+      <on_color>
+        <color red="0" green="255" blue="0"/>
+      </on_color>
+      <off_color>
+        <color red="128" green="128" blue="128"/>
+      </off_color>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Discharge Status</name>
+      <pv_name>$(P)$(R)UVSDischarge_RBV</pv_name>
+      <x>340</x>
+      <y>12</y>
+      <width>60</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- Readbacks Section -->
+  <widget type="group" version="3.0.0">
+    <name>Readbacks</name>
+    <x>15</x>
+    <y>365</y>
+    <width>420</width>
+    <height>75</height>
+    <style>1</style>
+    <font>
+      <font family="Liberation Sans" style="BOLD" size="14.0"/>
+    </font>
+    <foreground_color>
+      <color red="240" green="240" blue="240"/>
+    </foreground_color>
+    <line_color>
+      <color red="0" green="118" blue="177"/>
+    </line_color>
+
+    <widget type="label" version="2.0.0">
+      <name>Emission Label</name>
+      <text>Emission:</text>
+      <x>10</x>
+      <y>10</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Emission Current</name>
+      <pv_name>$(P)$(R)UVSEmissionCurrent_RBV</pv_name>
+      <x>130</x>
+      <y>10</y>
+      <width>100</width>
+      <height>22</height>
+      <precision>3</precision>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>Emission Units</name>
+      <text>mA</text>
+      <x>235</x>
+      <y>10</y>
+      <width>40</width>
+      <height>22</height>
+    </widget>
+
+    <widget type="label" version="2.0.0">
+      <name>Pressure Label</name>
+      <text>Pressure:</text>
+      <x>10</x>
+      <y>40</y>
+      <width>110</width>
+      <height>22</height>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Pressure</name>
+      <pv_name>$(P)$(R)UVSPressure_RBV</pv_name>
+      <x>130</x>
+      <y>40</y>
+      <width>100</width>
+      <height>22</height>
+      <precision>2</precision>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>Pressure Units</name>
+      <text>mbar</text>
+      <x>235</x>
+      <y>40</y>
+      <width>50</width>
+      <height>22</height>
+    </widget>
+  </widget>
+
+  <!-- Footer -->
+  <widget type="label" version="2.0.0">
+    <name>Footer</name>
+    <text>SPECS UVS 300 - ARI 29-ID-2 - NSLS-II</text>
+    <x>15</x>
+    <y>470</y>
+    <width>400</width>
+    <height>20</height>
+    <foreground_color>
+      <color red="128" green="128" blue="128"/>
+    </foreground_color>
+  </widget>
+
+</display>

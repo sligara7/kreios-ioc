@@ -149,6 +149,18 @@
 #define KREIOS_CMD_GET_LIVE_PARAM_INFO   "GetLiveParameterInfo"
 #define KREIOS_CMD_GET_LIVE_PARAM_VALUE  "GetLiveParameterValue"
 
+// UVS 300 UV Source — Prodigy device/parameter name placeholders
+// These names are unknown until the UVS hardware is connected.
+// Update after running GetAllDevices / GetAllDeviceParameterNames.
+#define UVS_DEVICE_NAME       "UVS 300"
+#define UVS_CMD_CONTROL       "Control"
+#define UVS_PARAM_GAS_TYPE    "GasType"
+#define UVS_PARAM_DISCHARGE   "Discharge"
+#define UVS_PARAM_EMISSION    "EmissionCurrent"
+#define UVS_PARAM_PRESSURE    "Pressure"
+#define UVS_PARAM_STATUS      "Status"
+#define UVS_PARAM_INTERLOCK   "Interlock"
+
 // Pre-defined EPICS Parameter Names
 #define KREIOSConnectString                   "KREIOS_CONNECT"
 #define KREIOSConnectedString                 "KREIOS_CONNECTED"
@@ -285,6 +297,18 @@
 #define KREIOSQueryVisibleNameRBVString       "KREIOS_QUERY_VISIBLE_NAME"
 #define KREIOSQueryStatusString               "KREIOS_QUERY_STATUS"
 
+// UVS 300 UV Source parameters
+#define KREIOSUVSPollString                   "KREIOS_UVS_POLL"
+#define KREIOSUVSConnectedString              "KREIOS_UVS_CONNECTED"
+#define KREIOSUVSGasSelectString              "KREIOS_UVS_GAS_SELECT"
+#define KREIOSUVSGasSelectRBVString           "KREIOS_UVS_GAS_SELECT_RBV"
+#define KREIOSUVSDischargeString              "KREIOS_UVS_DISCHARGE"
+#define KREIOSUVSDischargeRBVString           "KREIOS_UVS_DISCHARGE_RBV"
+#define KREIOSUVSEmissionCurrentString        "KREIOS_UVS_EMISSION_CURRENT"
+#define KREIOSUVSPressureString               "KREIOS_UVS_PRESSURE"
+#define KREIOSUVSStatusString                 "KREIOS_UVS_STATUS"
+#define KREIOSUVSInterlockString              "KREIOS_UVS_INTERLOCK"
+
 // Parameter value types
 typedef enum {
     KREIOSTypeDouble,
@@ -380,6 +404,13 @@ public:
     asynStatus queryGetDeviceInfo();
     asynStatus queryGetLiveParamInfo();
     asynStatus queryGetLiveParamValue();
+
+    // UVS 300 UV Source
+    asynStatus pollUVS300();
+    asynStatus uvsGetDeviceParamValue(const std::string &paramName,
+                                       std::string &value);
+    asynStatus uvsSetDeviceParamValue(const std::string &paramName,
+                                       const std::string &value);
 
     // Device parameter management
     asynStatus readDeviceVisibleName();
@@ -563,7 +594,19 @@ protected:
     int KREIOSQueryDeviceType_;
     int KREIOSQueryVisibleNameRBV_;
     int KREIOSQueryStatus_;
-    #define LAST_KREIOS_PARAM KREIOSQueryStatus_
+
+    // UVS 300 UV Source
+    int KREIOSUVSPoll_;
+    int KREIOSUVSConnected_;
+    int KREIOSUVSGasSelect_;
+    int KREIOSUVSGasSelectRBV_;
+    int KREIOSUVSDischarge_;
+    int KREIOSUVSDischargeRBV_;
+    int KREIOSUVSEmissionCurrent_;
+    int KREIOSUVSPressure_;
+    int KREIOSUVSStatus_;
+    int KREIOSUVSInterlock_;
+    #define LAST_KREIOS_PARAM KREIOSUVSInterlock_
 
 private:
     asynUser                           *portUser_;
