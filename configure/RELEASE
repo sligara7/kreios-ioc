@@ -1,0 +1,16 @@
+# RELEASE - Location of external products
+#
+# ADKreios - KREIOS-150 Momentum Microscope areaDetector Driver
+#
+# When building inside the areaDetector umbrella, RELEASE_LIBS_INCLUDE
+# provides all paths. For standalone builds, create RELEASE.local with
+# paths to your EPICS installation.
+
+ADKREIOS = $(TOP)
+
+# If using the areaDetector umbrella build, these are provided automatically:
+-include $(TOP)/../configure/RELEASE_LIBS_INCLUDE
+
+# Allow local overrides
+-include $(TOP)/RELEASE.local
+-include $(TOP)/configure/RELEASE.local

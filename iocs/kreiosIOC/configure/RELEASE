@@ -1,0 +1,13 @@
+# RELEASE - kreiosIOC
+#
+# Points to parent ADKreios module for driver library and templates.
+
+ADKREIOS = $(TOP)/../..
+
+# Pull in the same dependency paths as the driver module
+-include $(TOP)/../../configure/RELEASE_LIBS_INCLUDE
+
+# Allow local overrides (check both top-level and configure/ locations)
+-include $(TOP)/../../RELEASE.local
+-include $(TOP)/../../configure/RELEASE.local
+-include $(TOP)/configure/RELEASE.local

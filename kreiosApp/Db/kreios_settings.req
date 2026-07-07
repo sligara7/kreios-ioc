@@ -1,0 +1,49 @@
+# KREIOS-150 autosave settings
+# PVs whose values are saved and restored across IOC restarts.
+# Macros: P = device prefix, R = device suffix (e.g. cam1:)
+
+# Standard areaDetector acquisition settings (ADBase.template)
+$(P)$(R)AcquireTime
+$(P)$(R)NumImages
+$(P)$(R)ImageMode
+$(P)$(R)BinX
+$(P)$(R)BinY
+$(P)$(R)ReverseX
+$(P)$(R)ReverseY
+
+# Spectrum / energy settings
+$(P)$(R)StartEnergy
+$(P)$(R)EndEnergy
+$(P)$(R)StepWidth
+$(P)$(R)PassEnergy
+$(P)$(R)KineticEnergy
+$(P)$(R)RetardingRatio
+$(P)$(R)Samples
+
+# Acquisition and operating modes
+$(P)$(R)RunMode
+$(P)$(R)OperatingMode
+$(P)$(R)LensMode
+$(P)$(R)ScanRange
+
+# Analyzer voltages / detector settings
+$(P)$(R)DetectorVoltage
+$(P)$(R)BiasVoltage
+$(P)$(R)Gain
+
+# Momentum microscopy field of view
+$(P)$(R)FieldOfView
+$(P)$(R)Magnification
+$(P)$(R)KxMin
+$(P)$(R)KxMax
+$(P)$(R)KyMin
+$(P)$(R)KyMax
+
+# Data dimensionality
+$(P)$(R)ValuesPerSample
+$(P)$(R)NumSlices
+
+# Direct analyzer parameter control
+$(P)$(R)DirectPolarity
+$(P)$(R)DirectParamName
+$(P)$(R)DirectParamValue
